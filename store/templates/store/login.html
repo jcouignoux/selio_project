@@ -1,0 +1,23 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+    {% if message %}
+    {{ message }}
+    {% else %}
+    <h2>Log In</h2>
+    {% if errors %}
+    <div>
+        {% for key, error in errors %}
+        {% autoescape off %}
+            {{ error }}
+        {% endautoescape %}
+        {% endfor %}
+    </div>
+    {% endif %}
+    <form action="{% url 'store:login' %}" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Log In</button>
+    </form>
+    {% endif %}
+{% endblock %}

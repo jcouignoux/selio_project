@@ -1,0 +1,77 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block content %}
+<hr class="detail-separator">
+<h1 class="intro-text text-center">{{ ouvrage_title }}</h1>
+<hr class="detail-separator">
+
+<div class="row gx-4 gx-lg-5 row-cols-auto row-cols-md-auto row-cols-xl-4 justify-content-center">
+    <div class="card h-100">
+        <!-- Sale badge-->
+        <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
+        <!-- Product image-->
+        <img class="card-img-top" src="{{ ouvrage_picture }}" alt="..." />
+        <!-- Product details-->
+        <div class="card-body p-4">
+            <div class="text-center">
+                <!-- Product name-->
+                <h5 class="fw-bolder">{{ ouvrage_title }}</h5>
+                <!-- Product reviews-->
+                <div class="d-flex justify-content-center small text-warning mb-2">
+                    <div class="bi-star-fill"></div>
+                    <div class="bi-star-fill"></div>
+                    <div class="bi-star-fill"></div>
+                    <div class="bi-star-fill"></div>
+                    <div class="bi-star-fill"></div>
+                </div>
+                <!-- Product price-->
+                <span class="text-muted">{{ ouvrage_price }} €</span>
+            </div>
+        </div>
+        <!-- Product actions-->
+    </div>
+    <div class="card h-100 text-start">
+        <label class="fw-bolder">Référence: {{ ouvrage_reference }}</label>
+        <label class="fw-bolder">Auteur(s): {{ auteurs_name }}</label>
+        <label class="fw-bolder">Editeur: {{ editeurs_name }}</label>
+        <label class="fw-bolder">Catégorie: {{ categories_name }}</label>
+        <label class="fw-bolder">Publication: {{ ouvrage_publication }}</label>
+        <label class="fw-bolder">Stock: {{ ouvrage_stock }}</label>
+    </div>
+    <div class="card h-100 text-start"></div>
+        <form class="form-label" action="{% url 'store:detail' ouvrage_id=ouvrage_id %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="ouvrage_id" value="{{ ouvrage_id }}" >
+            <div class="form-control {% if form.catPrice.errors %}has-warning has-feedback{% endif %}">
+                <label for="{{ form.name.id_for_label }}" class="form-label">Cat. Prix</label>
+                {{ form.catPrice }}
+            </div>
+            <div class="form-control {% if form.payment.errors %}has-warning has-feedback{% endif %}">
+                <label for="{{ form.email.id_for_label }}" class="form-label">Paiement</label>
+                {{ form.payment }}
+            </div>
+            <div class="form-control {% if form.quantity.errors %}has-warning has-feedback{% endif %}">
+                <label for="{{ form.quantity.id_for_label }}" class="form-label">Paiement</label>
+                {{ form.quantity }}
+            </div>
+            <!-- <input type="hidden" class="hidden" value="{{ album_id }}" name="album_id"> -->
+            <button type="submit" class="btn btn-success">Valider</button>
+        </form>
+    </div>
+</div>
+  {% if errors %}
+    <div>
+      {% for key, error in errors %}
+      {% autoescape off %}
+        {{ error }}
+      {% endautoescape %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+
+</div>
+
+
+{% endblock %}
