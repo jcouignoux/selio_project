@@ -52,11 +52,18 @@
                 {{ form.payment }}
             </div>
             <div class="form-control {% if form.quantity.errors %}has-warning has-feedback{% endif %}">
-                <label for="{{ form.quantity.id_for_label }}" class="form-label">Paiement</label>
+                <label for="{{ form.quantity.id_for_label }}" class="form-label">Quantité</label>
                 {{ form.quantity }}
             </div>
+            <div class="form-control {% if form.date.errors %}has-warning has-feedback{% endif %}">
+                <label for="{{ form.date.id_for_label }}" class="form-label">Date</label>
+                {{ form.date }}
+                {{ form.media }}
+            </div>
             <!-- <input type="hidden" class="hidden" value="{{ album_id }}" name="album_id"> -->
-            <button type="submit" class="btn btn-success">Valider</button>
+            <div>
+                <button type="submit" class="btn btn-success">Valider</button>
+            </div>
         </form>
     </div>
 </div>

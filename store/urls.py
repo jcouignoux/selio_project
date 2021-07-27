@@ -5,8 +5,8 @@ from . import views
 
 
 urlpatterns = [
-    path('vente', views.vente, name="vente"),
-    path('uploadCSV', views.uploadCSV, name="uploadCSV"),
+    path('history', views.history, name="history"),
+    path('dataBase', views.dataBase, name="dataBase"),
     path('login', views.connexion, name="login"),
     path('logout', views.deconnexion, name="logout"),
     path('', views.index, name="index"),

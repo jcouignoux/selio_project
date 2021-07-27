@@ -33,12 +33,15 @@ else:
     DEBUG = True
     ALLOWED_HOSTS = ['127.0.0.1']
 
+# Use BOOTSTRAP3 if you are using Bootstrap 3
+BOOTSTRAP4 = {
+    'include_jquery': True,
+}
 
 # Application definition
 
 INSTALLED_APPS = [
     'store.apps.StoreConfig',
-    'website.apps.WebsiteConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +50,8 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.contrib.redirects',
+    'bootstrap4',
+    'bootstrap_datepicker_plus',
     'debug_toolbar',
 ]
 
@@ -132,6 +137,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+DATE_INPUT_FORMATS = ['%Y-%m-%d']
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -153,6 +159,7 @@ if os.environ.get('ENV') == 'PRODUCTION':
     DATABASES['default'].update(db_from_env)
 else:
     MEDIA_ROOT = os.path.join(BASE_DIR, 'store/media/')
+
 
 
 # Default primary key field type

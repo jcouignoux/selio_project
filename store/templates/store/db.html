@@ -1,0 +1,16 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<div>
+    <form class="form-label" action="{% url 'store:dataBase' %}" method=post enctype=multipart/form-data>
+        {% csrf_token %}
+        <div class="form-control">
+            <p><label> Fichier : </label> <input class="form-label" type="file" value='' name="xls" /></p>
+        </div>
+        <input class="btn btn-primary btn-block" type="submit" value="Importer">
+    </form>
+</div>
+{% endif %}
+{% endblock %}

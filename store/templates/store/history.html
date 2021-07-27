@@ -1,0 +1,32 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<div>
+    <form class="form-label" action="{% url 'store:history' %}" method="POST">
+    {% csrf_token %}
+        <label for="{{ form.date.id_for_label }}" class="form-label">Date</label>
+        {{ form.date }}
+        {{ form.media }}
+        <input class="btn btn-primary btn-block" type="submit" value="Sélectionner" />
+    </form>
+</div>
+<table class="table"><tbody>
+    {% for vente in ventes %}
+    <tr>
+        <td>{{ vente.reference }}</td>
+        <td>{{ vente.title }}</td>
+        <td>{{ vente.auteurs }}</td>
+        <td>{{ vente.editeurs }}</td>
+        <td>{{ vente.price }}</td>
+        <td>{{ vente.catPrice }}</td>
+        <td>{{ vente.payment }}</td>
+        <td>{{ vente.quantity }}</td>
+        <td>{{ vente.date|date:'Y-m-d' }}</td>
+        <td>{{ vente.comment }}</td>
+    </tr>
+    {% endfor %}
+</tbody></table>
+{% endif %}
+{% endblock %}

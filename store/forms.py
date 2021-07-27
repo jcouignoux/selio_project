@@ -1,11 +1,13 @@
 from django import forms
 from django.forms import ModelForm
 from django.contrib.auth.forms import AuthenticationForm
+from django.forms.forms import Form
 from django.forms.utils import ErrorList
 from django.forms.widgets import PasswordInput, TextInput, RadioSelect, NumberInput
 from django.contrib.auth.models import User
+from bootstrap_datepicker_plus import DatePickerInput
 
-from .models import Vente, Profil
+from .models import Vente, Profil, History
 
 
 class ParagraphErrorList(ErrorList):
@@ -31,9 +33,21 @@ class ConnexionForm(AuthenticationForm):
 class VenteForm(ModelForm):
     class Meta:
         model = Vente
-        fields = ["catPrice", "payment", "quantity"]
-        widget = {
-            'catPrice': RadioSelect(attrs={'class': 'form-control'}),
-            'payment': RadioSelect(attrs={'class': 'form-control'}),
-            'quantity': NumberInput(attrs={'class': 'form-control'})
+        fields = ["catPrice", "payment", "quantity", "date"]
+        widgets = {
+            'date': DatePickerInput(format='%Y-%m-%d')
+        }
+
+class DateForm(Form):
+    date = forms.DateField(
+        widget = DatePickerInput(format='%Y-%m-%d')
+    )
+
+class HistoryForm(Form):
+    class Meta:
+        model = History
+        fields = ["title", "start_date", "end_date"]
+        widgets = {
+            'start_date': DatePickerInput().start_of('date'),
+            'end_date': DatePickerInput().end_of('date')
         }

@@ -5,8 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction, IntegrityError
 
-from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, Vente
-from .forms import ConnexionForm, VenteForm, ParagraphErrorList
+from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, Vente, History
+from .forms import ConnexionForm, VenteForm, ParagraphErrorList, DateForm, HistoryForm
 from .store import xlsx
 
 # Create your views here.
@@ -59,22 +59,33 @@ def detail(request, ouvrage_id):
             catPrice = form.cleaned_data['catPrice']
             payment = form.cleaned_data['payment']
             quantity = form.cleaned_data['quantity']
-            try:
-                with transaction.atomic():
-                    ouvrage = get_object_or_404(Ouvrage, id=ouvrage.id)
-                    # vente = Vente.objects.create(
-                    #     ouvrage=ouvrage
-                    # )
-                    ouvrage.stock -= 1
-                    if ouvrage.stock == 0:
-                        ouvrage.available = False
-                    ouvrage.save()
-                    context = {
-                        'ouvrage_title': ouvrage.title
-                    }
-                    return render(request, 'store/index.html', context)
-            except IntegrityError:
-                form.errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."
+            date = form.cleaned_data['date']
+            # try:
+            with transaction.atomic():
+                ouvrage = get_object_or_404(Ouvrage, id=ouvrage.id)
+                vente = History.objects.create(
+                    reference=ouvrage.reference,
+                    title=ouvrage.title,
+                    auteurs=ouvrage.auteurs.first(),
+                    editeurs=ouvrage.editeurs.first(),
+                    price=ouvrage.price,
+                    catPrice=catPrice,
+                    payment=payment,
+                    quantity=quantity,
+                    date=date,
+                    comment = ""
+                )
+                ouvrage.stock -= 1
+                if ouvrage.stock <= 0:
+                    # ouvrage.available = False
+                    pass
+                ouvrage.save()
+                context = {
+                    'ouvrage_title': ouvrage.title
+                }
+                return render(request, 'store/index.html', context)
+            # except IntegrityError:
+            #     form.errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."
     else:
         form = VenteForm()
 
@@ -83,24 +94,40 @@ def detail(request, ouvrage_id):
 
     return render(request, 'store/detail.html', context)
 
-def uploadCSV(request):
+@login_required
+def dataBase(request):
     if request.method == "POST":
-        file = request.FILES['file']
+        file = request.FILES['xls']
         xls=xlsx()
         xls.importXLSX(file)
+    else:
+        pass
 
-    return render(request, 'store/import.html')
+    return render(request, 'store/db.html')
 
-def vente(request):
-    pass
+@login_required
+def history(request):
+    if request.method == "POST":
+        form = DateForm(request.POST)
+        print(form.data['date'])
+        start_date = form.data['date']
+        print(start_date)
+        end_date = form.data['date']
+        ventes = History.objects.filter(date__range=(start_date, end_date))
+    else:
+        form = DateForm()
+        ventes = History.objects.all()
 
-    return render(request, 'store/index.html')
+    context = {
+        'form': form,
+        'ventes': ventes
+    }
+    return render(request, 'store/history.html', context)
 
 def connexion(request):
 
     if request.method == "POST":
         form = ConnexionForm(data=request.POST, error_class=ParagraphErrorList)
-        print(form.is_valid())
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']

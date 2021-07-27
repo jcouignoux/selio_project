@@ -47,16 +47,16 @@ class Contact(models.Model):
 
 class Ouvrage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    reference = models.BigIntegerField("Référence", null=True)
+    reference = models.BigIntegerField("Référence", blank=True, null=True)
     title = models.CharField("Titre", max_length=200)
     auteurs = models.ManyToManyField(Author, related_name='ouvrages')
     editeurs = models.ManyToManyField(Publisher, related_name='ouvrages')
     categories = models.ManyToManyField(Categorie, related_name='ouvrages')
-    publication = models.IntegerField("Parution", null=True)
+    publication = models.IntegerField("Parution", blank=True, null=True)
     price = models.DecimalField("Prix", max_digits=5, decimal_places=2, null=True)
-    stock = models.IntegerField("Parution", default=0)
+    stock = models.IntegerField("Stock", default=0)
     picture = models.ImageField(upload_to='couv/', blank=True, null=True)
-    note = models.CharField("Note", max_length=1000, null=True)
+    note = models.CharField("Note", max_length=1000, blank=True, null=True)
     available = models.BooleanField("Disponible", default=True)
 
     def __str__(self):
@@ -104,4 +104,20 @@ class Vente(models.Model):
     ]
     payment = models.CharField('payment', choices=PAYMENT_CHOICES, max_length=10, default='Espèces')
     quantity = models.IntegerField(default=1)
+    date = models.DateField(blank=True, null=True)
 
+    def __str__(self):
+        return self.id
+
+class History(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    reference = models.BigIntegerField("Référence", blank=True, null=True)
+    title = models.CharField("Titre", max_length=200)
+    auteurs = models.CharField("Auteurs", max_length=400)
+    editeurs = models.CharField("Editeur", max_length=200)
+    price = models.DecimalField("Prix", max_digits=5, decimal_places=2, null=True)
+    catPrice = models.CharField('CatPrix', max_length=10)
+    payment = models.CharField('Paiement', max_length=10)
+    quantity = models.IntegerField('Quantité')
+    date = models.DateField('Date')
+    comment = models.CharField('Commentaire', max_length=10)
