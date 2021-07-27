@@ -1,0 +1,1 @@
+web: gunicorn selio_project.wsgi
