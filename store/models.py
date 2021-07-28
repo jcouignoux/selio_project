@@ -56,7 +56,7 @@ class Ouvrage(models.Model):
     price = models.DecimalField("Prix", max_digits=5, decimal_places=2, null=True)
     stock = models.IntegerField("Stock", default=0)
     picture = models.ImageField(upload_to='couv/', blank=True, null=True)
-    note = models.CharField("Note", max_length=1000, blank=True, null=True)
+    note = models.CharField("Note", max_length=3000, blank=True, null=True)
     available = models.BooleanField("Disponible", default=True)
 
     def __str__(self):
