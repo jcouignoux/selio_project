@@ -9,31 +9,31 @@ class xlsx():
     def importXLSX(self, file):
         # f = xlrd.open_workbook(file_contents=file.read())
         wb = openpyxl.load_workbook(file, data_only=True)
-        # Table Catégorie
-        catSheet = wb.get_sheet_by_name("categorie")
-        for r in range(2, catSheet.max_row):
-            cat = catSheet.cell(row=r, column=2).value
-            categorie = Categorie()
-            categorie.name = cat
-            categorie.save()
-
-        pubSheet = wb.get_sheet_by_name("editeur")
-        for r in range(2, pubSheet.max_row):
-            pubName = pubSheet.cell(row=r, column=2).value
-            pubMarge = pubSheet.cell(row=r, column=3).value
-            publisher = Publisher()
-            publisher.name = pubName
-            publisher.marge = pubMarge
-            publisher.save()
-
-        autSheet = wb.get_sheet_by_name("auteur")
-        for r in range(2, autSheet.max_row):
-            autName = autSheet.cell(row=r, column=2).value
-            autForname = autSheet.cell(row=r, column=3).value
-            author = Author()
-            author.name = autName
-            author.forname = autForname
-            author.save()
+        # # Table Catégorie
+        # catSheet = wb.get_sheet_by_name("categorie")
+        # for r in range(2, catSheet.max_row):
+        #     cat = catSheet.cell(row=r, column=2).value
+        #     categorie = Categorie()
+        #     categorie.name = cat
+        #     categorie.save()
+# 
+        # pubSheet = wb.get_sheet_by_name("editeur")
+        # for r in range(2, pubSheet.max_row):
+        #     pubName = pubSheet.cell(row=r, column=2).value
+        #     pubMarge = pubSheet.cell(row=r, column=3).value
+        #     publisher = Publisher()
+        #     publisher.name = pubName
+        #     publisher.marge = pubMarge
+        #     publisher.save()
+# 
+        # autSheet = wb.get_sheet_by_name("auteur")
+        # for r in range(2, autSheet.max_row):
+        #     autName = autSheet.cell(row=r, column=2).value
+        #     autForname = autSheet.cell(row=r, column=3).value
+        #     author = Author()
+        #     author.name = autName
+        #     author.forname = autForname
+        #     author.save()
 
         ouvSheet = wb.get_sheet_by_name("ouvrage")
         for r in range(2, ouvSheet.max_row):
