@@ -15,9 +15,9 @@
                         <div class="card h-100">
                             <!-- Product image-->
                             {% if ouvrage.picture != "" %}
-                            <img class="card-img-top" src="{% static '' %}store/couv/{{ ouvrage.picture }}" alt="..." />
+                            <img class="card-img-top" src="{% static 'store/couv/' %}{{ ouvrage.picture }}" alt="..." />
                             {% else %}
-                            <img class="card-img-top" src="{% static '' %}store/couv/sans-couverture.png" alt="..." />
+                            <img class="card-img-top" src="{% static 'store/couv/' %}sans-couverture.png" alt="..." />
                             {% endif %}
                             <!-- Product details-->
                             <div class="card-body p-4">
