@@ -1,5 +1,13 @@
 {% load static %}
-
+<div class="container px-4 px-lg-5">
+    <form class="d-flex" action="{% url 'store:index' %}" method="POST">
+        {% csrf_token %}
+        <input class="search" type="search" name="search" placeholder="Recherche dans les titres">
+        <button class="btn btn btn-outline-info my-2 my-sm-0" type="submit"> 
+            <i class="bi bi-search me-1"></i>
+        </button>
+    </form>
+</div>
 {% if ouvrages|length_is:"0" %}
     <div class="text-center">
         Palsambleu ! Nous n'avons trouvé aucun résultat à cette requête. Même pas de quoi se ronger la chique !
@@ -15,9 +23,9 @@
                         <div class="card h-100">
                             <!-- Product image-->
                             {% if ouvrage.picture != "" %}
-                            <img class="card-img-top" src="{% static 'store/couv/' %}{{ ouvrage.picture }}" alt="..." />
+                            <img class="card-img-top img-height-fix" src="{% static 'store/couv/' %}{{ ouvrage.picture }}" alt="..." />
                             {% else %}
-                            <img class="card-img-top" src="{% static 'store/couv/' %}sans-couverture.png" alt="..." />
+                            <img class="card-img-top img-height-fix" src="{% static 'store/couv/' %}sans-couverture.png" alt="..." />
                             {% endif %}
                             <!-- Product details-->
                             <div class="card-body p-4">
@@ -36,8 +44,8 @@
                     </div>
                 {% endfor %}
                 {% if paginate %}
-                <div class="container px-4 px-lg-5" ></div>
-                    <div class="clearfix" ></div>
+                <div>
+                    <div class="clearfix"></div>
                     <nav aria-label="...">
                         <ul class="pagination">
                         {% if ouvrages.has_previous %}
@@ -48,6 +56,7 @@
                         {% endif %}
                         </ul>
                     </nav>
+                </div>
                 {% endif %}
             </div>
         </div>

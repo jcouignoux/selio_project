@@ -43,11 +43,10 @@ class DateForm(Form):
         widget = DatePickerInput(format='%Y-%m-%d')
     )
 
-class HistoryForm(Form):
-    class Meta:
-        model = History
-        fields = ["title", "start_date", "end_date"]
-        widgets = {
-            'start_date': DatePickerInput().start_of('date'),
-            'end_date': DatePickerInput().end_of('date')
-        }
+class DateRangeForm(Form):
+    start_date = forms.DateField(
+        widget = DatePickerInput(format='%Y-%m-%d')
+    )
+    end_date = forms.DateField(
+        widget = DatePickerInput(format='%Y-%m-%d')
+    )

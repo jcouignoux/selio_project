@@ -6,13 +6,18 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction, IntegrityError
 
 from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, Vente, History
-from .forms import ConnexionForm, VenteForm, ParagraphErrorList, DateForm, HistoryForm
+from .forms import ConnexionForm, VenteForm, ParagraphErrorList, DateForm, DateRangeForm
 from .store import xlsx
 
 # Create your views here.
 def index(request):
     if request.user.is_authenticated:
-        ouvrages_list = Ouvrage.objects.filter(available=True).order_by('-created_at')
+        if request.method == 'POST':
+            search = request.POST['search']
+            print(search)
+            ouvrages_list = Ouvrage.objects.filter(title__icontains=search).order_by('title')
+        else:    
+            ouvrages_list = Ouvrage.objects.filter(available=True).order_by('title')
         paginator = Paginator(ouvrages_list, 12)
         page = request.GET.get('page')
         try: 
@@ -95,6 +100,23 @@ def detail(request, ouvrage_id):
     return render(request, 'store/detail.html', context)
 
 @login_required
+def history(request):
+    if request.method == "POST":
+        form = DateRangeForm(request.POST)
+        start_date = form.data['start_date']
+        end_date = form.data['end_date']
+        ventes = History.objects.filter(date__range=(start_date, end_date))
+    else:
+        form = DateRangeForm()
+        ventes = History.objects.all()
+
+    context = {
+        'form': form,
+        'ventes': ventes
+    }
+    return render(request, 'store/history.html', context)
+
+@login_required
 def dataBase(request):
     if request.method == "POST":
         file = request.FILES['xls']
@@ -104,25 +126,6 @@ def dataBase(request):
         pass
 
     return render(request, 'store/db.html')
-
-@login_required
-def history(request):
-    if request.method == "POST":
-        form = DateForm(request.POST)
-        print(form.data['date'])
-        start_date = form.data['date']
-        print(start_date)
-        end_date = form.data['date']
-        ventes = History.objects.filter(date__range=(start_date, end_date))
-    else:
-        form = DateForm()
-        ventes = History.objects.all()
-
-    context = {
-        'form': form,
-        'ventes': ventes
-    }
-    return render(request, 'store/history.html', context)
 
 def connexion(request):
 
