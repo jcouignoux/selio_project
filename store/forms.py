@@ -47,15 +47,10 @@ class ArrivageForm(ModelForm):
             'date': DatePickerInput(format='%Y-%m-%d', attrs={'class': 'form-control'})
         }
 
-class DateForm(Form):
-    date = forms.DateField(
-        widget = DatePickerInput(format='%Y-%m-%d')
-    )
-
 class DateRangeForm(Form):
     start_date = forms.DateField(
-        widget = DatePickerInput(format='%Y-%m-%d')
+        widget = DatePickerInput(format='%Y-%m-%d', attrs={"placeholder": "Date début"})
     )
     end_date = forms.DateField(
-        widget = DatePickerInput(format='%Y-%m-%d')
+        widget = DatePickerInput(format='%Y-%m-%d', attrs={"placeholder": "Date fin"})
     )

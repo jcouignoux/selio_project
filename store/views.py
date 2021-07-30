@@ -6,7 +6,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction, IntegrityError
 
 from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, History
-from .forms import ConnexionForm, VenteForm, ArrivageForm, ParagraphErrorList, DateForm, DateRangeForm
+from .forms import ConnexionForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm
 from .store import xlsx
 
 # Create your views here.
