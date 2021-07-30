@@ -2,9 +2,8 @@
 
 {% block content %}
     {% if message %}
-    {{ message }}
-    {% else %}
-    <h2>Log In</h2>
+        {{ message }}
+    {% endif %}
     {% if errors %}
     <div>
         {% for key, error in errors %}
@@ -19,5 +18,4 @@
         {{ form.as_p }}
         <button type="submit">Log In</button>
     </form>
-    {% endif %}
 {% endblock %}

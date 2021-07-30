@@ -11,31 +11,31 @@ from .store import xlsx
 
 # Create your views here.
 def index(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            search = request.POST['search']
-            print(search)
-            ouvrages_list = Ouvrage.objects.filter(title__icontains=search).order_by('title')
-        else:    
-            ouvrages_list = Ouvrage.objects.filter(available=True).order_by('title')
-        paginator = Paginator(ouvrages_list, 12)
-        page = request.GET.get('page')
-        try: 
-            ouvrages = paginator.page(page)
-        except PageNotAnInteger:
-            ouvrages = paginator.page(1)
-        except EmptyPage:
-            ouvrages = paginator.page(paginator.num_pages)
-        context = {
-            'ouvrages': ouvrages,
-            'paginate': True
-        }
-        return render(request, 'store/index.html', context)
-    else:
-        context = {
-            'message': 'Il faut être identifié pour accéder au site'
-        }
-        return render(request, 'store/login.html', context)
+    return render(request, 'store/index.html')
+
+def propos(request):
+    return render(request, 'store/propos.html')
+
+def store(request):
+    if request.method == 'POST':
+        search = request.POST['search']
+        print(search)
+        ouvrages_list = Ouvrage.objects.filter(title__icontains=search).order_by('title')
+    else:    
+        ouvrages_list = Ouvrage.objects.filter(available=True).order_by('title')
+    paginator = Paginator(ouvrages_list, 12)
+    page = request.GET.get('page')
+    try: 
+        ouvrages = paginator.page(page)
+    except PageNotAnInteger:
+        ouvrages = paginator.page(1)
+    except EmptyPage:
+        ouvrages = paginator.page(paginator.num_pages)
+    context = {
+        'ouvrages': ouvrages,
+        'paginate': True
+    }
+    return render(request, 'store/store.html', context)
 
 # @login_required
 def detail(request, ouvrage_id):
@@ -56,7 +56,8 @@ def detail(request, ouvrage_id):
         'ouvrage_publication': ouvrage.publication,
         'ouvrage_price': ouvrage.price,
         'ouvrage_stock': ouvrage.stock,
-        'ouvrage_picture': ouvrage.picture
+        'ouvrage_picture': ouvrage.picture,
+        'ouvrage_note': ouvrage.note
     }
     if request.method == 'POST':
         form = VenteForm(request.POST, error_class=ParagraphErrorList)
@@ -88,7 +89,7 @@ def detail(request, ouvrage_id):
                 context = {
                     'ouvrage_title': ouvrage.title
                 }
-                return render(request, 'store/index.html', context)
+                return render(request, 'store/store.html', context)
             # except IntegrityError:
             #     form.errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."
     else:
@@ -128,7 +129,6 @@ def dataBase(request):
     return render(request, 'store/db.html')
 
 def connexion(request):
-
     if request.method == "POST":
         form = ConnexionForm(data=request.POST, error_class=ParagraphErrorList)
         if form.is_valid():
@@ -155,4 +155,4 @@ def connexion(request):
 def deconnexion(request):
     logout(request)
 
-    return render(request, 'store/login.html')
+    return render(request, 'store/index.html')
