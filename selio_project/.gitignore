@@ -1,3 +1,4 @@
 selio_project/__pycache__
 store/__pycache__/
 store/migrations/__pycache__/S
+*.pyc

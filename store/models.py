@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import datetime
 
 
 # Create your models here.
@@ -87,37 +88,36 @@ class Profil(models.Model):
         return "Profil de {0}".format(self.user.username)
         # return self.username
 
-class Vente(models.Model):
 
-    ouvrage = models.ForeignKey(Ouvrage, on_delete=models.CASCADE, null=True)
+class History(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    date = models.DateField('Date', default=datetime.now)
+    TYPE_CHOICES = [
+        ('Vente', 'Vente'),
+        ('Arrivage', 'Arrivage'),
+    ]
+    type = models.CharField('Type', choices=TYPE_CHOICES, max_length=10, default='')
+    reference = models.BigIntegerField("Référence", blank=True, null=True)
+    title = models.CharField("Titre", max_length=200)
+    auteurs = models.CharField("Auteurs", max_length=400)
+    editeurs = models.CharField("Editeur", max_length=200)
+    price = models.DecimalField("Prix", max_digits=5, decimal_places=2, null=True)
     CAT_PRICE_CHOICES = [
         ('SELIO', 'SELIO'),
         ('Editeur', 'Editeur'),
         ('Dépôt', 'Dépôt'),
         ('Occasion', 'Occasion'),
     ]
-    catPrice = models.CharField('catPrice', choices=CAT_PRICE_CHOICES, max_length=10, default='SELIO')
+    catPrice = models.CharField('CatPrice', choices=CAT_PRICE_CHOICES, max_length=10, default='SELIO')
     PAYMENT_CHOICES = [
         ('Espèces', 'Espèces'),
         ('Chèque', 'Chèque'),
         ('Carte', 'Carte'),
     ]
-    payment = models.CharField('payment', choices=PAYMENT_CHOICES, max_length=10, default='Espèces')
-    quantity = models.IntegerField(default=1)
-    date = models.DateField(blank=True, null=True)
+    payment = models.CharField('Payment', choices=PAYMENT_CHOICES, max_length=10, default='Espèces')
+    fournisseur = models.CharField('Fournisseur', max_length=50, default='')
+    quantity = models.IntegerField('Quantité', default=1)
+    comment = models.CharField('Commentaire', max_length=10, blank=True, default='')
 
     def __str__(self):
         return self.id
-
-class History(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    reference = models.BigIntegerField("Référence", blank=True, null=True)
-    title = models.CharField("Titre", max_length=200)
-    auteurs = models.CharField("Auteurs", max_length=400)
-    editeurs = models.CharField("Editeur", max_length=200)
-    price = models.DecimalField("Prix", max_digits=5, decimal_places=2, null=True)
-    catPrice = models.CharField('CatPrix', max_length=10)
-    payment = models.CharField('Paiement', max_length=10)
-    quantity = models.IntegerField('Quantité')
-    date = models.DateField('Date')
-    comment = models.CharField('Commentaire', max_length=10)

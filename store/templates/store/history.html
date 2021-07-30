@@ -2,34 +2,46 @@
 {% load static %}
 
 {% block content %}
-{% if user.is_authenticated %}
-<div class="container px-4 px-lg-5">
-    <form class="d-flex" action="{% url 'store:history' %}" method="POST">
-    {% csrf_token %}
-        <label for="{{ form.date.id_for_label }}" class="form-label">Date Début</label>
-            {{ form.start_date }}
-            {{ form.media }}
-        <label for="{{ form.date.id_for_label }}" class="form-label">Date Début</label>
-            {{ form.end_date }}
-            {{ form.media }}
-        <input class="btn btn-primary btn-block" type="submit" value="Sélectionner" />
-    </form>
-</div>
-<table class="table"><tbody>
-    {% for vente in ventes %}
-    <tr>
-        <td>{{ vente.reference }}</td>
-        <td>{{ vente.title }}</td>
-        <td>{{ vente.auteurs }}</td>
-        <td>{{ vente.editeurs }}</td>
-        <td>{{ vente.price }}</td>
-        <td>{{ vente.catPrice }}</td>
-        <td>{{ vente.payment }}</td>
-        <td>{{ vente.quantity }}</td>
-        <td>{{ vente.date|date:'Y-m-d' }}</td>
-        <td>{{ vente.comment }}</td>
-    </tr>
-    {% endfor %}
-</tbody></table>
-{% endif %}
+    {% if user.is_staff %}
+    <div class="container px-4 px-lg-5">
+        <form class="d-flex" action="{% url 'store:history' %}" method="POST">
+        {% csrf_token %}
+            <label for="{{ form.date.id_for_label }}" class="form-label">Date Début</label>
+                {{ form.start_date }}
+                {{ form.media }}
+            <label for="{{ form.date.id_for_label }}" class="form-label">Date Début</label>
+                {{ form.end_date }}
+                {{ form.media }}
+            <input class="btn btn-primary btn-block" type="submit" value="Sélectionner" />
+        </form>
+    </div>
+    <table class="table"><tbody>
+            <th>Date</th>
+            <th>Ref</th>
+            <th>Titre</th>
+            <th>Auteurs</th>
+            <th>Editeurs</th>
+            <th>Prix</th>
+            <th>Cat. Prix</th>
+            <th>Paiement</th>
+            <th>Fournisseur</th>
+            <th>Quantité</th>
+            <th>Commentaire</th>
+        {% for history in histories %}
+        <tr>
+            <td>{{ history.date|date:'Y-m-d' }}</td>
+            <td>{{ history.reference }}</td>
+            <td>{{ history.title }}</td>
+            <td>{{ history.auteurs }}</td>
+            <td>{{ history.editeurs }}</td>
+            <td>{{ history.price }}</td>
+            <td>{{ history.catPrice }}</td>
+            <td>{{ history.payment }}</td>
+            <td>{{ history.fournisseur }}</td>
+            <td>{{ history.quantity }}</td>
+            <td>{{ history.comment }}</td>
+        </tr>
+        {% endfor %}
+    </tbody></table>
+    {% endif %}
 {% endblock %}

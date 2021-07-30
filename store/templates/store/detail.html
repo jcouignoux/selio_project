@@ -32,63 +32,65 @@
         <!-- Product actions-->
     </div>
     <div class="card h-100 text-start">
-        <label class="fw-bolder">Référence: {{ ouvrage_reference }}</label><br />
-        <label class="fw-bolder">Auteur(s): {{ auteurs_name }}</label><br />
-        <label class="fw-bolder">Editeur: {{ editeurs_name }}</label><br />
-        <label class="fw-bolder">Catégorie: {{ categories_name }}</label><br />
-        <label class="fw-bolder">Publication: {{ ouvrage_publication }}</label><br />
+        <label class="fw-bolder">Référence: {{ ouvrage_reference }}</label>
+        <label class="fw-bolder">Auteur(s): {{ auteurs_name }}</label>
+        <label class="fw-bolder">Editeur: {{ editeurs_name }}</label>
+        <label class="fw-bolder">Catégorie: {{ categories_name }}</label>
+        <label class="fw-bolder">Publication: {{ ouvrage_publication }}</label>
         <label class="fw-bolder">Stock: {{ ouvrage_stock }}</label><br />
     </div>
-    {% if user.is_authenticated %}
+        {% if user.is_authenticated %}
         <div class="card h-100 text-start">
-            <div class="form-label">Magasin</div>
+            <div class="text-center">Magasin</div>
+            <form  class="form-label" action="{% url 'store:detail' ouvrage_id=ouvrage_id %}" method="post">
+                {% csrf_token %}
+                <div class="form-control {% if Vform.catPrice.errors %}has-warning has-feedback{% endif %}">
+                    <label for="{{ Vform.catPrice.id_for_label }}">Cat. Prix:</label>
+                    {{ Vform.catPrice }}
+                </div>
+                <div class="form-control {% if Vform.payment.errors %}has-warning has-feedback{% endif %}">
+                    <label for="{{ Vform.payment.id_for_label }}" >Paiement:</label>
+                    {{ Vform.payment }}
+                </div>
+                <div class="form-control {% if Vform.quantity.errors %}has-warning has-feedback{% endif %}">
+                    <label for="{{ Vform.quantity.id_for_label }}">Quantité:</label>
+                    {{ Vform.quantity }}
+                </div>
+                <div class="form-control {% if Vform.comment.errors %}has-warning has-feedback{% endif %}">
+                    <label for="{{ Vform.comment.id_for_label }}">Commentaire:</label>
+                    {{ Vform.comment }}
+                </div>
+                    {{ Vform.date }}{{ Vform.media }}<br />
+                <div>
+                    <button type="submit" class="btn btn-success">Vendre</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+        {% if user.is_staff %}
+        <div class="card h-100 text-start">
+            <div class="text-center">Arrivage</div>
             <form class="form-label" action="{% url 'store:detail' ouvrage_id=ouvrage_id %}" method="post">
                 {% csrf_token %}
-                <input type="hidden" name="ouvrage_id" value="{{ ouvrage_id }}" >
-                <div class="form-control {% if form.catPrice.errors %}has-warning has-feedback{% endif %}">
-                    <label for="{{ form.catPrice.id_for_label }}" class="form-label">Cat. Prix
-                    {{ form.catPrice }}</label>
+                <div class="form-control {% if Aform.fournisseur.errors %}has-warning has-feedback{% endif %}">
+                    <label for="{{ Aform.fournisseur.id_for_label }}">Fournisseur</label>
+                    {{ Aform.fournisseur }}
                 </div>
-                <div class="form-control {% if form.payment.errors %}has-warning has-feedback{% endif %}">
-                    <label for="{{ form.payment.id_for_label }}" class="form-label">Paiement</label>
-                    {{ form.payment }}
+                <div class="form-control {% if Aform.quantity.errors %}has-warning has-feedback{% endif %}">
+                    <label for="{{ Aform.quantity.id_for_label }}">Quantité</label>
+                    {{ Aform.quantity }}
                 </div>
-                <div class="form-control {% if form.quantity.errors %}has-warning has-feedback{% endif %}">
-                    <label for="{{ form.quantity.id_for_label }}" class="form-label">Quantité</label>
-                    {{ form.quantity }}
+                <div class="form-control {% if Aform.comment.errors %}has-warning has-feedback{% endif %}">
+                    <label for="{{ Aform.comment.id_for_label }}">Commentaire:</label>
+                    {{ Aform.comment }}
                 </div>
-                <div class="form-control {% if form.date.errors %}has-warning has-feedback{% endif %}">
-                    <label for="{{ form.date.id_for_label }}" class="form-label">Date {{ form.date }}{{ form.media }}</label>
-                </div ><br /><br />
-                <!-- <input type="hidden" class="hidden" value="{{ album_id }}" name="album_id"> -->
+                    {{ Aform.date }}{{ Aform.media }}<br />
                 <div>
                     <button type="submit" class="btn btn-success">Valider</button>
                 </div>
             </form>
         </div>
-        <div class="card h-100 text-start">
-            <div class="form-label">Arrivage</div>
-            <form class="form-label" action="{% url 'store:detail' ouvrage_id=ouvrage_id %}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="ouvrage_id" value="{{ ouvrage_id }}" >
-                <div class="form-control">
-                    <label for="{{ form.catPrice.id_for_label }}" class="form-label">Fournisseur</label>
-                </div>
-                <div class="form-control {% if form.quantity.errors %}has-warning has-feedback{% endif %}">
-                    <label for="{{ form.quantity.id_for_label }}" class="form-label">Quantité</label>
-                    {{ form.quantity }}
-                </div>
-                <div class="form-control {% if form.date.errors %}has-warning has-feedback{% endif %}">
-                    <label for="{{ form.date.id_for_label }}" class="form-label">Date</label>
-                    {{ form.date }}{{ form.media }}
-                </div ><br /><br />
-                <!-- <input type="hidden" class="hidden" value="{{ album_id }}" name="album_id"> -->
-                <div>
-                    <button type="submit" class="btn btn-success">Valider</button>
-                </div>
-            </form>
-        </div>
-    {% else %}
+        {% else %}
         <div class="card h-100 text-start">
             <div class="form-label">Note de la SELIO</div>
                 <label class="fw-bolder">{{ ouvrage_note }}</label><br />
