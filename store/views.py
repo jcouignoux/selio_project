@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.http.response import FileResponse
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -6,8 +7,8 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction, IntegrityError
 
 from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, History
-from .forms import ConnexionForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm
-from .store import xlsx
+from .forms import ConnexionForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm
+from .store import exportXLSX
 
 # Create your views here.
 def index(request):
@@ -124,10 +125,14 @@ def history(request):
     else:
         form = DateRangeForm()
         histories = History.objects.all()
+        start_date = 'old'
+        end_date = 'new'
 
     context = {
         'form': form,
-        'histories': histories
+        'histories': histories,
+        'start_date': start_date,
+        'end_date': end_date,
     }
     return render(request, 'store/history.html', context)
 
@@ -141,6 +146,26 @@ def dataBase(request):
         pass
 
     return render(request, 'store/db.html')
+
+@login_required
+def histBase(request):
+    if request.method == "POST":
+        histSelect=request.POST.get('dateRange')
+        if 'old' not in histSelect:
+            start_date = histSelect.split(',')[0]
+            end_date = histSelect.split(',')[0]
+            # histDict = dict(History.objects.filter(date__range=(start_date, end_date)))
+        else:
+            # histDict = dict(History.objects.all().__dict__)
+            histDict = History.objects.all()
+        name = 'Comptes.xlsx'
+        title = ('Date', 'Ref', 'Titre', 'Auteurs', 'Editeur', 'Prix', 'Cat. Prix', 'Paiement', 'Fournisseur', "Quantité", 'commentaire')
+        file = exportXLSX(histDict, title, name)
+        return file
+    else:
+        pass
+
+    return render(request, 'store/history.html')
 
 def connexion(request):
     if request.method == "POST":
@@ -164,8 +189,7 @@ def connexion(request):
         context = {'form': form}
         return render(request, 'store/login.html', context)
 
-
-        
+@login_required    
 def deconnexion(request):
     logout(request)
 

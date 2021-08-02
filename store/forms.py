@@ -54,3 +54,6 @@ class DateRangeForm(Form):
     end_date = forms.DateField(
         widget = DatePickerInput(format='%Y-%m-%d', attrs={"placeholder": "Date fin"})
     )
+
+class DictForm(Form):
+    dict = forms.model_to_dict

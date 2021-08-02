@@ -7,6 +7,7 @@ from . import views
 urlpatterns = [
     path('history', views.history, name="history"),
     path('dataBase', views.dataBase, name="dataBase"),
+    path('histBase', views.histBase, name="histBase"),
     path('login', views.connexion, name="login"),
     path('logout', views.deconnexion, name="logout"),
     path('store', views.store, name="store"),
