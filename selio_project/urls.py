@@ -18,7 +18,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 
+from store import views
+
 urlpatterns = [
+    path('', views.index, name='index'),
     path('store/', include(('store.urls', 'store'), namespace='store')),
     path('admin4/', admin.site.urls),
 ]

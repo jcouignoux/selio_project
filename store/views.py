@@ -8,7 +8,7 @@ from django.db import transaction, IntegrityError
 
 from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, History
 from .forms import ConnexionForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm
-from .store import exportXLSX
+from .store import exportXLSX, xlsx
 
 # Create your views here.
 def index(request):

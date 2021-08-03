@@ -1,8 +1,6 @@
 from django.views.generic import View
 from django.http import HttpResponse
 from django.forms.models import model_to_dict
-import xlrd
-import openpyxl
 import xlsxwriter, xlrd
 from io import BytesIO, StringIO
 

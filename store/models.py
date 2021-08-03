@@ -118,6 +118,3 @@ class History(models.Model):
     fournisseur = models.CharField('Fournisseur', max_length=50, default='')
     quantity = models.IntegerField('Quantité', default=1)
     comment = models.CharField('Commentaire', max_length=10, blank=True, default='')
-
-    def __str__(self):
-        return self.id

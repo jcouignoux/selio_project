@@ -31,7 +31,7 @@
         </div>
         <!-- Product actions-->
     </div>
-    <div class="card h-100 text-start">
+    <div class="card text-start">
         <label class="fw-bolder">Référence: {{ ouvrage_reference }}</label>
         <label class="fw-bolder">Auteur(s): {{ auteurs_name }}</label>
         <label class="fw-bolder">Editeur: {{ editeurs_name }}</label>
@@ -40,7 +40,7 @@
         <label class="fw-bolder">Stock: {{ ouvrage_stock }}</label><br />
     </div>
         {% if user.is_authenticated %}
-        <div class="card h-100 text-start">
+        <div class="card">
             <div class="text-center">Magasin</div>
             <form  class="form-label" action="{% url 'store:detail' ouvrage_id=ouvrage_id %}" method="post">
                 {% csrf_token %}
@@ -49,7 +49,7 @@
                     {{ Vform.catPrice }}
                 </div>
                 <div class="form-control {% if Vform.payment.errors %}has-warning has-feedback{% endif %}">
-                    <label width="200px" for="{{ Vform.payment.id_for_label }}" >Paiement:</label>
+                    <label for="{{ Vform.payment.id_for_label }}" >Paiement:</label>
                     {{ Vform.payment }}
                 </div>
                 <div class="form-control {% if Vform.quantity.errors %}has-warning has-feedback{% endif %}">
@@ -68,7 +68,7 @@
         </div>
         {% endif %}
         {% if user.is_staff %}
-        <div class="card h-100 text-start">
+        <div class="card text-start">
             <div class="text-center">Arrivage</div>
             <form class="form-label" action="{% url 'store:detail' ouvrage_id=ouvrage_id %}" method="post">
                 {% csrf_token %}
