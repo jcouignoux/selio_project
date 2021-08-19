@@ -3,11 +3,11 @@ from django.forms import ModelForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms.forms import Form
 from django.forms.utils import ErrorList
-from django.forms.widgets import PasswordInput, TextInput, RadioSelect, NumberInput
+from django.forms.widgets import EmailInput, PasswordInput, TextInput, RadioSelect, NumberInput, Textarea
 from django.contrib.auth.models import User
 from bootstrap_datepicker_plus import DatePickerInput
 
-from .models import Profil, History
+from .models import Profil, History, Booking, Contact
 
 
 class ParagraphErrorList(ErrorList):
@@ -47,6 +47,26 @@ class ArrivageForm(ModelForm):
             'date': DatePickerInput(format='%Y-%m-%d', attrs={'class': 'form-control'})
         }
 
+
+class BookingForm(ModelForm):
+    class Meta:
+        model = Booking
+        fields = ["contact", "ouvrages"]
+
+
+class ContactForm(ModelForm):
+    class Meta:
+        model = Contact
+        fields = ["name", "forname", "email", "adresse"]
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control', 'placeholder':'Nom'}),
+            'forname': TextInput(attrs={'class': 'form-control', 'placeholder':'Prénom'}),
+            'email': EmailInput(attrs={'class': 'form-control', 'placeholder':'Email'}),
+            'adresse': Textarea(attrs={'class': 'form-control', 'placeholder':'Adresse'}),
+        }
+
+
+
 class DateRangeForm(Form):
     start_date = forms.DateField(
         widget = DatePickerInput(format='%Y-%m-%d', attrs={"placeholder": "Date début"})
@@ -54,6 +74,7 @@ class DateRangeForm(Form):
     end_date = forms.DateField(
         widget = DatePickerInput(format='%Y-%m-%d', attrs={"placeholder": "Date fin"})
     )
+
 
 class DictForm(Form):
     dict = forms.model_to_dict

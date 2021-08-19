@@ -1,0 +1,45 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card h-100">
+    <div class="text-center">Panier</div>
+    <form class="form-label" action="{% url 'store:basket' %}" method="post">
+        {% csrf_token %}
+        <label for="{{ form.ouvrage.id_for_label }}">Commande</label>
+            {% if ouvrages %}
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Ouvrage</th>
+                        <th>Prix</th>
+                        <th>Quantité</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for ouvrage in ouvrages %}
+                    <tr>
+                        <td>{{ ouvrage.title }}</td>
+                        <td>{{ ouvrage.price }} €</td>
+                        <td>{{ ouvrage.qty }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <div class="alert alert-warning" role="alert"><a href="{% url 'store:store' %}" class="btn btn-default btn-lg pull-right">Remplir mon panier !</a>
+                    <i class="fa fa-shopping-cart fa-3x pull-left"></i> <h4>Votre panier est vide :'(</h4>
+                    <p>Commencez dès maintenant à rechercher votre article préféré dans notre vaste catalogue de produits !</p>
+                </div>
+            {% endif %}<br /><br />
+        <div class="form-control {% if Cform.contact.errors %}has-warning has-feedback{% endif %}">
+            <label for="{{ Cform.contact.id_for_label }}">Contact</label>
+            {{ Cform.name }}
+            {{ Cform.forname }}
+            {{ Cform.email }}
+            {{ Cform.adresse }}
+            <button type="submit" class="btn btn-success">Commander</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

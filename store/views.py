@@ -1,21 +1,37 @@
 from django.conf import settings
 from django.http.response import FileResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction, IntegrityError
 
 from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, History
-from .forms import ConnexionForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm
-from .store import exportXLSX, xlsx
+from .forms import ConnexionForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, ContactForm
+from .store import exportXLSX, xlsx, basket
+
 
 # Create your views here.
 def index(request):
-    return render(request, 'store/index.html')
+    if 'basket' in request.session:
+        context = {
+            'basket': request.session['basket']
+        }
+    else:
+        context = {}
+    
+    return render(request, 'store/index.html', context)
 
 def propos(request):
-    return render(request, 'store/propos.html')
+    if 'basket' in request.session:
+        context = {
+            'basket': request.session['basket']
+        }
+    else:
+        context = {}
+    
+    return render(request, 'store/propos.html', context)
 
 def store(request):
     if request.method == 'POST':
@@ -34,8 +50,11 @@ def store(request):
         ouvrages = paginator.page(paginator.num_pages)
     context = {
         'ouvrages': ouvrages,
-        'paginate': True
+        'paginate': True,
     }
+    if 'basket' in request.session:
+        context['basket'] = request.session['basket']
+
     return render(request, 'store/store.html', context)
 
 def detail(request, ouvrage_id):
@@ -57,7 +76,7 @@ def detail(request, ouvrage_id):
         'ouvrage_price': ouvrage.price,
         'ouvrage_stock': ouvrage.stock,
         'ouvrage_picture': ouvrage.picture,
-        'ouvrage_note': ouvrage.note
+        'ouvrage_note': ouvrage.note,
     }
     if request.method == 'POST':
         VForm = VenteForm(request.POST, error_class=ParagraphErrorList)
@@ -104,6 +123,7 @@ def detail(request, ouvrage_id):
                     return render(request, 'store/store.html', context)
             except IntegrityError:
                 VForm.errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."
+
     else:
         VForm = VenteForm()
         AForm = ArrivageForm()
@@ -112,8 +132,62 @@ def detail(request, ouvrage_id):
     context['Verrors'] = VForm.errors.items()
     context['Aform'] = AForm
     context['Aerrors'] = AForm.errors.items()
+    if 'basket' in request.session:
+        context['basket'] = request.session['basket']
+    
+    # print(request.session['basket'])
 
     return render(request, 'store/detail.html', context)
+
+def add_to_basket(request):
+        
+    if request.method == 'POST':
+        ouvrage_id = request.POST.get('ouvrage_id')
+        # quantity = request.POST.get('quantity')
+        quantity = 1
+        # request.session.flush()
+        request.session.set_expiry(300)
+        # print(request.session.get_expire_at_browser_close())
+        # print(request.session.get_expiry_age())
+        if 'basket' not in request.session:
+            basket = {}
+            print(type(basket))
+        else:
+            basket = request.session['basket']
+            print(type(basket))
+        if ouvrage_id in basket:
+            basket[ouvrage_id] = basket[ouvrage_id] + quantity
+        else:
+            basket[ouvrage_id] = quantity
+        
+        # request.session.flush()
+        request.session['basket'] = basket
+    
+        return redirect(reverse('store:detail', kwargs={'ouvrage_id': ouvrage_id}))
+
+def basket(request):
+
+    if request.method == 'POST':
+        CForm = ContactForm(request.POST, error_class=ParagraphErrorList)
+    else:
+        if 'basket' in request.session:
+            context = {
+                'basket': request.session['basket'],
+            }
+            CForm = ContactForm()
+            ouvrages = []
+            for ouvrage_id in request.session['basket'].keys():
+                ouvrage = get_object_or_404(Ouvrage, pk=ouvrage_id)
+                ouvrage.qty = request.session['basket'][ouvrage_id]
+                ouvrages.append(ouvrage)
+            context['ouvrages'] = ouvrages
+        else:
+            context = {}
+
+    context['Cform'] = CForm
+    context['Cerrors'] = CForm.errors.items()
+
+    return render(request, 'store/basket.html', context)
 
 @login_required
 def history(request):
