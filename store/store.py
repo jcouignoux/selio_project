@@ -10,12 +10,6 @@ from wsgiref.util import FileWrapper
 from .models import Author, Publisher, Categorie, Ouvrage
 
 
-def basket(ouvrage_id):
-    if 'basket' in request.session:
-        pass
-    else:
-        request.session['basket'] = []
-
 class xlsx():
 
     def importXLSX(self, file):

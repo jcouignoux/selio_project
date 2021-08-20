@@ -48,12 +48,6 @@ class ArrivageForm(ModelForm):
         }
 
 
-class BookingForm(ModelForm):
-    class Meta:
-        model = Booking
-        fields = ["contact", "ouvrages"]
-
-
 class ContactForm(ModelForm):
     class Meta:
         model = Contact
@@ -64,7 +58,6 @@ class ContactForm(ModelForm):
             'email': EmailInput(attrs={'class': 'form-control', 'placeholder':'Email'}),
             'adresse': Textarea(attrs={'class': 'form-control', 'placeholder':'Adresse'}),
         }
-
 
 
 class DateRangeForm(Form):

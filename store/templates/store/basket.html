@@ -4,11 +4,9 @@
 {% block content %}
 <div class="card h-100">
     <div class="text-center">Panier</div>
-    <form class="form-label" action="{% url 'store:basket' %}" method="post">
-        {% csrf_token %}
         <label for="{{ form.ouvrage.id_for_label }}">Commande</label>
-            {% if ouvrages %}
-            <table class="table table-hover">
+        {% if ouvrages %}
+        <table class="table">
                 <thead>
                     <tr>
                         <th>Ouvrage</th>
@@ -18,20 +16,46 @@
                 </thead>
                 <tbody>
                 {% for ouvrage in ouvrages %}
-                    <tr>
-                        <td>{{ ouvrage.title }}</td>
-                        <td>{{ ouvrage.price }} €</td>
-                        <td>{{ ouvrage.qty }}</td>
-                    </tr>
+                <tr>
+                    <td>{{ ouvrage.title }}</td>
+                    <td>{{ ouvrage.price }} €</td>
+                    <td>
+                        <form class="form-check-inline"><a  href="{% url 'store:add_to_basket' %}">
+                            <button class="btn btn-outline-dark mt-auto" type="submit">
+                                <input type="hidden" name="ouvrage_to_mod" value="{{ ouvrage.id }}" >
+                                <input type="hidden" name="quantity" value="-" >
+                                <i class="bi bi-cart-dash"></i>
+                            </button>
+                        </a></form>
+                        <p class="form-check-inline" >{{ ouvrage.qty }}</p>
+                        <form class="form-check-inline"><a  href="{% url 'store:add_to_basket' %}">
+                            <button class="btn btn-outline-dark mt-auto" type="submit">
+                                <input type="hidden" name="ouvrage_to_mod" value="{{ ouvrage.id }}" >
+                                <input type="hidden" name="quantity" value="+" >
+                                <i class="bi bi-cart-plus"></i>
+                            </button>
+                        </a></form>
+                        <form class="form-check-inline"><a  href="{% url 'store:add_to_basket' %}">
+                            <button class="btn btn-outline-dark mt-auto" type="submit">
+                                <input type="hidden" name="ouvrage_to_mod" value="{{ ouvrage.id }}" >
+                                <input type="hidden" name="quantity" value="x" >
+                                <i class="bi bi-cart-x"></i>
+                            </button>
+                        </a></form>
+                    </td>
+                </tr>
                 {% endfor %}
                 </tbody>
-            </table>
-            {% else %}
-                <div class="alert alert-warning" role="alert"><a href="{% url 'store:store' %}" class="btn btn-default btn-lg pull-right">Remplir mon panier !</a>
-                    <i class="fa fa-shopping-cart fa-3x pull-left"></i> <h4>Votre panier est vide :'(</h4>
-                    <p>Commencez dès maintenant à rechercher votre article préféré dans notre vaste catalogue de produits !</p>
-                </div>
-            {% endif %}<br /><br />
+        </table>
+        {% else %}
+            <div class="alert alert-warning" role="alert"><a href="{% url 'store:store' %}" class="btn btn-default btn-lg pull-right">Remplir mon panier !</a>
+                <i class="fa fa-shopping-cart fa-3x pull-left"></i> <h4>Votre panier est vide :'(</h4>
+                <p>Commencez dès maintenant à rechercher votre article préféré dans notre vaste catalogue de produits !</p>
+            </div>
+        {% endif %}<br /><br />
+    <form class="form-label" action="{% url 'store:basket' %}" method="post">
+    {% csrf_token %}
+        <input type="hidden" name="basket" value="{{ basket }}" >
         <div class="form-control {% if Cform.contact.errors %}has-warning has-feedback{% endif %}">
             <label for="{{ Cform.contact.id_for_label }}">Contact</label>
             {{ Cform.name }}

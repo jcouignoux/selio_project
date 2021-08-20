@@ -15,5 +15,6 @@ urlpatterns = [
     path('', views.index, name="index"),
     path('add_to_basket', views.add_to_basket, name="add_to_basket"),
     path('basket', views.basket, name="basket"),
+    path('booking', views.booking, name="booking"),
     path('<ouvrage_id>', views.detail, name="detail"),
 ]

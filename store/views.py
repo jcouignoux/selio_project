@@ -9,7 +9,7 @@ from django.db import transaction, IntegrityError
 
 from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, History
 from .forms import ConnexionForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, ContactForm
-from .store import exportXLSX, xlsx, basket
+from .store import exportXLSX, xlsx
 
 
 # Create your views here.
@@ -143,18 +143,17 @@ def add_to_basket(request):
         
     if request.method == 'POST':
         ouvrage_id = request.POST.get('ouvrage_id')
-        # quantity = request.POST.get('quantity')
-        quantity = 1
-        # request.session.flush()
-        request.session.set_expiry(300)
+        if request.POST.get('quantity'):
+            quantity = request.POST.get('quantity')
+        else:
+            quantity = 1
+        request.session.set_expiry(3600)
         # print(request.session.get_expire_at_browser_close())
         # print(request.session.get_expiry_age())
         if 'basket' not in request.session:
             basket = {}
-            print(type(basket))
         else:
             basket = request.session['basket']
-            print(type(basket))
         if ouvrage_id in basket:
             basket[ouvrage_id] = basket[ouvrage_id] + quantity
         else:
@@ -166,28 +165,75 @@ def add_to_basket(request):
         return redirect(reverse('store:detail', kwargs={'ouvrage_id': ouvrage_id}))
 
 def basket(request):
+    # request.session.flush()
+    # basket = {}
+    if 'basket' in request.session:
+        ouvrage_to_mod = request.GET.get('ouvrage_to_mod')
+        if request.GET.get('quantity') == '-':
+            request.session['basket'][ouvrage_to_mod] -= 1
+        elif request.GET.get('quantity') == '+':
+            request.session['basket'][ouvrage_to_mod] += 1
+        elif request.GET.get('quantity') == 'x':
+            del request.session['basket'][ouvrage_to_mod]
+        request.session.modified = True
+        ouvrages = []
+        for ouvrage_id in request.session['basket'].keys():
+            ouvrage = get_object_or_404(Ouvrage, pk=ouvrage_id)
+            ouvrage.qty = request.session['basket'][ouvrage_id]
+            ouvrages.append(ouvrage)
+        context = {
+            'basket': request.session['basket'],
+            'ouvrages': ouvrages
+        }
+    else:
+        context = {}
 
     if request.method == 'POST':
         CForm = ContactForm(request.POST, error_class=ParagraphErrorList)
+        if CForm.is_valid():
+            name = CForm.cleaned_data['name']
+            forname = CForm.cleaned_data['forname']
+            email = CForm.cleaned_data['email']
+            adresse = CForm.cleaned_data['adresse']
+            # try:
+            with transaction.atomic():
+                contact = Contact.objects.filter(email=email)
+                if not contact.exists():
+                    contact = Contact.objects.create(
+                        email=email,
+                        name=name,
+                        forname=forname,
+                        adresse=adresse
+                    )
+                else:
+                    contact = contact.first()
+                booking = Booking()
+                booking.contact=contact
+                booking.save()
+                for ouvrage in ouvrages:
+                    booking.ouvrages.add(ouvrage)
+                booking.save()
+                request.session.flush()
+                context = {
+                    'booking': booking.id
+                }
+            # except IntegrityError:
+            #     CForm.errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."
     else:
-        if 'basket' in request.session:
-            context = {
-                'basket': request.session['basket'],
-            }
-            CForm = ContactForm()
-            ouvrages = []
-            for ouvrage_id in request.session['basket'].keys():
-                ouvrage = get_object_or_404(Ouvrage, pk=ouvrage_id)
-                ouvrage.qty = request.session['basket'][ouvrage_id]
-                ouvrages.append(ouvrage)
-            context['ouvrages'] = ouvrages
-        else:
-            context = {}
+        CForm = ContactForm()
 
     context['Cform'] = CForm
     context['Cerrors'] = CForm.errors.items()
 
     return render(request, 'store/basket.html', context)
+
+def booking(request):
+    bookings_list = Booking.objects.filter(contacted=False).order_by('created_at')
+    context = {
+        'bookings_list': bookings_list
+    }
+
+    return render(request, 'store/booking.html', context)
 
 @login_required
 def history(request):

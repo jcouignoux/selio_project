@@ -1,0 +1,31 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block content %}
+    {% if user.is_staff %}
+    <div class="container px-4 px-lg-5">
+        <form class="d-flex" action="{% url 'store:history' %}" method="POST">
+        {% csrf_token %}
+            {{ form.start_date }}{{ form.media }}
+            {{ form.end_date }}{{ form.media }}
+            <input class="btn" type="submit" value="Sélectionner" />
+        </form>
+    </div>
+    <table class="table"><tbody>
+            <th>Date</th>
+            <th>Contact</th>
+            <th>Ouvrage</th>
+            <th>Contacté</th>
+        {% for booking in bookings_list %}
+        <tr>
+            <td>{{ booking.created_at|date:'Y-m-d' }}</td>
+            <td>{{ booking.contact.name }}<br />{{ booking.contact.email }}<br />{{ booking.contact.adresse }}</td>
+            <td>{% for ouvrage in booking.ouvrages.all %}
+                {{ ouvrage.title }}<br />
+            {% endfor %}</td>
+            <td>{{ booking.contacted }}</td>
+        </tr>
+        {% endfor %}
+    </tbody></table>
+    {% endif %}
+{% endblock %}

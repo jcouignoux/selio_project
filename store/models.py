@@ -74,14 +74,14 @@ class Booking(models.Model):
     ouvrages = models.ManyToManyField(Ouvrage)
 
     def __str__(self):
-        return self.contact.name
+        return self
 
     class Meta:
         verbose_name = "réservation"
 
 
 class Profil(models.Model):
-    # username = models.CharField(max_length=200)
+    # username = models.CharField(max_length=200)booking.ouvrags
     user = models.OneToOneField(User, on_delete=models.CASCADE)  # La liaison OneToOne vers le modèle User
 
     def __str__(self):
