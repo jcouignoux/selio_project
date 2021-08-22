@@ -20,10 +20,18 @@
         <tr>
             <td>{{ booking.created_at|date:'Y-m-d' }}</td>
             <td>{{ booking.contact.name }}<br />{{ booking.contact.email }}<br />{{ booking.contact.adresse }}</td>
-            <td>{% for ouvrage in booking.ouvrages.all %}
-                {{ ouvrage.title }}<br />
-            {% endfor %}</td>
-            <td>{{ booking.contacted }}</td>
+            <td>
+                {% for ouvrage in booking.ouvrages.all %}
+                    {{ ouvrage.title }}<br />
+                {% endfor %}
+            </td>
+            <td>
+            {% if booking.contacted %}
+                <i class="bi bi-check2-square"></i>
+            {% else %}
+                <i class="bi bi-square"></i>
+            {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody></table>

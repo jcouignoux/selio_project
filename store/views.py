@@ -20,6 +20,8 @@ def index(request):
         }
     else:
         context = {}
+    bookings_list = Booking.objects.filter(contacted=False).order_by('created_at')
+    context['bookings_list'] = bookings_list
     
     return render(request, 'store/index.html', context)
 
@@ -30,6 +32,8 @@ def propos(request):
         }
     else:
         context = {}
+    bookings_list = Booking.objects.filter(contacted=False).order_by('created_at')
+    context['bookings_list'] = bookings_list
     
     return render(request, 'store/propos.html', context)
 
@@ -54,6 +58,8 @@ def store(request):
     }
     if 'basket' in request.session:
         context['basket'] = request.session['basket']
+    bookings_list = Booking.objects.filter(contacted=False).order_by('created_at')
+    context['bookings_list'] = bookings_list
 
     return render(request, 'store/store.html', context)
 
@@ -134,6 +140,8 @@ def detail(request, ouvrage_id):
     context['Aerrors'] = AForm.errors.items()
     if 'basket' in request.session:
         context['basket'] = request.session['basket']
+    bookings_list = Booking.objects.filter(contacted=False).order_by('created_at')
+    context['bookings_list'] = bookings_list
     
     # print(request.session['basket'])
 
@@ -168,6 +176,7 @@ def basket(request):
     # request.session.flush()
     # basket = {}
     if 'basket' in request.session:
+        print('test')
         ouvrage_to_mod = request.GET.get('ouvrage_to_mod')
         if request.GET.get('quantity') == '-':
             request.session['basket'][ouvrage_to_mod] -= 1
@@ -215,10 +224,11 @@ def basket(request):
                 booking.save()
                 request.session.flush()
                 context = {
-                    'booking': booking.id
+                    'booking': booking
                 }
             # except IntegrityError:
             #     CForm.errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."
+        return render(request, 'store/thanks.html', context)
     else:
         CForm = ContactForm()
 
