@@ -256,6 +256,14 @@ def history(request):
     }
     return render(request, 'store/history.html', context)
 
+def contact(request):
+    contacts_list = Contact.objects.order_by('name')
+    context = {
+        'contacts_list': contacts_list,
+    }
+
+    return render(request, 'store/contact.html', context)
+
 @login_required
 def dataBase(request):
     if request.method == "POST":

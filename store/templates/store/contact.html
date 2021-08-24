@@ -1,0 +1,35 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<div class="card h-100">
+    <div class="text-center">Panier</div>
+        <label>Contacts</label>
+        {% if contacts_list %}
+        <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Email</th>
+                        <th>Commandes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for contact in contacts_list.all %}
+                <tr>
+                    <td>{{ contact.name }}</td>
+                    <td>{{ contact.forname }}</td>
+                    <td>{{ contact.email }}</td>
+                    <td>{% for booking in bookings_list.all %}
+                            {% if booking.contact.id == contact.id %}
+                                {{ booking.id }}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+        </table>
+        {% endif %}
+</div>
+{% endblock %}

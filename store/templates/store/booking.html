@@ -22,7 +22,7 @@
             <td>{{ booking.contact.name }}<br />{{ booking.contact.email }}<br />{{ booking.contact.adresse }}</td>
             <td>
                 {% for ouvrage in booking.ouvrages.all %}
-                    {{ ouvrage.title }}<br />
+                <a  href="{% url 'store:detail' ouvrage_id=ouvrage.id %}">{{ ouvrage.title }}</a><br />
                 {% endfor %}
             </td>
             <td>

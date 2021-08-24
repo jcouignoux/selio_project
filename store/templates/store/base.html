@@ -44,6 +44,7 @@
                                 <li><a class="dropdown-item" href="{% url 'store:history' %}">Historique</a></li>
                                 <li><hr class="dropdown-divider" /></li>
                                 <li><a class="dropdown-item" href="{% url 'store:dataBase' %}">Base</a></li>
+                                <li><a class="dropdown-item" href="{% url 'store:contact' %}">Contacts</a></li>
                             </ul>
                         </li>
                         {% endif %}
@@ -54,7 +55,7 @@
                                 <button class="btn btn-outline-dark" type="submit">
                                     <i class="bi-cart-fill me-1"></i>
                                     Commandes
-                                    <span class="badge bg-dark text-white ms-1 rounded-pill">{{ bookings_list|length }}</span>
+                                    <span class="badge bg-dark text-white ms-1 rounded-pill">{{ bookings_list.all|length }}</span>
                                 </button>
                             </a>
                             <a  href="{% url 'store:logout' %}">
