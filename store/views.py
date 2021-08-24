@@ -19,9 +19,9 @@ def index(request):
             'basket': request.session['basket']
         }
     else:
-        context = {}
-    bookings_list = Booking.objects.filter(contacted=False).order_by('created_at')
-    context['bookings_list'] = bookings_list
+        context = {
+            'basket': ''
+        }
     
     return render(request, 'store/index.html', context)
 
@@ -32,8 +32,6 @@ def propos(request):
         }
     else:
         context = {}
-    bookings_list = Booking.objects.filter(contacted=False).order_by('created_at')
-    context['bookings_list'] = bookings_list
     
     return render(request, 'store/propos.html', context)
 
@@ -58,8 +56,6 @@ def store(request):
     }
     if 'basket' in request.session:
         context['basket'] = request.session['basket']
-    bookings_list = Booking.objects.filter(contacted=False).order_by('created_at')
-    context['bookings_list'] = bookings_list
 
     return render(request, 'store/store.html', context)
 
@@ -140,8 +136,6 @@ def detail(request, ouvrage_id):
     context['Aerrors'] = AForm.errors.items()
     if 'basket' in request.session:
         context['basket'] = request.session['basket']
-    bookings_list = Booking.objects.filter(contacted=False).order_by('created_at')
-    context['bookings_list'] = bookings_list
     
     # print(request.session['basket'])
 
@@ -238,12 +232,8 @@ def basket(request):
     return render(request, 'store/basket.html', context)
 
 def booking(request):
-    bookings_list = Booking.objects.filter(contacted=False).order_by('created_at')
-    context = {
-        'bookings_list': bookings_list
-    }
 
-    return render(request, 'store/booking.html', context)
+    return render(request, 'store/booking.html')
 
 @login_required
 def history(request):
