@@ -8,7 +8,14 @@
             <img  class="align-self-center" width="30%" height="auto" src="{% static 'store/img/selio.png' %}" alt="..." />
             <label>La SELIO vous remercie</label><br />
             <p>Nous avons pris en compte votre commande, nous vous recontacterons afin confirmez l'adresse d'envoi et vous donner les instructions de paiment.</p>
+            <p>Récapitulatif de votre commande:</p>
+            {{ booking.all }}
+            {% for ouvrage in booking.all %}
+                {{ ouvrage.title }}
+            {% endfor %}
         </div>
     </div>
+    {% else %}
+       <p>Oups</p>
     {% endif %}
 {% endblock %}

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+#from jsonfield import JSONField
 from datetime import datetime
 
 
@@ -71,7 +72,7 @@ class Booking(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     contacted = models.BooleanField(default=False)
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
-    ouvrages = models.ManyToManyField(Ouvrage)
+    ouvrages = models.JSONField()
 
     def __str__(self):
         return self
@@ -81,12 +82,10 @@ class Booking(models.Model):
 
 
 class Profil(models.Model):
-    # username = models.CharField(max_length=200)booking.ouvrags
     user = models.OneToOneField(User, on_delete=models.CASCADE)  # La liaison OneToOne vers le modèle User
 
     def __str__(self):
         return "Profil de {0}".format(self.user.username)
-        # return self.username
 
 
 class History(models.Model):

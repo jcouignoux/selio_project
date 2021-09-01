@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.conf import settings
 from django.http.response import FileResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -8,8 +9,8 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction, IntegrityError
 
 from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, History
-from .forms import ConnexionForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, ContactForm
-from .store import exportXLSX, xlsx
+from .forms import BookingForm, ConnexionForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, ContactForm
+from .store import exportXLSX, xlsx, add_to_history
 
 
 # Create your views here.
@@ -35,13 +36,20 @@ def propos(request):
     
     return render(request, 'store/propos.html', context)
 
-def store(request):
+def store(request, select_type, select_id):
     if request.method == 'POST':
         search = request.POST['search']
-        print(search)
         ouvrages_list = Ouvrage.objects.filter(title__icontains=search).order_by('title')
-    else:    
-        ouvrages_list = Ouvrage.objects.filter(available=True).order_by('title')
+    else:
+        if select_type != 'All':
+            if select_type == 'categories':
+                ouvrages_list = Ouvrage.objects.filter(categories__id=select_id)
+            elif select_type == 'auteurs':
+                ouvrages_list = Ouvrage.objects.filter(auteurs__id=select_id)
+            elif select_type == 'editeurs':
+                ouvrages_list = Ouvrage.objects.filter(editeurs__id=select_id)
+        else:
+            ouvrages_list = Ouvrage.objects.filter(available=True).order_by('title')
     paginator = Paginator(ouvrages_list, 12)
     page = request.GET.get('page')
     try: 
@@ -170,7 +178,6 @@ def basket(request):
     # request.session.flush()
     # basket = {}
     if 'basket' in request.session:
-        print('test')
         ouvrage_to_mod = request.GET.get('ouvrage_to_mod')
         if request.GET.get('quantity') == '-':
             request.session['basket'][ouvrage_to_mod] -= 1
@@ -198,6 +205,7 @@ def basket(request):
             forname = CForm.cleaned_data['forname']
             email = CForm.cleaned_data['email']
             adresse = CForm.cleaned_data['adresse']
+            basket = request.session['basket']
             # try:
             with transaction.atomic():
                 contact = Contact.objects.filter(email=email)
@@ -212,9 +220,7 @@ def basket(request):
                     contact = contact.first()
                 booking = Booking()
                 booking.contact=contact
-                booking.save()
-                for ouvrage in ouvrages:
-                    booking.ouvrages.add(ouvrage)
+                booking.ouvrages=basket
                 booking.save()
                 request.session.flush()
                 context = {
@@ -233,7 +239,26 @@ def basket(request):
 
 def booking(request):
 
-    return render(request, 'store/booking.html')
+    if request.method == 'POST':
+        BForm = BookingForm(request.POST, error_class=ParagraphErrorList)
+        if BForm.is_valid():
+            booking_id = request.POST.get('booking_id')
+            booking = get_object_or_404(Booking, id=booking_id)
+            booking.contacted = True
+            booking.save()
+            for ouvrage in booking.ouvrages:
+                ouvrage_id = ouvrage.id
+                quantity = ouvrage.qty
+                date = datetime.now
+                add_to_history(ouvrage_id, quantity, date)
+    else:
+        BForm = BookingForm()
+                    
+    context = {
+        'BForm': BForm,
+    }
+
+    return render(request, 'store/booking.html', context)
 
 @login_required
 def history(request):

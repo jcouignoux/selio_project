@@ -1,7 +1,27 @@
 {% load static %}
 <br />
-<div class="container px-4 px-lg-5 row-cols-2">
-    <form class="d-flex" action="{% url 'store:store' %}" method="POST">
+<div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+    <div class="d-flex col">
+        <div class="dropdown-toggle active px-4 px-lg-5" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Catégories</div>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            {% for categorie in categories_list %}
+            <li><a class="dropdown-item" href="{% url 'store:store' select_type='categories' select_id=categorie.id %}">{{ categorie.name }}</a></li>
+            {% endfor %}
+        </ul>
+        <div class="dropdown-toggle active px-4 px-lg-5" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Auteurs</div>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            {% for author in authors_list %}
+            <li><a class="dropdown-item" href="{% url 'store:store' select_type='auteurs' select_id=author.id %}">{{ author }}</a></li>
+            {% endfor %}
+        </ul>
+        <div class="dropdown-toggle active px-4 px-lg-5" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Editeurs</div>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            {% for publisher in publishers_list %}
+            <li><a class="dropdown-item" href="{% url 'store:store' select_type='editeurs' select_id=publisher.id %}">{{ publisher }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <form class="d-flex col" action="{% url 'store:store' select_type='All' select_id='All' %}" method="POST">
         {% csrf_token %}
         <input class="search col" type="search" name="search" placeholder="Recherche dans les titres">
         <button class="btn btn-outline-dark mt-auto" type="submit"> 
@@ -9,12 +29,12 @@
         </button>
     </form>
 </div>
+
 {% if ouvrages|length_is:"0" %}
     <div class="text-center">
         Palsambleu ! Nous n'avons trouvé aucun résultat à cette requête. Même pas de quoi se ronger la chique !
         Partez de nouveau à l'abordage !
     </div>
-
 {% else %}
     <section class="py-5">
     {% if paginate %}

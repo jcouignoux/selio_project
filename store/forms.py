@@ -1,9 +1,10 @@
 from django import forms
+from django.db.models.fields import BooleanField
 from django.forms import ModelForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms.forms import Form
 from django.forms.utils import ErrorList
-from django.forms.widgets import EmailInput, PasswordInput, TextInput, RadioSelect, NumberInput, Textarea
+from django.forms.widgets import CheckboxInput, EmailInput, PasswordInput, TextInput, RadioSelect, NumberInput, Textarea
 from django.contrib.auth.models import User
 from bootstrap_datepicker_plus import DatePickerInput
 
@@ -57,6 +58,15 @@ class ContactForm(ModelForm):
             'forname': TextInput(attrs={'class': 'form-control', 'placeholder':'Prénom'}),
             'email': EmailInput(attrs={'class': 'form-control', 'placeholder':'Email'}),
             'adresse': Textarea(attrs={'class': 'form-control', 'placeholder':'Adresse'}),
+        }
+
+
+class BookingForm(ModelForm):
+    class Meta:
+        model = Booking
+        fields = ["contacted"]
+        widgets = {
+            'contacted': CheckboxInput(),
         }
 
 
