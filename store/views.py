@@ -10,7 +10,8 @@ from django.db import transaction, IntegrityError
 
 from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, History
 from .forms import BookingForm, ConnexionForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, ContactForm
-from .store import exportXLSX, xlsx, add_to_history
+from .store import add_to_history
+from .xlsx import xlsx, exportXLSX
 
 
 # Create your views here.
@@ -312,7 +313,7 @@ def histBase(request):
             # histDict = dict(History.objects.all().__dict__)
             histDict = History.objects.all()
         name = 'Comptes.xlsx'
-        title = ('Date', 'Ref', 'Titre', 'Auteurs', 'Editeur', 'Prix', 'Cat. Prix', 'Paiement', 'Fournisseur', "Quantité", 'commentaire')
+        title = ('Date', 'Ref', 'Titre', 'Auteurs', 'Editeur', 'Prix', 'Cat. Prix', 'Paiement', 'Fournisseur', "Quantité", 'Commentaire')
         file = exportXLSX(histDict, title, name)
         return file
     else:
