@@ -2,24 +2,24 @@
 <br />
 <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
     <div class="d-flex col">
-        <div class="dropdown-toggle active px-4 px-lg-5" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Catégories</div>
+        <div class="dropdown-toggle active px-4 px-lg-6" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Catégories</div>
         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             {% for categorie in categories_list %}
             <li><a class="dropdown-item" href="{% url 'store:store' select_type='categories' select_id=categorie.id %}">{{ categorie.name }}</a></li>
             {% endfor %}
         </ul>
         <div class="dropdown-toggle active px-4 px-lg-5" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Auteurs</div>
-        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <select class="dropdown-menu" aria-labelledby="navbarDropdown" size="8" onchange="location = this.value;">
             {% for author in authors_list %}
-            <li><a class="dropdown-item" href="{% url 'store:store' select_type='auteurs' select_id=author.id %}">{{ author }}</a></li>
+            <option value="{% url 'store:store' select_type='auteurs' select_id=author.id %}">{{ author.name }}</option>
             {% endfor %}
-        </ul>
+        </select>
         <div class="dropdown-toggle active px-4 px-lg-5" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Editeurs</div>
-        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <select class="dropdown-menu" aria-labelledby="navbarDropdown" size="8" onchange="location = this.value;">
             {% for publisher in publishers_list %}
-            <li><a class="dropdown-item" href="{% url 'store:store' select_type='editeurs' select_id=publisher.id %}">{{ publisher }}</a></li>
+            <option value="{% url 'store:store' select_type='editeurs' select_id=publisher.id %}">{{ publisher.name }}</option>
             {% endfor %}
-        </ul>
+        </select>
     </div>
     <form class="d-flex col" action="{% url 'store:store' select_type='All' select_id='All' %}" method="POST">
         {% csrf_token %}
