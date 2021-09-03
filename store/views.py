@@ -45,9 +45,9 @@ def store(request, select_type, select_id):
         if select_type != 'All':
             if select_type == 'categories':
                 ouvrages_list = Ouvrage.objects.filter(categories__id=select_id)
-            elif select_type == 'auteurs':
+            elif select_type == 'authors':
                 ouvrages_list = Ouvrage.objects.filter(auteurs__id=select_id)
-            elif select_type == 'editeurs':
+            elif select_type == 'publishers':
                 ouvrages_list = Ouvrage.objects.filter(editeurs__id=select_id)
         else:
             ouvrages_list = Ouvrage.objects.filter(available=True).order_by('title')

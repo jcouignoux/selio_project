@@ -2,22 +2,22 @@
 <br />
 <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
     <div class="d-flex col">
-        <div class="dropdown-toggle active px-4 px-lg-6" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Catégories</div>
-        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            {% for categorie in categories_list %}
-            <li><a class="dropdown-item" href="{% url 'store:store' select_type='categories' select_id=categorie.id %}">{{ categorie.name }}</a></li>
+        <div class="dropdown-toggle active px-4 px-lg-5" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Catégories</div>
+        <select class="dropdown-menu" aria-labelledby="navbarDropdown" size="8" onchange="location = this.value;">
+            {% for category in categories_list %}
+            <option class="dropdown-item" value="{% url 'store:store' select_type='categories' select_id=category.id %}">{{ category.name }}</option>
             {% endfor %}
-        </ul>
+        </select>
         <div class="dropdown-toggle active px-4 px-lg-5" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Auteurs</div>
         <select class="dropdown-menu" aria-labelledby="navbarDropdown" size="8" onchange="location = this.value;">
             {% for author in authors_list %}
-            <option value="{% url 'store:store' select_type='auteurs' select_id=author.id %}">{{ author.name }}</option>
+            <option class="dropdown-item" value="{% url 'store:store' select_type='authors' select_id=author.id %}">{{ author.name }}</option>
             {% endfor %}
         </select>
         <div class="dropdown-toggle active px-4 px-lg-5" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Editeurs</div>
         <select class="dropdown-menu" aria-labelledby="navbarDropdown" size="8" onchange="location = this.value;">
             {% for publisher in publishers_list %}
-            <option value="{% url 'store:store' select_type='editeurs' select_id=publisher.id %}">{{ publisher.name }}</option>
+            <option class="dropdown-item" value="{% url 'store:store' select_type='publishers' select_id=publisher.id %}">{{ publisher.name }}</option>
             {% endfor %}
         </select>
     </div>
