@@ -22,13 +22,17 @@
             <td>{{ booking.created_at|date:'Y-m-d' }}</td>
             <td>{{ booking.contact.name }}<br />{{ booking.contact.email }}<br />{{ booking.contact.adresse }}</td>
             <td>
-                {% for ouvrage, qty in booking.ouvrages.items %}
-                <a  href="{% url 'store:detail' ouvrage_id=ouvrage %}">{{ ouvrage }}</a><br />
+                {% for booking_detail in booking_detail_list %}
+                    {% if booking_detail.booking.id == booking.id %}
+                        <a  href="{% url 'store:detail' ouvrage_id=booking_detail.ouvrage.id %}">{{ booking_detail.ouvrage.title }}</a><br />
+                    {% endif %}
                 {% endfor %}
             </td>
             <td>
-                {% for ouvrage, qty in booking.ouvrages.items %}
-                    {{ qty }}<br />
+                {% for booking_detail in booking_detail_list %}
+                    {% if booking_detail.booking.id == booking.id %}
+                        {{ booking_detail.qty }}<br />
+                    {% endif %}
                 {% endfor %}
             </td>
             <td>
