@@ -72,13 +72,33 @@ class Booking(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     contacted = models.BooleanField(default=False)
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
-    ouvrages = models.JSONField()
+    WAITING = 'W'
+    PAID = 'P'
+    SHIPPED = 'S'
+    CANCELED = 'C'
+    STATUS = (
+        (WAITING, 'En attente de validation'),
+        (PAID, 'Payée'),
+        (SHIPPED, 'Expédiée'),
+        (CANCELED, 'Annulée'),
+    )
+    status = models.CharField(max_length=1, choices=STATUS, default=WAITING, verbose_name="Statut de la commande")
 
     def __str__(self):
         return self
 
     class Meta:
         verbose_name = "réservation"
+
+
+class BookingDetail(models.Model):
+    """
+    Une ligne de commande référence un produit, la quantité commandée ainsi que les prix associés.
+    Elle est liée à une commande.
+    """
+    booking = models.ForeignKey(Booking, verbose_name="Commande associée", on_delete=models.CASCADE)
+    ouvrage = models.ForeignKey(Ouvrage, on_delete=models.CASCADE)
+    qty = models.IntegerField(verbose_name="Quantité")
 
 
 class Profil(models.Model):

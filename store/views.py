@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction, IntegrityError
 
-from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, History
+from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, BookingDetail, History
 from .forms import BookingForm, ConnexionForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, ContactForm
 from .store import add_to_history
 from .xlsx import xlsx, exportXLSX
@@ -221,11 +221,16 @@ def basket(request):
                     contact = contact.first()
                 booking = Booking()
                 booking.contact=contact
-                booking.ouvrages=basket
                 booking.save()
+                for ouvrage in ouvrages:
+                    booking_detail = BookingDetail()
+                    booking_detail.booking = booking
+                    booking_detail.ouvrage = ouvrage
+                    booking_detail.qty = ouvrage.qty
+                    booking_detail.save()
                 request.session.flush()
                 context = {
-                    'booking': booking
+                    'booking_detail': BookingDetail.objects.filter(booking__id=booking.id).all(),
                 }
             # except IntegrityError:
             #     CForm.errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."
