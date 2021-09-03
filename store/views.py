@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction, IntegrityError
+from django.db.models import Q
 
 from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, BookingDetail, History
 from .forms import BookingForm, ConnexionForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, ContactForm
@@ -221,6 +222,7 @@ def basket(request):
                     contact = contact.first()
                 booking = Booking()
                 booking.contact=contact
+                booking.status=['W',]
                 booking.save()
                 for ouvrage in ouvrages:
                     booking_detail = BookingDetail()
@@ -243,26 +245,44 @@ def basket(request):
 
     return render(request, 'store/basket.html', context)
 
-def booking(request):
+def booking(request):         
+    context = {}
 
     if request.method == 'POST':
-        BForm = BookingForm(request.POST, error_class=ParagraphErrorList)
-        if BForm.is_valid():
+        booking_list = Booking.objects.filter(contacted=False).order_by('created_at')
+        BForm = BookingForm(request.POST, error_class=ParagraphErrorList)   
+        action = request.POST.get('action')
+        if action in ('W', 'K', 'P', 'S', 'C'):
             booking_id = request.POST.get('booking_id')
             booking = get_object_or_404(Booking, id=booking_id)
-            booking.contacted = True
+            if action not in booking.status:
+                booking.status.append(action)
+            else:
+                booking.status.remove(action)
             booking.save()
-            for ouvrage in booking.ouvrages:
-                ouvrage_id = ouvrage.id
-                quantity = ouvrage.qty
-                date = datetime.now
-                add_to_history(ouvrage_id, quantity, date)
+            if action == "S":
+                for ouvrage in booking.ouvrages:
+                    ouvrage_id = ouvrage.id
+                    quantity = ouvrage.qty
+                    date = datetime.now
+                    add_to_history(ouvrage_id, quantity, date)
+            if action == "C":
+                booking.delete()
+                pass
+        else:
+            print(BForm)
+            if BForm.is_valid():
+                status = BForm.cleaned_data.get('status')
+                print(status)
+                booking_list = Booking.objects.filter(status__contains=status).order_by('created_at')
+                context['bookings_list_sel']=booking_list
+
     else:
         BForm = BookingForm()
-                    
-    context = {
-        'BForm': BForm,
-    }
+        booking_list = Booking.objects.filter(contacted=False).order_by('created_at')
+        
+    context['bookings_list_sel']=booking_list
+    context['BForm']=BForm
 
     return render(request, 'store/booking.html', context)
 

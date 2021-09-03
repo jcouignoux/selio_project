@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
 #from jsonfield import JSONField
 from datetime import datetime
 
@@ -73,16 +74,20 @@ class Booking(models.Model):
     contacted = models.BooleanField(default=False)
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
     WAITING = 'W'
+    KONTACTED = 'K'
     PAID = 'P'
     SHIPPED = 'S'
     CANCELED = 'C'
     STATUS = (
         (WAITING, 'En attente de validation'),
+        (KONTACTED, 'Contacté'),
         (PAID, 'Payée'),
         (SHIPPED, 'Expédiée'),
         (CANCELED, 'Annulée'),
     )
-    status = models.CharField(max_length=1, choices=STATUS, default=WAITING, verbose_name="Statut de la commande")
+    status = ArrayField(
+        models.CharField(max_length=1, choices=STATUS, default=WAITING, verbose_name="Statut de la commande")
+    )
 
     def __str__(self):
         return self

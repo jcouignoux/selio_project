@@ -3,7 +3,7 @@ from django.forms import ModelForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms.forms import Form
 from django.forms.utils import ErrorList
-from django.forms.widgets import CheckboxInput, EmailInput, PasswordInput, TextInput, NumberInput, Textarea
+from django.forms.widgets import CheckboxInput, EmailInput, PasswordInput, SelectMultiple, TextInput, NumberInput, Textarea, CheckboxSelectMultiple
 from django.contrib.auth.models import User
 from bootstrap_datepicker_plus import DatePickerInput
 
@@ -60,13 +60,30 @@ class ContactForm(ModelForm):
         }
 
 
-class BookingForm(ModelForm):
-    class Meta:
-        model = Booking
-        fields = ["contacted", "contact"]
-        widgets = {
-            'contacted': CheckboxInput(),
-        }
+#class BookingForm(ModelForm):
+class BookingForm(forms.Form):
+    WAITING = 'W'
+    KONTACTED = 'K'
+    PAID = 'P'
+    SHIPPED = 'S'
+    CANCELED = 'C'
+    STATUS = (
+        (WAITING, 'En attente de validation'),
+        (KONTACTED, 'Contacté'),
+        (PAID, 'Payée'),
+        (SHIPPED, 'Expédiée'),
+        (CANCELED, 'Annulée'),
+    )
+    status = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        choices=STATUS,
+    )
+    # class Meta:
+    #     model = Booking
+    #     fields = ["status"]
+    #     widgets = {
+    #     }
 
 
 class DateRangeForm(Form):

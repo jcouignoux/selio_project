@@ -3,12 +3,16 @@
 
 {% block content %}
     {% if user.is_staff %}
-    <div class="container px-4 px-lg-5">
-        <form class="d-flex" action="{% url 'store:history' %}" method="POST">
-        {% csrf_token %}
-            {{ form.start_date }}{{ form.media }}
-            {{ form.end_date }}{{ form.media }}
-            <input class="btn" type="submit" value="Sélectionner" />
+    <div class="container px-4 px-lg-4">
+        <form class="d-flex" action="{% url 'store:booking' %}" method="POST">
+            {% csrf_token %}
+            {{ BForm.as_p }}
+            <input class="btn" type="submit" value="Filtrer" />
+        </form>
+    </div>
+    <div>
+        <form class="d-flex" action="{% url 'store:booking' %}" method="GET">
+            <input class="btn" type="submit" value="Clear" />
         </form>
     </div>
     <table class="table"><tbody>
@@ -17,7 +21,7 @@
             <th>Ouvrage</th>
             <th>Quantité</th>
             <th>Contacté</th>
-        {% for booking in bookings_list %}
+        {% for booking in bookings_list_sel %}
         <tr>
             <td>{{ booking.created_at|date:'Y-m-d' }}</td>
             <td>{{ booking.contact.name }}<br />{{ booking.contact.email }}<br />{{ booking.contact.adresse }}</td>
@@ -39,16 +43,30 @@
                 <form class="navbar navbar-expand-lg" action="{% url 'store:booking' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="booking_id" value="{{ booking.id }}" >
-                    {% if booking.contacted %}
-                        <i class="{% if Bform.contacted.errors %}has-warning has-feedback{% endif %} bi bi-check2-square"></i>
-                        {{ Bform.contacted }}
+                    {% if 'W' in booking.status or 'K' in booking.status or 'P' in booking.status or 'S' in booking.status %}
+                        <button type="submit" name="action" value="W" class="btn btn-success">En Attente</button>
                     {% else %}
-                        <i class="{% if Bform.contacted.errors %}has-warning has-feedback{% endif %} bi bi-square"></i>
-                        {{ Bform }}
-                        {{ Bform.contacted }}
-                        <button type="submit" class="btn btn-outline-dark">Contacté</button>
-                        <button type="submit" class="btn btn-outline-dark">Valider l'envoi</button>
-                        <button type="submit" class="btn btn-outline-dark">Annuler la Commande</button>
+                        <button type="submit" name="action" value="W" class="btn btn-warning">En Attente</button>
+                    {% endif %}
+                    {% if 'K' in booking.status or 'P' in booking.status or 'S' in booking.status %}
+                        <button type="submit" name="action" value="K" class="btn btn-success">Contacté</button>
+                    {% else %}
+                        <button type="submit" name="action" value="K" class="btn btn-warning">Contacté</button>
+                    {% endif %}
+                    {% if 'P' in booking.status or 'S' in booking.status %}
+                        <button type="submit" name="action" value="P" class="btn btn-success">Payée</button>
+                    {% else %}
+                        <button type="submit" name="action" value="P" class="btn btn-warning">Payée</button>
+                    {% endif %}
+                    {% if 'S' in booking.status %}
+                        <button type="submit" name="action" value="S" class="btn btn-success">Expédiée</button>
+                    {% else %}
+                        <button type="submit" name="action" value="S" class="btn btn-warning">Expédiée</button>
+                    {% endif %}
+                    {% if 'C' in booking.status %}
+                        <button type="submit" name="action" value="C" class="btn btn-danger">Annulée</button>
+                    {% else %}
+                        <button type="submit" name="action" value="C" class="btn btn-warning">Annulée</button>
                     {% endif %}
                 </form>
             </td>
