@@ -1,4 +1,5 @@
 from datetime import datetime
+import operator
 from django.conf import settings
 from django.http.response import FileResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -8,6 +9,7 @@ from django.urls import reverse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction, IntegrityError
 from django.db.models import Q
+# from functools import reduce
 
 from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, BookingDetail, History
 from .forms import BookingForm, ConnexionForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, ContactForm
@@ -270,11 +272,15 @@ def booking(request):
                 booking.delete()
                 pass
         else:
-            print(BForm)
             if BForm.is_valid():
                 status = BForm.cleaned_data.get('status')
                 print(status)
-                booking_list = Booking.objects.filter(status__contains=status).order_by('created_at')
+                # booking_list = Booking.objects.filter(status__contains=status).order_by('created_at')
+                my_filter_qs = Q()
+                for stat in status:
+                    my_filter_qs = my_filter_qs | Q(status__contains=[stat])
+                # booking_list = Booking.objects.in_bulk(status)
+                booking_list = Booking.objects.filter(my_filter_qs).order_by('created_at')
                 context['bookings_list_sel']=booking_list
 
     else:
