@@ -1,7 +1,7 @@
 from datetime import datetime
 import operator
 from django.conf import settings
-from django.http.response import FileResponse
+from django.http.response import FileResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -10,6 +10,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction, IntegrityError
 from django.db.models import Q
 # from functools import reduce
+from django.template.loader import render_to_string
 
 from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, BookingDetail, History
 from .forms import BookingForm, ConnexionForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, ContactForm
@@ -254,7 +255,7 @@ def booking(request):
         booking_list = Booking.objects.filter(contacted=False).order_by('created_at')
         BForm = BookingForm(request.POST, error_class=ParagraphErrorList)   
         action = request.POST.get('action')
-        if action in ('W', 'K', 'P', 'S', 'C'):
+        if action in ('W', 'K', 'P', 'S', 'C', 'D'):
             booking_id = request.POST.get('booking_id')
             booking = get_object_or_404(Booking, id=booking_id)
             if action not in booking.status:
@@ -268,9 +269,8 @@ def booking(request):
                     quantity = ouvrage.qty
                     date = datetime.now
                     add_to_history(ouvrage_id, quantity, date)
-            if action == "C":
+            if action == "D":
                 booking.delete()
-                pass
         else:
             if BForm.is_valid():
                 status = BForm.cleaned_data.get('status')

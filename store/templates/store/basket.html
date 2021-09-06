@@ -5,7 +5,6 @@
 <div class="card h-100">
     <div class="text-center">Panier</div>
         <label for="{{ form.ouvrage.id_for_label }}">Commande</label>
-        {{ basket }}
         {% if basket %}
         <table class="table">
                 <thead>
@@ -63,7 +62,7 @@
             {{ Cform.forname }}
             {{ Cform.email }}
             {{ Cform.adresse }}
-            <button type="submit" class="btn btn-success">Commander</button>
+            <button type="submit" class="btn btn-success" onclick="return confirm('Merci de confirmer');">Commander</button>
         </div>
     </form>
 </div>
