@@ -274,7 +274,6 @@ def booking(request):
         else:
             if BForm.is_valid():
                 status = BForm.cleaned_data.get('status')
-                print(status)
                 # booking_list = Booking.objects.filter(status__contains=status).order_by('created_at')
                 my_filter_qs = Q()
                 for stat in status:
