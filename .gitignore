@@ -2,4 +2,4 @@ selio_project/__pycache__
 store/__pycache__/*.pyc
 store/migrations/*.pyc
 store/migrations/*.py
-*.pyc
+**/*.pyc
