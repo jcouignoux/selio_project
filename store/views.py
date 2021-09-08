@@ -49,12 +49,25 @@ def store(request, select_type, select_id):
         if select_type != 'All':
             if select_type == 'categories':
                 ouvrages_list = Ouvrage.objects.filter(categories__id=select_id)
+                context = {
+                    'type_filter':  'Catégorie',
+                    'sel_id': get_object_or_404(Categorie, pk=select_id),
+                }
             elif select_type == 'authors':
                 ouvrages_list = Ouvrage.objects.filter(auteurs__id=select_id)
+                context = {
+                    'type_filter':  'Auteur',
+                    'sel_id': get_object_or_404(Author, pk=select_id),
+                }
             elif select_type == 'publishers':
                 ouvrages_list = Ouvrage.objects.filter(editeurs__id=select_id)
+                context = {
+                    'type_filter':  'Editeur',
+                    'sel_id': get_object_or_404(Publisher, pk=select_id),
+                }
         else:
             ouvrages_list = Ouvrage.objects.filter(available=True).order_by('title')
+            context = {}
     paginator = Paginator(ouvrages_list, 12)
     page = request.GET.get('page')
     try: 
@@ -63,10 +76,8 @@ def store(request, select_type, select_id):
         ouvrages = paginator.page(1)
     except EmptyPage:
         ouvrages = paginator.page(paginator.num_pages)
-    context = {
-        'ouvrages': ouvrages,
-        'paginate': True,
-    }
+    context['ouvrages'] = ouvrages
+    context['paginate'] = True
     if 'basket' in request.session:
         context['basket'] = request.session['basket']
 
@@ -248,6 +259,7 @@ def basket(request):
 
     return render(request, 'store/basket.html', context)
 
+@login_required
 def booking(request):         
     context = {}
 

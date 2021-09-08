@@ -29,7 +29,11 @@
         </button>
     </form>
 </div>
-
+{% if type_filter %}
+    <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 offcanvas-title justify-content-center">
+        {{ type_filter }} : {{ sel_id }}
+    </div>
+{% endif %}
 {% if ouvrages|length_is:"0" %}
     <div class="text-center">
         Palsambleu ! Nous n'avons trouvé aucun résultat à cette requête. Même pas de quoi se ronger la chique !
