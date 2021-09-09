@@ -306,7 +306,8 @@ def booking(request):
 
     else:
         BForm = BookingForm()
-        booking_list = Booking.objects.filter(contacted=False).order_by('created_at')
+        # booking_list = Booking.objects.filter(contacted=False).order_by('created_at')
+        booking_list = Booking.objects.exclude(status__contains=(['S']))
         
     context['bookings_list_sel']=booking_list
     context['BForm']=BForm
