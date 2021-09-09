@@ -283,11 +283,12 @@ def booking(request):
             else:
                 booking.status.remove(action)
             booking.save()
-            if action == "S":
-                for ouvrage in booking.ouvrages:
-                    ouvrage_id = ouvrage.id
-                    quantity = ouvrage.qty
-                    date = datetime.now
+            if action == 'S':
+                booking_details = BookingDetail.objects.filter(booking_id=booking.id)
+                for booking in booking_details:
+                    ouvrage_id = booking.ouvrage.id
+                    quantity = booking.qty
+                    date = str(datetime.now().strftime('%Y-%m-%d'))
                     add_to_history(ouvrage_id, quantity, date)
             if action == "D":
                 booking.delete()
