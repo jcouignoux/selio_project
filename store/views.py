@@ -28,6 +28,8 @@ def index(request):
         context = {
             'basket': ''
         }
+    test = Booking.objects.first()
+    print(test.status)
     
     return render(request, 'store/index.html', context)
 
@@ -267,6 +269,10 @@ def booking(request):
         booking_list = Booking.objects.filter(contacted=False).order_by('created_at')
         BForm = BookingForm(request.POST, error_class=ParagraphErrorList)   
         action = request.POST.get('action')
+        if action == 'X':
+            booking_detail_id = request.POST.get('booking_detail_id')
+            booking_detail = get_object_or_404(BookingDetail, id=booking_detail_id)
+            booking_detail.delete()
         if action in ('W', 'K', 'P', 'S', 'C', 'D'):
             booking_id = request.POST.get('booking_id')
             booking = get_object_or_404(Booking, id=booking_id)
@@ -292,6 +298,7 @@ def booking(request):
                     my_filter_qs = my_filter_qs | Q(status__contains=[stat])
                 # booking_list = Booking.objects.in_bulk(status)
                 booking_list = Booking.objects.filter(my_filter_qs).order_by('created_at')
+                # booking_list = Booking.objects.filter(status__0=status).order_by('created_at')
                 context['bookings_list_sel']=booking_list
 
     else:

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 #from jsonfield import JSONField
 from datetime import datetime
+from decimal import *
 
 
 # Create your models here.
@@ -78,15 +79,17 @@ class Booking(models.Model):
     PAID = 'P'
     SHIPPED = 'S'
     CANCELED = 'C'
+    DELETED = 'D'
     STATUS = (
         (WAITING, 'En attente de validation'),
         (KONTACTED, 'Contacté'),
         (PAID, 'Payée'),
         (SHIPPED, 'Expédiée'),
         (CANCELED, 'Annulée'),
+        (DELETED, 'Annulée'),
     )
     status = ArrayField(
-        models.CharField(max_length=1, choices=STATUS, default=WAITING, verbose_name="Statut de la commande")
+        models.CharField(max_length=1, choices=STATUS, verbose_name="Statut de la commande", blank=True)
     )
 
     def __str__(self):
@@ -95,6 +98,20 @@ class Booking(models.Model):
     class Meta:
         verbose_name = "réservation"
 
+    @property
+    def total(self):
+        total = 0
+        booking_details = BookingDetail.objects.filter(booking_id=self.id)
+        for booking_detail in booking_details:
+            total += booking_detail.total()
+        return round(total,2)
+
+    def ouvrages_qty(self):
+        qtys = 0
+        booking_details = BookingDetail.objects.filter(booking_id=self.id)
+        for booking_detail in booking_details:
+            qtys += booking_detail.qty
+        return qtys
 
 class BookingDetail(models.Model):
     """
@@ -105,6 +122,14 @@ class BookingDetail(models.Model):
     ouvrage = models.ForeignKey(Ouvrage, on_delete=models.CASCADE)
     qty = models.IntegerField(verbose_name="Quantité")
 
+    # def total_ht(self):
+    #     return round(self.product_unit_price * float(self.qty), 2)
+
+    # def total_vat(self):
+    #     return round(self.product_unit_price * float(self.qty) * self.vat, 2)
+
+    def total(self):
+        return round(self.ouvrage.price * self.qty, 2)
 
 class Profil(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)  # La liaison OneToOne vers le modèle User
