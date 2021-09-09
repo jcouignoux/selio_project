@@ -28,8 +28,8 @@ def index(request):
         context = {
             'basket': ''
         }
-    test = Booking.objects.first()
-    print(test.status)
+    test = BookingDetail.objects.all()
+    print(len(test))
     
     return render(request, 'store/index.html', context)
 
@@ -223,6 +223,7 @@ def basket(request):
             forname = CForm.cleaned_data['forname']
             email = CForm.cleaned_data['email']
             adresse = CForm.cleaned_data['adresse']
+            # Bug refresh page thanks
             basket = request.session['basket']
             # try:
             with transaction.atomic():
@@ -248,7 +249,8 @@ def basket(request):
                     booking_detail.save()
                 request.session.flush()
                 context = {
-                    'booking_detail': BookingDetail.objects.filter(booking__id=booking.id).all(),
+                    'booking_details': BookingDetail.objects.filter(booking__id=booking.id).all(),
+                    'booking': booking,
                 }
             # except IntegrityError:
             #     CForm.errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."

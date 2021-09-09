@@ -2,16 +2,31 @@
 {% load static %}
 
 {% block content %}
-    {% if booking_detail %}
+    {% if booking_details %}
     <div class="container px-4 px-lg-5">
         <div class="card">
             <img  class="align-self-center" width="30%" height="auto" src="{% static 'store/img/selio.png' %}" alt="..." />
             <label>La SELIO vous remercie</label><br />
             <p>Nous avons pris en compte votre commande, nous vous recontacterons afin confirmez l'adresse d'envoi et vous donner les instructions de paiment.</p>
             <p>Récapitulatif de votre commande:</p>
-            {% for booking in booking_detail.all %}
-                <p>{{ booking.ouvrage.title }}</p>
-            {% endfor %}
+            <table class="table"><tbody>
+                <th>Titre</th>
+                <th>Prix</th>
+                <th>Quantité</th>
+                <th>Total</th>
+                {% for booking_detail in booking_details.all %}
+                    <tr>
+                        <td>{{ booking_detail.ouvrage.title }}</td>
+                        <td>{{ booking_detail.ouvrage.price }}</td>
+                        <td>{{ booking_detail.qty }}</td>
+                        <td>{{ booking_detail.total }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <td>Total</td>
+                <td>{{ booking.total }}</td>
+            </tfoot></table>
         </div>
     </div>
     {% else %}

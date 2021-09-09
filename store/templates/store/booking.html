@@ -30,7 +30,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="booking_detail_id" value="{{ booking_detail.id }}" >
                             <a href="{% url 'store:detail' ouvrage_id=booking_detail.ouvrage.id %}">{{ booking_detail.ouvrage.title }}</a>
-                            <button type="submit" name="action" value="X" class="bi bi-x-square" onclick="return confirm('Etes-vous sûr ?');"></button><br />
+                            <button type="submit" name="action" value="X" class="bi bi-x-square btn btn-primary-outline" onclick="return confirm('Etes-vous sûr ?');"></button>
                         </form>
                     {% endif %}
                 {% endfor %}
@@ -38,14 +38,14 @@
             <td>
                 {% for booking_detail in booking_detail_list %}
                     {% if booking_detail.booking.id == booking.id %}
-                        {{ booking_detail.qty }}<br />
+                        {{ booking_detail.qty }}<br /><br />
                     {% endif %}
                 {% endfor %}
             </td>
             <td>
                 {% for booking_detail in booking_detail_list %}
                     {% if booking_detail.booking.id == booking.id %}
-                        {{ booking_detail.ouvrage.price }} €<br />
+                        {{ booking_detail.ouvrage.price }} €<br /><br />
                     {% endif %}
                 {% endfor %}
             </td>
