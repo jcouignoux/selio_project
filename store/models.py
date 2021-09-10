@@ -72,7 +72,6 @@ class Ouvrage(models.Model):
 
 class Booking(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    contacted = models.BooleanField(default=False)
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
     WAITING = 'W'
     KONTACTED = 'K'
@@ -88,9 +87,7 @@ class Booking(models.Model):
         (CANCELED, 'Annulée'),
         (DELETED, 'Annulée'),
     )
-    status = ArrayField(
-        models.CharField(max_length=1, choices=STATUS, verbose_name="Statut de la commande", blank=True)
-    )
+    status = models.CharField(max_length=1, choices=STATUS, verbose_name="Statut de la commande", blank=True)
 
     def __str__(self):
         return self

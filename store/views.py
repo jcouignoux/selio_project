@@ -239,7 +239,7 @@ def basket(request):
                     contact = contact.first()
                 booking = Booking()
                 booking.contact=contact
-                booking.status=['W',]
+                booking.status='W'
                 booking.save()
                 for ouvrage in ouvrages:
                     booking_detail = BookingDetail()
@@ -264,24 +264,25 @@ def basket(request):
     return render(request, 'store/basket.html', context)
 
 @login_required
-def booking(request):         
+def booking(request):
+    STATUS_LIST = ('W', 'K', 'P', 'S', 'C', 'D')        
     context = {}
 
     if request.method == 'POST':
-        booking_list = Booking.objects.filter(contacted=False).order_by('created_at')
+        booking_list = Booking.objects.all().order_by('created_at')
         BForm = BookingForm(request.POST, error_class=ParagraphErrorList)   
         action = request.POST.get('action')
         if action == 'X':
             booking_detail_id = request.POST.get('booking_detail_id')
             booking_detail = get_object_or_404(BookingDetail, id=booking_detail_id)
             booking_detail.delete()
-        if action in ('W', 'K', 'P', 'S', 'C', 'D'):
+        if action in STATUS_LIST:
             booking_id = request.POST.get('booking_id')
             booking = get_object_or_404(Booking, id=booking_id)
-            if action not in booking.status:
-                booking.status.append(action)
+            if action == booking.status:
+                booking.status = STATUS_LIST[STATUS_LIST.index(action) - 1]
             else:
-                booking.status.remove(action)
+                booking.status = action
             booking.save()
             if action == 'S':
                 booking_details = BookingDetail.objects.filter(booking_id=booking.id)
@@ -295,11 +296,14 @@ def booking(request):
         else:
             if BForm.is_valid():
                 status = BForm.cleaned_data.get('status')
+                print(status)
                 # booking_list = Booking.objects.filter(status__contains=status).order_by('created_at')
                 my_filter_qs = Q()
                 for stat in status:
-                    my_filter_qs = my_filter_qs | Q(status__contains=[stat])
+                    # my_filter_qs = my_filter_qs | Q(status__contains=[stat])
+                    my_filter_qs = my_filter_qs | Q(status=stat)
                 # booking_list = Booking.objects.in_bulk(status)
+                # booking_list = Booking.objects.filter(status=status)
                 booking_list = Booking.objects.filter(my_filter_qs).order_by('created_at')
                 # booking_list = Booking.objects.filter(status__0=status).order_by('created_at')
                 context['bookings_list_sel']=booking_list
@@ -307,7 +311,7 @@ def booking(request):
     else:
         BForm = BookingForm()
         # booking_list = Booking.objects.filter(contacted=False).order_by('created_at')
-        booking_list = Booking.objects.exclude(status__contains=(['S']))
+        booking_list = Booking.objects.exclude(status='S')
         
     context['bookings_list_sel']=booking_list
     context['BForm']=BForm
