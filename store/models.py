@@ -40,13 +40,65 @@ class Categorie(models.Model):
 
 
 class Contact(models.Model):
-    name = models.CharField(max_length=200)
-    forname = models.CharField(max_length=200)
-    email = models.EmailField(max_length=100)
-    adresse = models.CharField(max_length=200)
+    """
+    Un client est une personne inscrite au site dans le but d'effectuer une commande.
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="Contact", null=True)
+    default_shipping_address = models.ForeignKey("Address",
+                                                 related_name="default_shipping_address",
+                                                 null=True,
+                                                 verbose_name="Adresse de livraison par défaut",
+                                                 on_delete=models.CASCADE
+                                                 )
+    default_invoicing_address = models.ForeignKey("Address",
+                                                  related_name="default_invoicing_address",
+                                                  null=True,
+                                                  verbose_name="Adresse de facturation par défaut",
+                                                  on_delete=models.CASCADE
+                                                  )
 
-    def __str__(self):
-        return self.name
+    @property
+    def __unicode__(self):
+        return self.user.username + " (" + self.user.first_name + " " + self.user.last_name + ")"
+
+    def addresses(self):
+        return Address.objects.filter(contact_id=self.id)
+
+    @property
+    def bookings(self):
+        return Booking.objects.filter(contact_id=self.id).order_by('-id')
+
+
+class Address(models.Model):
+    """
+    Une adresse est liée à un client et pourra être utilisée pour la livraison ou la facturation d'une commande.
+    """
+    contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
+    MISTER = 'MR'
+    MISS = 'MISS'
+    MISSES = 'MRS'
+    GENDER = (
+        (MISTER, 'Monsieur'),
+        (MISS, 'Mademoiselle'),
+        (MISSES, 'Madame'),
+    )
+    gender = models.CharField(max_length=4, choices=GENDER, default=MISTER, verbose_name="Civilité")
+    first_name = models.CharField(max_length=50, verbose_name="Prénom")
+    last_name = models.CharField(max_length=50, verbose_name="Nom")
+    company = models.CharField(max_length=50, blank=True, verbose_name="Société")
+    address = models.CharField(max_length=255, verbose_name="Adresse")
+    additional_address = models.CharField(max_length=255, blank=True, verbose_name="Complément d'adresse")
+    postcode = models.CharField(max_length=5, verbose_name="Code postal")
+    city = models.CharField(max_length=50, verbose_name="Ville")
+    phone = models.CharField(max_length=10, verbose_name="Téléphone")
+    mobilephone = models.CharField(max_length=10, blank=True, verbose_name="Téléphone portable")
+
+    class Meta:
+        verbose_name = 'Adresse'
+        verbose_name_plural = 'Adresses'
+
+    def __unicode__(self):
+        return self.first_name + " " + self.last_name + " (" + self.address + ", " + self.postcode + " " + self.city + ")"
 
 
 class Ouvrage(models.Model):
@@ -110,13 +162,18 @@ class Booking(models.Model):
             qtys += booking_detail.qty
         return qtys
 
+    @property
+    def bookingdetails(self):
+        return BookingDetail.objects.filter(booking_id=self.id).order_by('-id')
+
+
 class BookingDetail(models.Model):
     """
     Une ligne de commande référence un produit, la quantité commandée ainsi que les prix associés.
     Elle est liée à une commande.
     """
     booking = models.ForeignKey(Booking, verbose_name="Commande associée", on_delete=models.CASCADE)
-    ouvrage = models.ForeignKey(Ouvrage, on_delete=models.CASCADE)
+    ouvrage = models.ForeignKey(Ouvrage, on_delete=models.PROTECT)
     qty = models.IntegerField(verbose_name="Quantité")
 
     # def total_ht(self):
@@ -127,6 +184,7 @@ class BookingDetail(models.Model):
 
     def total(self):
         return round(self.ouvrage.price * self.qty, 2)
+
 
 class Profil(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)  # La liaison OneToOne vers le modèle User

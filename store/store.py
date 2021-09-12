@@ -3,7 +3,6 @@ from django.shortcuts import get_object_or_404
 from .models import History, Ouvrage
 
 def add_to_history(ouvrage_id, quantity, date):
-    print('test')
     ouvrage = get_object_or_404(Ouvrage, id=ouvrage_id)
     history = History.objects.create(
         reference=ouvrage.reference,

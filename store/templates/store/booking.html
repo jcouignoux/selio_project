@@ -22,7 +22,7 @@
         {% for booking in bookings_list_sel %}
         <tr>
             <td>{{ booking.created_at|date:'Y-m-d' }}</td>
-            <td>{{ booking.contact.name }}<br />{{ booking.contact.email }}<br />{{ booking.contact.adresse }}</td>
+            <td>{{ booking.contact.user }}<br />{{ booking.contact.user.email }}<br />{{ booking.contact.default_shipping_address.city }}</td>
             <td>
                 {% for booking_detail in booking_detail_list %}
                     {% if booking_detail.booking.id == booking.id %}

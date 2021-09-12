@@ -7,7 +7,7 @@ from django.forms.widgets import CheckboxInput, EmailInput, PasswordInput, Selec
 from django.contrib.auth.models import User
 from bootstrap_datepicker_plus import DatePickerInput
 
-from .models import Profil, History, Booking, Contact
+from .models import Profil, History, Booking, Contact, Address
 
 
 class ParagraphErrorList(ErrorList):
@@ -48,16 +48,45 @@ class ArrivageForm(ModelForm):
         }
 
 
-class ContactForm(ModelForm):
+# class ContactForm(ModelForm):
+#     class Meta:
+#         model = Contact
+#         fields = ["name", "forname", "email", "adresse"]
+#         widgets = {
+#             'name': TextInput(attrs={'class': 'form-control', 'placeholder':'Nom'}),
+#             'forname': TextInput(attrs={'class': 'form-control', 'placeholder':'Prénom'}),
+#             'email': EmailInput(attrs={'class': 'form-control', 'placeholder':'Email'}),
+#             'adresse': Textarea(attrs={'class': 'form-control', 'placeholder':'Adresse'}),
+#         }
+# 
+
+class UserForm(ModelForm):
     class Meta:
-        model = Contact
-        fields = ["name", "forname", "email", "adresse"]
+        model = User
+        fields = ['email', 'password']
         widgets = {
-            'name': TextInput(attrs={'class': 'form-control', 'placeholder':'Nom'}),
-            'forname': TextInput(attrs={'class': 'form-control', 'placeholder':'Prénom'}),
-            'email': EmailInput(attrs={'class': 'form-control', 'placeholder':'Email'}),
-            'adresse': Textarea(attrs={'class': 'form-control', 'placeholder':'Adresse'}),
+            'email': EmailInput(attrs={'placeholder':'Email'}),
+            'password': PasswordInput(attrs={'placeholder':'Mot de Passe'}),
         }
+
+
+class AddressForm(ModelForm):
+    email = forms.EmailField(label='Votre adresse e-mail', required=True)
+
+    class Meta:
+        model = Address
+        fields = ['gender', 'first_name', 'last_name', 'address', 'additional_address',
+                  'postcode', 'city', 'phone', 'mobilephone']
+
+
+# class RegisterForm(ModelForm):
+#     first_name = forms.CharField(label='Votre prénom', required=True)
+#     last_name = forms.CharField(label='Votre nom', required=True)
+#     email = forms.EmailField(label='Votre adresse e-mail', required=True)
+# 
+#     class Meta:
+#         model = User
+#         fields = ['first_name', 'last_name', 'email']
 
 
 #class BookingForm(ModelForm):

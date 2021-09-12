@@ -1,7 +1,11 @@
 {% extends 'store/base.html' %}
 
+{% block extra_js%}
+    <script src="http://malsup.github.com/jquery.form.js"></script>
+{% endblock %}
+
 {% block content %}
-<div class="card h-100">
+<section class="card h-100">
     <div class="text-center">Panier</div>
         <label>Contacts</label>
         {% if contacts_list %}
@@ -11,25 +15,42 @@
                         <th>Nom</th>
                         <th>Prénom</th>
                         <th>Email</th>
+                        <th>Adresse</th>
                         <th>Commandes</th>
+                        <th>Commandes en cours</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                 {% for contact in contacts_list.all %}
                 <tr>
-                    <td>{{ contact.name }}</td>
-                    <td>{{ contact.forname }}</td>
-                    <td>{{ contact.email }}</td>
-                    <td>{% for booking in bookings_list.all %}
-                            {% if booking.contact.id == contact.id %}
-                                {{ booking.id }}
-                            {% endif %}
+                    <td>{{ contact.default_shipping_address.last_name }}</td>
+                    <td>{{ contact.default_shipping_address.first_name }}</td>
+                    <td>{{ contact.user.email }}</td>
+                    <td>{{ contact.default_shipping_address.city }}</td>
+                    <td>Commandes</td>
+                    <td>{% for booking in contact.bookings.all %}
+                            {% for bookingdetail in booking.bookingdetails.all %}
+                                {{ bookingdetail.ouvrage.title }}<br />
+                                {% if booking.bookingdetails.all|length > 1 %}
+                                    ----------------<br />
+                                {% endif %}
+                            {% endfor %}
                         {% endfor %}
+                    </td>
+                    <td>
+                        <form action="{% url 'store:contact' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="contact_id" value="{{ contact.id }}" >
+                            <button type="submit" name="action" value="Delete" class="bi bi-x-square btn btn-primary-outline" onclick="return confirm('Etes-vous sûr ?');"></button>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}
                 </tbody>
         </table>
+        {% else %}
+            <p>Aucun contact enregistré</p>
         {% endif %}
-</div>
+</section>
 {% endblock %}
