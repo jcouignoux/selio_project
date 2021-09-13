@@ -50,9 +50,10 @@ class AdminURLMixin(object):
 #     ouvrage_link.short_description = "Ouvrage"
 
 
-# @admin.register(Contact)
-# class ContactAdmin(admin.ModelAdmin):
-#     inlines = [BookingInline,]
+@admin.register(Contact)
+class ContactAdmin(admin.ModelAdmin):
+    # inlines = [BookingInline,]
+    fields = ['user']
 
 class OuvrageAuthorInline(admin.TabularInline):
     model = Ouvrage.auteurs.through
