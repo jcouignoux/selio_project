@@ -52,6 +52,7 @@ def store(request, select_type, select_id):
     if request.method == 'POST':
         search = request.POST['search']
         ouvrages_list = Ouvrage.objects.filter(title__icontains=search).order_by('title')
+        context = {}
     else:
         if select_type != 'All':
             if select_type == 'categories':

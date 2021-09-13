@@ -2,8 +2,9 @@ from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.contrib.auth.models import User
 
-from .models import Booking, Contact, Ouvrage, Author, Publisher, Categorie
+from .models import Address, Booking, Contact, Ouvrage, Author, Publisher, Categorie
 
 # Register your models here.
 
@@ -49,11 +50,25 @@ class AdminURLMixin(object):
 # 
 #     ouvrage_link.short_description = "Ouvrage"
 
+class UserInline(admin.TabularInline, AdminURLMixin):
+    model = User
+    extra = 0
+    fieldsets = [
+        (None, {'fields': ['email',]})
+        ] # list columns
+
 
 @admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
-    # inlines = [BookingInline,]
-    fields = ['user']
+    fields = ['user', 'default_shipping_address', 'default_invoicing_address']
+
+
+@admin.register(Address)
+class AddressetAdmin(admin.ModelAdmin, AdminURLMixin):
+    fields = ['contact', 'gender', 'first_name', 'last_name', 'address', 'additional_address',
+            'postcode', 'city', 'phone', 'mobilephone',
+    ]
+
 
 class OuvrageAuthorInline(admin.TabularInline):
     model = Ouvrage.auteurs.through

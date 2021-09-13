@@ -43,7 +43,7 @@ class Contact(models.Model):
     """
     Un client est une personne inscrite au site dans le but d'effectuer une commande.
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="Contact", null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Contact", null=True)
     default_shipping_address = models.ForeignKey("Address",
                                                  related_name="default_shipping_address",
                                                  null=True,
@@ -57,7 +57,6 @@ class Contact(models.Model):
                                                   on_delete=models.CASCADE
                                                   )
 
-    @property
     def __unicode__(self):
         return self.user.username + " (" + self.user.first_name + " " + self.user.last_name + ")"
 
@@ -67,6 +66,13 @@ class Contact(models.Model):
     @property
     def bookings(self):
         return Booking.objects.filter(contact_id=self.id).order_by('-id')
+
+    @property
+    def users(self):
+        return User.objects.filter(user_email=self.email).first()
+
+    def __str__(self):
+        return self.user.username
 
 
 class Address(models.Model):
@@ -98,6 +104,9 @@ class Address(models.Model):
         verbose_name_plural = 'Adresses'
 
     def __unicode__(self):
+        return self.first_name + " " + self.last_name + " (" + self.address + ", " + self.postcode + " " + self.city + ")"
+
+    def __str__(self):
         return self.first_name + " " + self.last_name + " (" + self.address + ", " + self.postcode + " " + self.city + ")"
 
 
@@ -186,11 +195,11 @@ class BookingDetail(models.Model):
         return round(self.ouvrage.price * self.qty, 2)
 
 
-class Profil(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)  # La liaison OneToOne vers le modèle User
-
-    def __str__(self):
-        return "Profil de {0}".format(self.user.username)
+#  class Profil(models.Model):
+#      user = models.OneToOneField(User, on_delete=models.CASCADE)  # La liaison OneToOne vers le modèle User
+#  
+#      def __str__(self):
+#          return "Profil de {0}".format(self.user.username)
 
 
 class History(models.Model):

@@ -7,7 +7,7 @@ from django.forms.widgets import CheckboxInput, EmailInput, PasswordInput, Selec
 from django.contrib.auth.models import User
 from bootstrap_datepicker_plus import DatePickerInput
 
-from .models import Profil, History, Booking, Contact, Address
+from .models import History, Booking, Contact, Address
 
 
 class ParagraphErrorList(ErrorList):
