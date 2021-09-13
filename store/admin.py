@@ -58,15 +58,20 @@ class UserInline(admin.TabularInline, AdminURLMixin):
         ] # list columns
 
 
+class AddressAdmin(admin.ModelAdmin):
+    list_display = ('address', 'postcode', 'city', 'contact')
+
+
+class AddressInline(admin.StackedInline):
+    model = Address
+    extra = 1
+
+
 @admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
-    fields = ['user', 'default_shipping_address', 'default_invoicing_address']
-
-
-@admin.register(Address)
-class AddressetAdmin(admin.ModelAdmin, AdminURLMixin):
-    fields = ['contact', 'gender', 'first_name', 'last_name', 'address', 'additional_address',
-            'postcode', 'city', 'phone', 'mobilephone',
+    search_fields = ('user__first_name', 'user__last_name', 'user__email')
+    inlines = [
+        AddressInline,
     ]
 
 
