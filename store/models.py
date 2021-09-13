@@ -125,21 +125,21 @@ class Ouvrage(models.Model):
 class Booking(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
-    WAITING = 'W'
-    KONTACTED = 'K'
-    PAID = 'P'
-    SHIPPED = 'S'
-    CANCELED = 'C'
-    DELETED = 'D'
+    # WAITING = 'W'
+    # KONTACTED = 'K'
+    # PAID = 'P'
+    # SHIPPED = 'S'
+    # CANCELED = 'C'
+    # DELETED = 'D'
     STATUS = [
-        (WAITING, 'En attente de validation'),
-        (KONTACTED, 'Contacté'),
-        (PAID, 'Payée'),
-        (SHIPPED, 'Expédiée'),
-        (CANCELED, 'Annulée'),
-        (DELETED, 'Annulé'),
+        ('W', 'En attente de validation'),
+        ('K', 'Contacté'),
+        ('P', 'Payée'),
+        ('S', 'Expédiée'),
+        ('C', 'Annulée'),
+        ('D', 'Annulé'),
     ]
-    status = models.CharField(max_length=1, choices=STATUS, default=WAITING, verbose_name="Statut de la commande", blank=True)
+    status = models.CharField(max_length=1, choices=STATUS, verbose_name="Statut de la commande", null=True)
 
     def __str__(self):
         return self
