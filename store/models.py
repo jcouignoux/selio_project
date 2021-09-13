@@ -131,14 +131,14 @@ class Booking(models.Model):
     SHIPPED = 'S'
     CANCELED = 'C'
     DELETED = 'D'
-    STATUS = (
+    STATUS = [
         (WAITING, 'En attente de validation'),
         (KONTACTED, 'Contacté'),
         (PAID, 'Payée'),
         (SHIPPED, 'Expédiée'),
         (CANCELED, 'Annulée'),
-        (DELETED, 'Annulée'),
-    )
+        (DELETED, 'Annulé'),
+    ]
     status = models.CharField(max_length=1, choices=STATUS, default=WAITING, verbose_name="Statut de la commande", blank=True)
 
     def __str__(self):
