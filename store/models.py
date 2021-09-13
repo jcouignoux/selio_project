@@ -139,7 +139,7 @@ class Booking(models.Model):
         ('C', 'Annulée'),
         ('D', 'Annulé'),
     ]
-    status = models.CharField(max_length=1, choices=STATUS, verbose_name="Statut de la commande", null=True)
+    status = models.CharField(max_length=1, choices=STATUS, verbose_name="Statut de la commande", null=True, blank=True)
 
     def __str__(self):
         return self
