@@ -16,7 +16,7 @@ from django.contrib.auth.models import User
 
 # from django.views.decorators.csrf import csrf_protect
 
-from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, BookingDetail, History
+from .models import Address, Ouvrage, Author, Publisher, Categorie, Contact, Booking, BookingDetail, History
 from .forms import BookingForm, ConnexionForm, UserForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, AddressForm
 from .store import add_to_history
 from .contacts import create_contact
@@ -274,9 +274,14 @@ def basket(request):
         CForm = AddressForm()
         UForm = UserForm()
 
+    if request.user.is_authenticated:
+        contact = Contact.objects.get(user=request.user)
+        context['contact'] = contact
+        print(contact.default_shipping_address.__dict__)
+        CForm = AddressForm(contact.default_shipping_address.__dict__)
     context['CForm'] = CForm
     context['UForm'] = UForm
-    context['Cerrors'] = CForm.errors.items()
+    # context['Cerrors'] = CForm.errors.items()
 
     return render(request, 'store/basket.html', context)
 
@@ -431,27 +436,54 @@ def histBase(request):
 def connexion(request):
     if request.method == "POST":
         form = ConnexionForm(data=request.POST, error_class=ParagraphErrorList)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
+        UForm = UserForm(data=request.POST, error_class=ParagraphErrorList)
+        if form.is_valid() or UForm.is_valid():
+            if form.is_valid():
+                username = form.cleaned_data['username']
+                password = form.cleaned_data['password']
+            elif UForm.is_valid():
+                email = UForm.cleaned_data['email']
+                user = User.objects.get(email=email)
+                password = UForm.cleaned_data['password']
+            user = authenticate(request, username=user.username, password=password)
             if user:
                 login(request, user)
-                return render(request, 'store/index.html')
+                if form.is_valid():
+                    return render(request, 'store/index.html')
+                if UForm.is_valid():
+                    contact = Contact.objects.get(user=user)
+                    ouvrages = []
+                    if 'basket' in request.session: 
+                        for ouvrage_id in request.session['basket'].keys():
+                            ouvrage = get_object_or_404(Ouvrage, pk=ouvrage_id)
+                            ouvrage.qty = request.session['basket'][ouvrage_id]
+                            ouvrages.append(ouvrage)
+                        context = {
+                            'basket': request.session['basket'],
+                            'ouvrages': ouvrages,
+                            'contact': contact,
+                        }
+                    else:
+                        context = {
+                            'contact': contact,
+                        }
+                    return render(request, 'store/basket.html', context)
             else:
                 print('ok')
-                context = {'form': form}
-                return render(request, 'store/login.html', context)
-        else:
-            context = {'form': form}
-            return render(request, 'store/login.html', context)
     else:
         form = ConnexionForm()
-        context = {'form': form}
-        return render(request, 'store/login.html', context)
+        UForm = UserForm()
+    
+    context = {
+        'form': form,
+        'UForm': UForm,
+        }
+
+    return render(request, 'store/login.html', context)
 
 @login_required    
 def deconnexion(request):
     logout(request)
 
     return render(request, 'store/index.html')
+

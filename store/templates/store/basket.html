@@ -54,29 +54,45 @@
             </div>
         {% endif %}<br /><br />
     {% if user.is_authenticated %}
-        <div>
-            {{ user.email }}
-        </div>
+            <form class="form-label " action="{% url 'store:basket' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="basket" value="{{ basket }}" >
+                <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <label for="{{ CForm.id_for_label }}">Adresse de facturation</label><br />
+                        {{ CForm.as_p }}
+                    </div>
+                    <div class="col">
+                        <label for="{{ CForm.id_for_label }}">Adresse de livraison</label>
+                        {{ contact.default_invoicing_address }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col"><button type="submit" class="btn btn-success" onclick="return confirm('Merci de confirmer');">Commander</button></div>
+                </div>
+                </div>
+            </form>
     {% else %}
-        <form class="container px-4 px-lg-3" action="{% url 'store:basket' %}" method="post">
+        <form class="container px-4 px-lg-3" action="{% url 'store:login' %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="basket" value="{{ basket }}" >
             <div class="d-flex {% if Uform.errors %}has-warning has-feedback{% endif %}">
                 <label class="d-flex" for="{{ Uform.id_for_label }}">Si vous avez déjà un compte, identifiez vous : {{ UForm.as_p }}</label>
-                <button type="submit" class="btn" onclick="return confirm('Merci de confirmer');">S'identifier</button>
+                <button type="submit" class="btn" >S'identifier</button>
+            </div>
+        </form>
+        <form class="form-label" action="{% url 'store:basket' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="basket" value="{{ basket }}" >
+            <div class="form-control {% if CForm.contact.errors %}has-warning has-feedback{% endif %}">
+                <label for="{{ CForm.contact.id_for_label }}">Contact</label>
+                {{ CForm.as_p }}
+                <label for="{{ CForm.contact.id_for_label }}">Cochez la case pour enregistrer votre compte</label>
+                <input type="checkbox" name="save_contact"><br />
+                <button type="submit" class="btn btn-success" onclick="return confirm('Merci de confirmer');">Commander</button>
             </div>
         </form>
     {% endif%}
-    <form class="form-label" action="{% url 'store:basket' %}" method="post">
-        {% csrf_token %}
-        <input type="hidden" name="basket" value="{{ basket }}" >
-        <div class="form-control {% if CForm.contact.errors %}has-warning has-feedback{% endif %}">
-            <label for="{{ CForm.contact.id_for_label }}">Contact</label>
-            {{ CForm.as_p }}
-            <label for="{{ CForm.contact.id_for_label }}">Cochez la case pour enregistrer votre compte</label>
-            <input type="checkbox" name="save_contact"><br />
-            <button type="submit" class="btn btn-success" onclick="return confirm('Merci de confirmer');">Commander</button>
-        </div>
-    </form>
 </div>
 {% endblock %}
