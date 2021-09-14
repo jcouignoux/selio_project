@@ -443,9 +443,9 @@ def connexion(request):
                 password = form.cleaned_data['password']
             elif UForm.is_valid():
                 email = UForm.cleaned_data['email']
-                user = User.objects.get(email=email)
+                username = User.objects.get(email=email).username
                 password = UForm.cleaned_data['password']
-            user = authenticate(request, username=user.username, password=password)
+            user = authenticate(request, username=username, password=password)
             if user:
                 login(request, user)
                 if form.is_valid():
