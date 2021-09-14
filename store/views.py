@@ -173,6 +173,7 @@ def detail(request, ouvrage_id):
 
     return render(request, 'store/detail.html', context)
 
+
 def add_to_basket(request):
         
     if request.method == 'POST':
