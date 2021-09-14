@@ -39,7 +39,7 @@
         <label class="fw-bolder">Publication: {{ ouvrage_publication }}</label>
         <label class="fw-bolder">Stock: {{ ouvrage_stock }}</label><br />
     </div>
-        {% if user.is_authenticated %}
+        {% if user.is_staff %}
         <div class="card">
             <div class="text-center">Magasin</div>
             <form  class="form-label" action="{% url 'store:detail' ouvrage_id=ouvrage_id %}" method="post">
