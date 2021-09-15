@@ -383,10 +383,12 @@ def contact_detail(request, contact_id):
 
     contact = get_object_or_404(Contact, id=contact_id)
     CForm = AddressForm(contact.default_shipping_address.__dict__)
-    CForm.email = contact.user.email
+    user = get_object_or_404(User, id=contact.user.id)
+    UForm = UserForm(user.__dict__)
     context = {
         'contact': contact,
         'CForm': CForm,
+        'UForm': UForm,
     }
 
     return render(request, 'store/contact_detail.html', context)
@@ -465,6 +467,9 @@ def connexion(request):
                     return render(request, 'store/index.html')
                 if UForm.is_valid():
                     contact = Contact.objects.get(user=user)
+                    CForm = AddressForm(contact.default_shipping_address.__dict__)
+                    user = get_object_or_404(User, id=contact.user.id)
+                    UForm = UserForm(user.__dict__)
                     ouvrages = []
                     if 'basket' in request.session: 
                         for ouvrage_id in request.session['basket'].keys():
@@ -475,10 +480,14 @@ def connexion(request):
                             'basket': request.session['basket'],
                             'ouvrages': ouvrages,
                             'contact': contact,
+                            'CForm': CForm,
+                            'UForm': UForm,
                         }
                     else:
                         context = {
                             'contact': contact,
+                            'CForm': CForm,
+                            'UForm': UForm,
                         }
                     return render(request, 'store/basket.html', context)
             else:

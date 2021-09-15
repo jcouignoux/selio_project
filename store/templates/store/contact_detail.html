@@ -23,12 +23,16 @@
 <div class="container card h-50">
     <div class="row">
         <div class="col form-group">
+            {% bootstrap_form UForm %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col form-group">
             <label class="form-control" for="{{ CForm.id_for_label }}">Adresse de facturation</label><br />
             {% bootstrap_form CForm %}
         </div>
         <div class="col form-group">
-            <label class="form-control" for="{{ CForm.id_for_label }}">Adresse de livraison</label>
-            {{ contact.default_invoicing_address }}
+            <label class="form-control" for="{{ CForm.id_for_label }}">Adresse de livraison</label><br />
             {% bootstrap_form CForm %}
         </div>
     </div>

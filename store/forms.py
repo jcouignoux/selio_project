@@ -71,7 +71,7 @@ class UserForm(ModelForm):
 
 
 class AddressForm(ModelForm):
-    email = forms.EmailField(label='Votre adresse e-mail', required=True)
+    # email = forms.EmailField(label='Votre adresse e-mail', required=True)
 
     class Meta:
         model = Address
