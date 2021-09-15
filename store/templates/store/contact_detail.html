@@ -1,0 +1,22 @@
+{% extends 'store/base.html' %} 
+{% load bootstrap4 %}
+
+{% block content %}
+<hr class="detail-separator">
+<h1 class="intro-text text-center">{{ contact.user.username }}</h1>
+<hr class="detail-separator">
+
+<div class="container">
+    <div class="row">
+        <div class="col form-group">
+            <label class="form-control" for="{{ CForm.id_for_label }}">Adresse de facturation</label><br />
+            {% bootstrap_form CForm %}
+        </div>
+        <div class="col form-group">
+            <label class="form-control" for="{{ CForm.id_for_label }}">Adresse de livraison</label>
+            {{ contact.default_invoicing_address }}
+            {% bootstrap_form CForm %}
+        </div>
+    </div>
+</div>
+{% endblock %}

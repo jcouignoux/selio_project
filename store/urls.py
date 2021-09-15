@@ -15,6 +15,7 @@ urlpatterns = [
     path('basket', views.basket, name="basket"),
     path('booking', views.booking, name="booking"),
     # path('contacts', views.ContactListView.as_view(), name="contact"),
+    path('contact/<contact_id>', views.contact_detail, name="contact_detail"),
     path('contacts', views.contact, name="contact"),
     path('<ouvrage_id>', views.detail, name="detail"),
     path('<select_type>/<select_id>', views.store, name="store"),

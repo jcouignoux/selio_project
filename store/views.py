@@ -277,7 +277,6 @@ def basket(request):
     if request.user.is_authenticated:
         contact = Contact.objects.get(user=request.user)
         context['contact'] = contact
-        print(contact.default_shipping_address.__dict__)
         CForm = AddressForm(contact.default_shipping_address.__dict__)
     context['CForm'] = CForm
     context['UForm'] = UForm
@@ -370,14 +369,28 @@ def contact(request):
             contact.delete()
         
     contacts_list = Contact.objects.order_by('user')
-    for contact in contacts_list:
-        for booking in contact.bookings.all():
-            print(booking.bookingdetails.first().ouvrage)
+    # for contact in contacts_list:
+    #     for booking in contact.bookings.all():
+    #         print(booking.bookingdetails.first().ouvrage)
     context = {
         'contacts_list': contacts_list,
     }
 
     return render(request, 'store/contact.html', context)
+
+@login_required
+def contact_detail(request, contact_id):
+
+    contact = get_object_or_404(Contact, id=contact_id)
+    CForm = AddressForm(contact.default_shipping_address.__dict__)
+    CForm.email = contact.user.email
+    context = {
+        'contact': contact,
+        'CForm': CForm,
+    }
+
+    return render(request, 'store/contact_detail.html', context)
+
 
 class ContactListView(ListView):
     model = Contact
