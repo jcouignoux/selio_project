@@ -228,7 +228,7 @@ def basket(request):
         # CForm = ContactForm(request.POST, error_class=ParagraphErrorList)
         CForm = AddressForm(request.POST, error_class=ParagraphErrorList)
         UForm = UserForm(request.POST, error_class=ParagraphErrorList)
-        if CForm.is_valid() and UForm.is_valid():
+        if CForm.is_valid():
             dict = {}
             for type in ('dsa', 'dia'):
                 dict[type] = {}
@@ -241,12 +241,12 @@ def basket(request):
                 dict[type]['city'] = CForm.cleaned_data['city']
                 dict[type]['phone'] = CForm.cleaned_data['phone']
                 dict[type]['mobilephone'] = CForm.cleaned_data['mobilephone']
-                dict[type]['email'] = UForm.cleaned_data['email']
+                dict[type]['email'] = request.POST.get('email')
             # Bug refresh page thanks
             basket = request.session['basket']
             # try:
             with transaction.atomic():
-                contact = Contact.objects.filter(user__email=UForm.cleaned_data['email'])
+                contact = Contact.objects.filter(user__email=request.POST.get('email'))
                 if not contact.exists():
                     contact = create_contact(dict)
                 else:
