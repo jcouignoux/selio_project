@@ -54,25 +54,11 @@
             </div>
         {% endif %}<br /><br />
     {% if user.is_authenticated %}
-            <form class="form-label " action="{% url 'store:basket' %}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="basket" value="{{ basket }}" >
-                <div class="container">
-                <div class="row">
-                    <div class="col">
-                        <label for="{{ CForm.id_for_label }}">Adresse de facturation</label><br />
-                        {{ CForm.as_p }}
-                    </div>
-                    <div class="col">
-                        <label for="{{ CForm.id_for_label }}">Adresse de livraison</label>
-                        {{ contact.default_invoicing_address }}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col"><button type="submit" class="btn btn-success" onclick="return confirm('Merci de confirmer');">Commander</button></div>
-                </div>
-                </div>
-            </form>
+        <form class="form-label" action="{% url 'store:basket' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="basket" value="{{ basket }}" >
+            {% include 'store/contact_detail.html' %}
+            <button type="submit" class="btn btn-success" onclick="return confirm('Merci de confirmer');">Commander</button>
     {% else %}
         <form class="container px-4 px-lg-3" action="{% url 'store:login' %}" method="post">
             {% csrf_token %}
