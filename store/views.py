@@ -278,6 +278,8 @@ def basket(request):
         contact = Contact.objects.get(user=request.user)
         context['contact'] = contact
         CForm = AddressForm(contact.default_shipping_address.__dict__)
+        user = get_object_or_404(User, id=contact.user.id)
+        UForm = UserForm(user.__dict__)
     context['CForm'] = CForm
     context['UForm'] = UForm
     # context['Cerrors'] = CForm.errors.items()
