@@ -69,9 +69,7 @@
             <form class="form-label" action="{% url 'store:add_to_basket' %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="ouvrage_id" value="{{ ouvrage_id }}" >
-                <div class="form-control {% if form.quantity.errors %}has-warning has-feedback{% endif %}">
-                    <label for="{{ form.quantity.id_for_label }}" class="form-label">Quantité</label>
-                </div><br /><br />
+                <input class="" type="number" name="quantity" min="1" step="1" value="1" placeholder="Quantité"><br /><br />
                 <div>
                     <button type="submit" class="btn btn-success" >Ajouter au Panier</button>
                 </div>

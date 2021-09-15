@@ -179,7 +179,7 @@ def add_to_basket(request):
     if request.method == 'POST':
         ouvrage_id = request.POST.get('ouvrage_id')
         if request.POST.get('quantity'):
-            quantity = request.POST.get('quantity')
+            quantity = int(request.POST.get('quantity'))
         else:
             quantity = 1
         request.session.set_expiry(3600)
@@ -228,7 +228,7 @@ def basket(request):
         # CForm = ContactForm(request.POST, error_class=ParagraphErrorList)
         CForm = AddressForm(request.POST, error_class=ParagraphErrorList)
         UForm = UserForm(request.POST, error_class=ParagraphErrorList)
-        if CForm.is_valid():
+        if CForm.is_valid() and UForm.is_valid():
             dict = {}
             for type in ('dsa', 'dia'):
                 dict[type] = {}
@@ -241,12 +241,12 @@ def basket(request):
                 dict[type]['city'] = CForm.cleaned_data['city']
                 dict[type]['phone'] = CForm.cleaned_data['phone']
                 dict[type]['mobilephone'] = CForm.cleaned_data['mobilephone']
-                dict[type]['email'] = CForm.cleaned_data['email']
+                dict[type]['email'] = UForm.cleaned_data['email']
             # Bug refresh page thanks
             basket = request.session['basket']
             # try:
             with transaction.atomic():
-                contact = Contact.objects.filter(user__email=CForm.cleaned_data['email'])
+                contact = Contact.objects.filter(user__email=UForm.cleaned_data['email'])
                 if not contact.exists():
                     contact = create_contact(dict)
                 else:
