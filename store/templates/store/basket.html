@@ -1,8 +1,9 @@
 {% extends 'store/base.html' %}
 {% load static %}
+{% load bootstrap4 %}
 
 {% block content %}
-<div class="card h-100">
+<div class="card">
     <div class="text-center">Panier</div>
         <label for="{{ form.ouvrage.id_for_label }}">Commande</label>
         {% if basket %}
@@ -68,16 +69,12 @@
                 <button type="submit" class="btn" >S'identifier</button>
             </div>
         </form>
-        <form class="form-label" action="{% url 'store:basket' %}" method="post">
+        <label for="{{ CForm.contact.id_for_label }}">Contact</label>
+        <form class="form-group w-25 align-self-center" action="{% url 'store:basket' %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="basket" value="{{ basket }}" >
-            <div class="form-control {% if CForm.contact.errors %}has-warning has-feedback{% endif %}">
-                <label for="{{ CForm.contact.id_for_label }}">Contact</label>
-                {{ CForm.as_p }}
-                <label for="{{ CForm.contact.id_for_label }}">Cochez la case pour enregistrer votre compte</label>
-                <input type="checkbox" name="save_contact"><br />
-                <button type="submit" class="btn btn-success" onclick="return confirm('Merci de confirmer');">Commander</button>
-            </div>
+            {% bootstrap_form CForm %}
+            <button type="submit" class="btn btn-success" onclick="return confirm('Merci de confirmer');">Commander</button>
         </form>
     {% endif%}
 </div>

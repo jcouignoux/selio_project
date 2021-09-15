@@ -23,7 +23,7 @@
         <tr>
             <td>{{ booking.created_at|date:'Y-m-d' }}</td>
             <td>
-                <a href="{% url 'store:contact_detail' contact_id=booking.contact.id %}">{{ booking.contact.id }}</a><br />
+                <a href="{% url 'store:contact_detail' contact_id=booking.contact.id %}">{{ booking.contact }}</a><br />
                 {{ booking.contact.user.email }}<br />
                 {{ booking.contact.default_shipping_address.city }}
             </td>

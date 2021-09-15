@@ -1,5 +1,6 @@
 {% extends 'store/base.html' %}
 {% load static %}
+{% load bootstrap4 %}
 
 {% block content %}
 <hr class="detail-separator">
@@ -42,52 +43,20 @@
         {% if user.is_staff %}
         <div class="card">
             <div class="text-center">Magasin</div>
-            <form  class="form-label" action="{% url 'store:detail' ouvrage_id=ouvrage_id %}" method="post">
+            <form class="form-group" action="{% url 'store:detail' ouvrage_id=ouvrage_id %}" method="post">
                 {% csrf_token %}
-                <div class="form-control {% if Vform.catPrice.errors %}has-warning has-feedback{% endif %}">
-                    <label for="{{ Vform.catPrice.id_for_label }}">Cat. Prix:</label>
-                    {{ Vform.catPrice }}
-                </div>
-                <div class="form-control {% if Vform.payment.errors %}has-warning has-feedback{% endif %}">
-                    <label for="{{ Vform.payment.id_for_label }}" >Paiement:</label>
-                    {{ Vform.payment }}
-                </div>
-                <div class="form-control {% if Vform.quantity.errors %}has-warning has-feedback{% endif %}">
-                    <label for="{{ Vform.quantity.id_for_label }}">Quantité:</label>
-                    {{ Vform.quantity }}
-                </div>
-                <div class="form-control {% if Vform.comment.errors %}has-warning has-feedback{% endif %}">
-                    <label for="{{ Vform.comment.id_for_label }}">Commentaire:</label>
-                    {{ Vform.comment }}
-                </div>
-                    {{ Vform.date }}{{ Vform.media }}<br />
-                <div>
-                    <button type="submit" class="btn btn-success">Vendre</button>
-                </div>
+                {% bootstrap_form Vform %}{{ Vform.media }}
+                <button type="submit" class="btn btn-success">Vendre</button>
             </form>
         </div>
         {% endif %}
         {% if user.is_staff %}
-        <div class="card text-start">
+        <div class="card">
             <div class="text-center">Arrivage</div>
-            <form class="form-label" action="{% url 'store:detail' ouvrage_id=ouvrage_id %}" method="post">
+            <form class="form-group" action="{% url 'store:detail' ouvrage_id=ouvrage_id %}" method="post">
                 {% csrf_token %}
-                <div class="form-control {% if Aform.fournisseur.errors %}has-warning has-feedback{% endif %}">
-                    <label for="{{ Aform.fournisseur.id_for_label }}">Fournisseur</label>
-                    {{ Aform.fournisseur }}
-                </div>
-                <div class="form-control {% if Aform.quantity.errors %}has-warning has-feedback{% endif %}">
-                    <label for="{{ Aform.quantity.id_for_label }}">Quantité</label>
-                    {{ Aform.quantity }}
-                </div>
-                <div class="form-control {% if Aform.comment.errors %}has-warning has-feedback{% endif %}">
-                    <label for="{{ Aform.comment.id_for_label }}">Commentaire:</label>
-                    {{ Aform.comment }}
-                </div>
-                    {{ Aform.date }}{{ Aform.media }}<br />
-                <div>
-                    <button type="submit" class="btn btn-success">Valider</button>
-                </div>
+                {% bootstrap_form Aform %}{{ Aform.media }}
+                <button type="submit" class="btn btn-success">Valider</button>
             </form>
         </div>
         {% else %}

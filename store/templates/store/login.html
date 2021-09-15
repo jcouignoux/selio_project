@@ -1,4 +1,5 @@
 {% extends 'store/base.html' %}
+{% load bootstrap4 %}
 
 {% block content %}
 <div class="col mb-4">
@@ -15,9 +16,9 @@
         {% endfor %}
     </div>
     {% endif %}
-    <form action="{% url 'store:login' %}" method="POST">
+    <form class="form-group w-10 align-self-center" action="{% url 'store:login' %}" method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
+        {% bootstrap_form form %}
         <button type="submit">Log In</button>
     </form>
     </div>
