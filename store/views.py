@@ -337,6 +337,16 @@ def booking(request):
     return render(request, 'store/booking.html', context)
 
 @login_required
+def booking_detail(request, booking_id):
+
+    booking = get_object_or_404(Booking, id=booking_id)
+    context = {
+        'booking': booking,
+    }
+
+    return render(request, 'store/booking_detail.html', context)
+
+@login_required
 def history(request):
     if request.method == "POST":
         form = DateRangeForm(request.POST)

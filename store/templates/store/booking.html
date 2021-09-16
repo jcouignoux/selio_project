@@ -11,16 +11,18 @@
         </form>
     </div>
     <table class="table"><tbody>
-            <th>Date</th>
-            <th>Contact</th>
-            <th>Ouvrage</th>
-            <th>Quantité</th>
-            <th>Prix</th>
-            <th>Nb Ouvrages</th>
-            <th>Total</th>
-            <th>Contacté</th>
+        <th>Numéro</th>
+        <th>Date</th>
+        <th>Contact</th>
+        <th>Ouvrage</th>
+        <th>Quantité</th>
+        <th>Prix</th>
+        <th>Nb Ouvrages</th>
+        <th>Total</th>
+        <th>Contacté</th>
         {% for booking in bookings_list_sel %}
         <tr>
+            <td><a href="{% url 'store:booking_detail' booking_id=booking.id %}">{{ booking.id }}</a></td>
             <td>{{ booking.created_at|date:'Y-m-d' }}</td>
             <td>
                 <a href="{% url 'store:contact_detail' contact_id=booking.contact.id %}">{{ booking.contact }}</a><br />

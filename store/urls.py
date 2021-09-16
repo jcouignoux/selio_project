@@ -14,6 +14,7 @@ urlpatterns = [
     path('add_to_basket', views.add_to_basket, name="add_to_basket"),
     path('basket', views.basket, name="basket"),
     path('booking', views.booking, name="booking"),
+    path('booking/<booking_id>', views.booking_detail, name="booking_detail"),
     # path('contacts', views.ContactListView.as_view(), name="contact"),
     path('contact/<contact_id>', views.contact_detail, name="contact_detail"),
     path('contacts', views.contact, name="contact"),

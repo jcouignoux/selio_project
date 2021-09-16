@@ -172,7 +172,7 @@ class Booking(models.Model):
         return qtys
 
     @property
-    def bookingdetails(self):
+    def booking_details(self):
         return BookingDetail.objects.filter(booking_id=self.id).order_by('-id')
 
 
