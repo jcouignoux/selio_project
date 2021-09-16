@@ -194,15 +194,12 @@ def add_to_basket(request):
         else:
             basket[ouvrage_id] = quantity
         
-        # request.session.flush()
         request.session['basket'] = basket
     
         return redirect(reverse('store:detail', kwargs={'ouvrage_id': ouvrage_id}))
 
 
 def basket(request):
-    # request.session.flush()
-    # basket = {}
     if 'basket' in request.session:
         ouvrage_to_mod = request.GET.get('ouvrage_to_mod')
         if request.GET.get('quantity') == '-':
@@ -225,50 +222,48 @@ def basket(request):
         context = {}
 
     if request.method == 'POST':
-        # CForm = ContactForm(request.POST, error_class=ParagraphErrorList)
         CForm = AddressForm(request.POST, error_class=ParagraphErrorList)
         UForm = UserForm(request.POST, error_class=ParagraphErrorList)
-        if CForm.is_valid():
+        if 'basket' not in request.session:
+            CForm.errors['basket'] = "Votre panier est vide."
+        if  CForm.is_valid() and 'basket' in request.session:
             dict = {}
             for type in ('dsa', 'dia'):
-                dict[type] = {}
-                dict[type]['gender'] = CForm.cleaned_data['gender']
-                dict[type]['first_name'] = CForm.cleaned_data['first_name']
-                dict[type]['last_name'] = CForm.cleaned_data['last_name']
-                dict[type]['address'] = CForm.cleaned_data['address']
-                dict[type]['additional_address'] = CForm.cleaned_data['additional_address']
-                dict[type]['postcode'] = CForm.cleaned_data['postcode']
-                dict[type]['city'] = CForm.cleaned_data['city']
-                dict[type]['phone'] = CForm.cleaned_data['phone']
-                dict[type]['mobilephone'] = CForm.cleaned_data['mobilephone']
+                dict[type] = CForm.cleaned_data
                 dict[type]['email'] = request.POST.get('email')
             # Bug refresh page thanks
             basket = request.session['basket']
-            # try:
-            with transaction.atomic():
-                contact = Contact.objects.filter(user__email=request.POST.get('email'))
-                if not contact.exists():
-                    contact = create_contact(dict)
-                else:
-                    contact = contact.first()
-                booking = Booking()
-                booking.contact=contact
-                booking.status='W'
-                booking.save()
-                for ouvrage in ouvrages:
-                    booking_detail = BookingDetail()
-                    booking_detail.booking = booking
-                    booking_detail.ouvrage = ouvrage
-                    booking_detail.qty = ouvrage.qty
-                    booking_detail.save()
-                request.session.flush()
-                context = {
-                    'booking_details': BookingDetail.objects.filter(booking__id=booking.id).all(),
-                    'booking': booking,
-                }
-            # except IntegrityError:
-            #     CForm.errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."
-        return render(request, 'store/thanks.html', context)
+            contact = Contact.objects.filter(user__email=request.POST.get('email'))
+            if contact.exists():
+                # contact = contact.first()
+                print('test')
+                CForm.errors['email'] = "Cette Adresse Mail existe déjà, merci de vous connecter ou d'en utiliser une autre."
+                context['Cerrors'] = CForm.errors.items()
+            else:
+                try:
+                    with transaction.atomic():
+                        contact = create_contact(dict)
+                    booking = Booking()
+                    booking.contact=contact
+                    booking.status='W'
+                    booking.save()
+                    for ouvrage in ouvrages:
+                        booking_detail = BookingDetail()
+                        booking_detail.booking = booking
+                        booking_detail.ouvrage = ouvrage
+                        booking_detail.qty = ouvrage.qty
+                        booking_detail.save()
+                    del request.session['basket']
+                    context = {
+                        'booking_details': BookingDetail.objects.filter(booking__id=booking.id).all(),
+                        'booking': booking,
+                        'dict': dict['dsa'],
+                    }
+                except IntegrityError:
+                    CForm.errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."
+                except Exception as e:
+                    CForm.errors['error'] = e
+                return render(request, 'store/thanks.html', context)
     else:
         # CForm = ContactForm()
         CForm = AddressForm()
@@ -282,7 +277,7 @@ def basket(request):
         UForm = UserForm(user.__dict__)
     context['CForm'] = CForm
     context['UForm'] = UForm
-    # context['Cerrors'] = CForm.errors.items()
+    context['Cerrors'] = CForm.errors.items()
 
     return render(request, 'store/basket.html', context)
 

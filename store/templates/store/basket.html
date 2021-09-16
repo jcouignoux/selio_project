@@ -5,8 +5,8 @@
 {% block content %}
 <div class="card">
     <div class="text-center">Panier</div>
-        <label for="{{ form.ouvrage.id_for_label }}">Commande</label>
-        {% if basket %}
+    <label for="{{ form.ouvrage.id_for_label }}">Commande</label>
+    {% if basket %}
         <table class="table">
                 <thead>
                     <tr>
@@ -48,18 +48,19 @@
                 {% endfor %}
                 </tbody>
         </table>
-        {% else %}
-            <div class="alert alert-warning" role="alert"><a href="{% url 'store:store' select_type='All' select_id='All' %}" class="btn btn-default btn-lg pull-right">Remplir mon panier !</a>
-                <i class="bi bi-shop-window pull-left"></i> <h4>Votre panier est vide :'(</h4>
-                <p>Commencez dès maintenant à rechercher votre article préféré dans notre vaste catalogue de produits !</p>
-            </div>
-        {% endif %}<br /><br />
+    {% else %}
+        <div class="alert alert-warning" role="alert"><a href="{% url 'store:store' select_type='All' select_id='All' %}" class="btn btn-default btn-lg pull-right">Remplir mon panier !</a>
+            <i class="bi bi-shop-window pull-left"></i> <h4>Votre panier est vide :'(</h4>
+            <p>Commencez dès maintenant à rechercher votre article préféré dans notre vaste catalogue de produits !</p>
+        </div>
+    {% endif %}<br /><br />
     {% if user.is_authenticated %}
         <form class="form-label" action="{% url 'store:basket' %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="basket" value="{{ basket }}" >
             {% include 'store/contact_detail.html' %}
             <button type="submit" class="btn btn-success" onclick="return confirm('Merci de confirmer');">Commander</button>
+        </form>
     {% else %}
         <form class="container px-4 px-lg-3" action="{% url 'store:login' %}" method="post">
             {% csrf_token %}
@@ -70,6 +71,15 @@
             </div>
         </form>
         <label for="{{ CForm.contact.id_for_label }}">Contact</label>
+        {% if Cerrors %}
+            <div>
+                {% for key, error in Cerrors %}
+                    {% autoescape off %}
+                        {{ error }}
+                    {% endautoescape %}
+                {% endfor %}
+            </div>
+        {% endif %}
         <form class="form-group w-25 align-self-center" action="{% url 'store:basket' %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="basket" value="{{ basket }}" >
@@ -77,6 +87,6 @@
             {% bootstrap_form CForm %}
             <button type="submit" class="btn btn-success" onclick="return confirm('Merci de confirmer');">Commander</button>
         </form>
-    {% endif%}
+    {% endif %}
 </div>
 {% endblock %}
