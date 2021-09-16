@@ -224,46 +224,47 @@ def basket(request):
     if request.method == 'POST':
         CForm = AddressForm(request.POST, error_class=ParagraphErrorList)
         UForm = UserForm(request.POST, error_class=ParagraphErrorList)
-        if 'basket' not in request.session:
-            CForm.errors['basket'] = "Votre panier est vide."
-        if  CForm.is_valid() and 'basket' in request.session:
-            dict = {}
-            for type in ('dsa', 'dia'):
-                dict[type] = CForm.cleaned_data
-                dict[type]['email'] = request.POST.get('email')
-            # Bug refresh page thanks
-            basket = request.session['basket']
-            contact = Contact.objects.filter(user__email=request.POST.get('email'))
-            if contact.exists():
-                # contact = contact.first()
-                print('test')
-                CForm.errors['email'] = "Cette Adresse Mail existe déjà, merci de vous connecter ou d'en utiliser une autre."
-                context['Cerrors'] = CForm.errors.items()
-            else:
-                try:
+        if 'basket' in request.session:
+            if  CForm.is_valid():
+                dict = {}
+                for type in ('dsa', 'dia'):
+                    dict[type] = CForm.cleaned_data
+                    dict[type]['email'] = request.POST.get('email')
+                # Bug refresh page thanks
+                basket = request.session['basket']
+                contact = Contact.objects.filter(user__email=request.POST.get('email'))
+                if contact.exists() and not request.user.is_authenticated:
+                    # contact = contact.first()
+                    print('test')
+                    CForm.errors['email'] = "Cette Adresse Mail existe déjà, merci de vous connecter ou d'en utiliser une autre."
+                    context['Cerrors'] = CForm.errors.items()
+                else:
+                    # try:
                     with transaction.atomic():
-                        contact = create_contact(dict)
-                    booking = Booking()
-                    booking.contact=contact
-                    booking.status='W'
-                    booking.save()
-                    for ouvrage in ouvrages:
-                        booking_detail = BookingDetail()
-                        booking_detail.booking = booking
-                        booking_detail.ouvrage = ouvrage
-                        booking_detail.qty = ouvrage.qty
-                        booking_detail.save()
-                    del request.session['basket']
-                    context = {
-                        'booking_details': BookingDetail.objects.filter(booking__id=booking.id).all(),
-                        'booking': booking,
-                        'dict': dict['dsa'],
-                    }
-                except IntegrityError:
-                    CForm.errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."
-                except Exception as e:
-                    CForm.errors['error'] = e
-                return render(request, 'store/thanks.html', context)
+                        if not contact.exists():
+                            contact = create_contact(dict)
+                        booking = Booking()
+                        booking.contact=contact
+                        booking.status='W'
+                        booking.save()
+                        for ouvrage in ouvrages:
+                            booking_detail = BookingDetail()
+                            booking_detail.booking = booking
+                            booking_detail.ouvrage = ouvrage
+                            booking_detail.qty = ouvrage.qty
+                            booking_detail.save()
+                        del request.session['basket']
+                        context = {
+                            'booking_details': BookingDetail.objects.filter(booking__id=booking.id).all(),
+                            'booking': booking,
+                            'dict': dict['dsa'],
+                        }
+                    # except IntegrityError:
+                    #     CForm.errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."
+                    # except Exception as e:
+                    #     CForm.errors['error'] = e
+                    return render(request, 'store/thanks.html', context)
+
     else:
         # CForm = ContactForm()
         CForm = AddressForm()
