@@ -1,80 +1,9 @@
 
 {% load bootstrap4 %}
 {% load static %}
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>SELIO</title>
-    <!-- Favicon-->
-    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'store/assets/favicon-96x96.png' %}" />
-    <!-- Bootstrap icons-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-    <!-- Core theme CSS (includes Bootstrap)-->
-    <link rel="stylesheet" type="text/css" href="{% static 'store/css/styles.css' %}" />
-</head>
-       <!-- Header-->
-       <header class="bg-dark py-5">
-        <div class="container px-4 px-lg-5 my-5">
-            <div class="text-center text-white">
-                <h1 class="display-4 fw-bolder">SELIO</h1>
-                <p class="lead fw-normal text-white-50 mb-0">Société d'Edition et Librairie d'Informations Ouvrières</p>
-            </div>
-        </div>
-    </header>
-    <!-- Navigation-->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container px-4 px-lg-5">
-            <a class="navbar-brand" href="{% url 'store:index' %}">Accueil</a>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'store:store' select_type='All' select_id='All' %}">Magasin</a></li>
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'store:propos' %}">A Propos</a></li>
-                    {% if user.is_staff %}
-                    <li class="nav-item dropdown">
-                        <div class="nav-link dropdown-toggle active" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Admin</div>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{% url 'store:history' %}">Historique</a></li>
-                            <li><hr class="dropdown-divider" /></li>
-                            <li><a class="dropdown-item" href="{% url 'store:dataBase' %}">Base</a></li>
-                            <li><a class="dropdown-item" href="{% url 'store:contact' %}">Contacts</a></li>
-                        </ul>
-                    </li>
-                    {% endif %}
-                </ul>
-                <div class="d-flex">
-                    {% if user.is_staff %}
-                        <a  href="{% url 'store:booking' %}">
-                            <button class="btn btn-outline-dark" type="submit">
-                                <i class="bi-cart-fill me-1"></i>
-                                Commandes
-                                <span class="badge bg-dark text-white ms-1 rounded-pill">{{ bookings_list.all|length }}</span>
-                            </button>
-                        </a>
-                    {% else %}
-                        <a href="{% url 'store:basket' %}">
-                            <button class="btn btn-outline-dark" type="submit">
-                                <i class="bi-cart-fill me-1"></i>
-                                Panier
-                                <span class="badge bg-dark text-white ms-1 rounded-pill">{{ basket|length }}</span>
-                            </button>
-                        </a>
-                    {% endif %}
-                    {% if user.is_authenticated %}
-                    <a  href="{% url 'store:logout' %}">
-                        <button class="btn btn-outline-dark" type="submit">
-                            Hi {{ user.username }}!
-                            <i class="bi bi-box-arrow-right me-1"></i>
-                        </button>
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </nav>
+
 {% block content %}
-{% if user.is_staff or current_user.id == contact.user.id %}
+{% if user.is_staff or user.id == contact.user.id %}
     <hr class="detail-separator">
     <h1 class="intro-text text-center">{{ contact.user.username }}</h1>
     <hr class="detail-separator">

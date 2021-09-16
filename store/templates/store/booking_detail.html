@@ -74,7 +74,7 @@
         </div>
     </nav>
 {% block content %}
-{% if user.is_staff or current_user.id == contact.user.id %}
+{% if user.is_staff or user.id == contact.user.id %}
     <hr class="detail-separator">
     <h2 class="intro-text text-center">Commande N° {{ booking.id }}</h2>
     <hr class="detail-separator">    
