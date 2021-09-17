@@ -24,10 +24,13 @@
         <tr>
             <td><a class="open-booking" href="{% url 'store:booking_detail' booking_id=booking.id %}"
                 data-popup-url="{% url 'store:booking_detail' booking_id=booking.id %}">
-                {{ booking.id }}</a></td>
+                {{ booking.id }}</a>
+            </td>
             <td>{{ booking.created_at|date:'Y-m-d' }}</td>
             <td>
-                <a href="{% url 'store:contact_detail' contact_id=booking.contact.id %}">{{ booking.contact }}</a><br />
+                <a class="open-contact" href="{% url 'store:contact_detail' contact_id=booking.contact.id %}"
+                data-popup-url="{% url 'store:contact_detail' contact_id=booking.contact.id %}">
+                {{ booking.contact }}</a><br />
                 {{ booking.contact.user.email }}<br />
                 {{ booking.contact.default_shipping_address.city }}
             </td>
@@ -37,7 +40,9 @@
                         <form action="{% url 'store:booking' %}" method="post">
                             {% csrf_token %}
                             <input type="hidden" name="booking_detail_id" value="{{ booking_detail.id }}" >
-                            <a href="{% url 'store:detail' ouvrage_id=booking_detail.ouvrage.id %}">{{ booking_detail.ouvrage.title }}</a>
+                            <a class="open-ouvrage" href="{% url 'store:detail' ouvrage_id=booking_detail.ouvrage.id %}"
+                            data-popup-url="{% url 'store:detail' ouvrage_id=booking_detail.ouvrage.id %}">
+                            {{ booking_detail.ouvrage.title }}</a>
                             <button type="submit" name="action" value="X" class="bi bi-x-square btn btn-primary-outline" onclick="return confirm('Etes-vous sûr ?');"></button>
                         </form>
                     {% endif %}
@@ -102,6 +107,8 @@
         </tr>
         {% endfor %}
     </tbody></table>
-    {% include "store/booking_modal.html" %}
+{% include "store/booking_modal.html" %}
+{% include "store/contact_modal.html" %}
+{% include "store/ouvrage_modal.html" %}
 {% endif %}
 {% endblock %}
