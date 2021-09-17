@@ -196,7 +196,8 @@ def add_to_basket(request):
         
         request.session['basket'] = basket
     
-        return redirect(reverse('store:detail', kwargs={'ouvrage_id': ouvrage_id}))
+        # return redirect(reverse('store:detail', kwargs={'ouvrage_id': ouvrage_id}))
+        return redirect(reverse('store:store', kwargs={'select_type':'All', 'select_id':'All'}))
 
 
 def basket(request):
@@ -244,7 +245,7 @@ def basket(request):
                         if not contact.exists():
                             contact = create_contact(dict)
                         booking = Booking()
-                        booking.contact=contact
+                        booking.contact=contact.first()
                         booking.status='W'
                         booking.save()
                         for ouvrage in ouvrages:

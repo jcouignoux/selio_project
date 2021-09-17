@@ -17,11 +17,11 @@
             <div class="col">
                 <div class="row">
                     <div class="col form-group">
-                        <label class="form-control" for="{{ CForm.id_for_label }}">Adresse de facturation</label><br />
+                        <label class="form-control" for="{{ CForm.id_for_label }}">Ad. de facturation</label><br />
                         {% bootstrap_form CForm %}
                     </div>
                     <div class="col form-group">
-                        <label class="form-control" for="{{ CForm.id_for_label }}">Adresse de livraison</label><br />
+                        <label class="form-control" for="{{ CForm.id_for_label }}">Ad. de livraison</label><br />
                         {% bootstrap_form CForm %}
                     </div>
                 </div>
@@ -30,11 +30,15 @@
                 <div class="row form-group">
                     <label class="form-control" for="{{ CForm.id_for_label }}">Historique de Commandes</label><br />
                     {% for booking in contact.bookings.all %}
-                        <p><a href="{% url 'store:booking_detail' booking_id=booking.id %}">{{ booking.created_at }}</a></p>
+                        <p><a class="open-booking" href="{% url 'store:booking_detail' booking_id=booking.id %}"
+                            data-popup-url="{% url 'store:booking_detail' booking_id=booking.id %}">
+                            {{ booking.created_at }}
+                        </a></p>
                     {% endfor %}
                 </div>
             </div>
         </div>
     </div>
 {% endif %}
+{% include "store/booking_modal.html" %}
 {% endblock %}
