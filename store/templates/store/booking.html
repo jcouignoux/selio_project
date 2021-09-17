@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-    {% if user.is_staff %}
+{% if user.is_staff %}
     <div class="container px-4 px-lg-4">
         <form class="d-flex" action="{% url 'store:booking' %}" method="POST">
             {% csrf_token %}
@@ -22,7 +22,9 @@
         <th>Contacté</th>
         {% for booking in bookings_list_sel %}
         <tr>
-            <td><a href="{% url 'store:booking_detail' booking_id=booking.id %}">{{ booking.id }}</a></td>
+            <td><a class="open-booking" href="{% url 'store:booking_detail' booking_id=booking.id %}"
+                data-popup-url="{% url 'store:booking_detail' booking_id=booking.id %}">
+                {{ booking.id }}</a></td>
             <td>{{ booking.created_at|date:'Y-m-d' }}</td>
             <td>
                 <a href="{% url 'store:contact_detail' contact_id=booking.contact.id %}">{{ booking.contact }}</a><br />
@@ -64,7 +66,7 @@
             <td>
                 <form class="navbar navbar-expand-lg" action="{% url 'store:booking' %}" method="post">
                     {% csrf_token %}
-                    <input type="hidden" name="booking_id" value="{{ booking.id }}" >
+                        <input type="hidden" name="booking_id" value="{{ booking.id }}" >
                     {% if 'W' in booking.status or 'K' in booking.status or 'P' in booking.status or 'S' in booking.status %}
                         <button type="submit" name="action" value="W" class="btn btn-success">En Attente</button>
                     {% else %}
@@ -100,5 +102,6 @@
         </tr>
         {% endfor %}
     </tbody></table>
-    {% endif %}
+    {% include "store/booking_modal.html" %}
+{% endif %}
 {% endblock %}

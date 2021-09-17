@@ -324,7 +324,7 @@ def booking(request):
                 # booking_list = Booking.objects.filter(status=status)
                 booking_list = Booking.objects.filter(my_filter_qs).order_by('created_at')
                 # booking_list = Booking.objects.filter(status__0=status).order_by('created_at')
-                context['bookings_list_sel']=booking_list
+                ## context['bookings_list_sel']=booking_list
 
     else:
         BForm = BookingForm()
