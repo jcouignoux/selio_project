@@ -1,7 +1,7 @@
 from datetime import datetime
 import operator
 from django.conf import settings
-from django.http.response import FileResponse, HttpResponse
+from django.http.response import FileResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -33,8 +33,6 @@ def index(request):
         context = {
             'basket': ''
         }
-    test = BookingDetail.objects.all()
-    print(len(test))
     
     return render(request, 'store/index.html', context)
 
@@ -154,7 +152,8 @@ def detail(request, ouvrage_id):
                     context = {
                         'ouvrage_title': ouvrage.title
                     }
-                    return render(request, 'store/store.html', context)
+                    # return render(request, 'store/store.html', context)
+                    return HttpResponseRedirect(request.META.get('HTTP_REFERER','/'))
             except IntegrityError:
                 VForm.errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."
 
@@ -168,8 +167,6 @@ def detail(request, ouvrage_id):
     context['Aerrors'] = AForm.errors.items()
     if 'basket' in request.session:
         context['basket'] = request.session['basket']
-    
-    # print(request.session['basket'])
 
     return render(request, 'store/detail.html', context)
 
@@ -256,7 +253,7 @@ def basket(request):
                             booking_detail.save()
                         del request.session['basket']
                         context = {
-                            'booking_details': BookingDetail.objects.filter(booking__id=booking.id).all(),
+                            # 'booking_details': BookingDetail.objects.filter(booking__id=booking.id).all(),
                             'booking': booking,
                             'dict': dict['dsa'],
                         }
@@ -322,15 +319,13 @@ def booking(request):
                     # my_filter_qs = my_filter_qs | Q(status__contains=[stat])
                     my_filter_qs = my_filter_qs | Q(status=stat)
                 # booking_list = Booking.objects.in_bulk(status)
-                # booking_list = Booking.objects.filter(status=status)
                 booking_list = Booking.objects.filter(my_filter_qs).order_by('created_at')
                 # booking_list = Booking.objects.filter(status__0=status).order_by('created_at')
-                ## context['bookings_list_sel']=booking_list
 
     else:
         BForm = BookingForm()
         # booking_list = Booking.objects.filter(contacted=False).order_by('created_at')
-        booking_list = Booking.objects.exclude(status='S')
+        booking_list = Booking.objects.exclude(status='S').order_by('created_at')
         
     context['bookings_list_sel']=booking_list
     context['BForm']=BForm
@@ -378,9 +373,6 @@ def contact(request):
             contact.delete()
         
     contacts_list = Contact.objects.order_by('user')
-    # for contact in contacts_list:
-    #     for booking in contact.bookings.all():
-    #         print(booking.bookingdetails.first().ouvrage)
     context = {
         'contacts_list': contacts_list,
     }
@@ -403,29 +395,6 @@ def contact_detail(request, contact_id):
     return render(request, 'store/contact_detail.html', context)
 
 
-class ContactListView(ListView):
-    model = Contact
-    template_name = 'store/contact.html'
-
-    def get_queryset(self):
-        return Contact.objects.all()
-
-class ContactUpdateView(UpdateView):
-    model = Contact
-    #CForm = ContactForm
-    CForm = AddressForm
-    template_name = 'store/contact_edit_form.html'
-
-    def dispatch(self,  *args, **kwargs):
-        self.contact_id = kwargs['pk']
-        return super(ContactUpdateView, self).dispatch(*args, **kwargs)
-    
-    def CForm_valid(self, Cform):
-        Cform.save()
-        contact = Contact.objects.get(id=self.contact.id)
-        return HttpResponse(render_to_string('store/contact_edit_form_success.html', {'contact': contact}))
-
-
 @login_required
 def dataBase(request):
     if request.method == "POST":
@@ -444,9 +413,7 @@ def histBase(request):
         if 'old' not in histSelect:
             start_date = histSelect.split(',')[0]
             end_date = histSelect.split(',')[0]
-            # histDict = dict(History.objects.filter(date__range=(start_date, end_date)))
         else:
-            # histDict = dict(History.objects.all().__dict__)
             histDict = History.objects.all()
         name = 'Comptes.xlsx'
         title = ('Date', 'Ref', 'Titre', 'Auteurs', 'Editeur', 'Prix', 'Cat. Prix', 'Paiement', 'Fournisseur', "Quantité", 'Commentaire')
