@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-    {% if booking_details %}
+    {% if booking %}
     <div class="container px-4 px-lg-5">
         <div class="card">
             <img  class="align-self-center" width="30%" height="auto" src="{% static 'store/img/selio.png' %}" alt="..." />
@@ -14,7 +14,7 @@
                 <th>Prix</th>
                 <th>Quantité</th>
                 <th>Total</th>
-                {% for booking_detail in booking_details.all %}
+                {% for booking_detail in booking.booking_details %}
                     <tr>
                         <td>{{ booking_detail.ouvrage.title }}</td>
                         <td>{{ booking_detail.ouvrage.price }}</td>
