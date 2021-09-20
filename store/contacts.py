@@ -10,16 +10,14 @@ from .models import Contact, Address
 def create_contact(dict):
     username = dict['dsa']['first_name'] + '_' + dict['dsa']['last_name'] + '_'
     test_user = User.objects.filter(username__startswith=username).order_by('-username').first()
-    print(test_user)
-    if test_user:
-        print(test_user.username.split("_")[2])
+    if test_user == None:
+        username = dict['dsa']['first_name'] + '_' + dict['dsa']['last_name'] + '_1'
+    else:
         username_temp = test_user.username.split("_")
         username = "_".join((username_temp[0], username_temp[1], str(int(username_temp[2]) + 1)))
-    else:
-        username = dict['dsa']['first_name'] + '_' + dict['dsa']['last_name'] + '_1'
     user = User.objects.create(
                 username=username,
-                email=dict['dsa']['email'],
+                email=dict['email'],
                 # password=dict['password'],
                 password = "default2021"
     )
