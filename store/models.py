@@ -134,12 +134,6 @@ class Ouvrage(models.Model):
 class Booking(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
-    ## WAITING = 'W'
-    ## KONTACTED = 'K'
-    ## PAID = 'P'
-    ## SHIPPED = 'S'
-    ## CANCELED = 'C'
-    ## DELETED = 'D'
     STATUS = [
         ('W', 'En attente de validation'),
         ('K', 'Contacté'),
@@ -193,13 +187,6 @@ class BookingDetail(models.Model):
 
     def total(self):
         return round(self.ouvrage.price * self.qty, 2)
-
-
-#  class Profil(models.Model):
-#      user = models.OneToOneField(User, on_delete=models.CASCADE)  # La liaison OneToOne vers le modèle User
-#  
-#      def __str__(self):
-#          return "Profil de {0}".format(self.user.username)
 
 
 class History(models.Model):
