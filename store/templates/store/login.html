@@ -4,23 +4,23 @@
 {% block content %}
 <div class="col mb-4">
     <div class="card text-center">
-    {% if message %}
-        {{ message }}
-    {% endif %}
-    {% if errors %}
-    <div>
-        {% for key, error in errors %}
-        {% autoescape off %}
-            {{ error }}
-        {% endautoescape %}
-        {% endfor %}
-    </div>
-    {% endif %}
-    <form class="form-group w-10 align-self-center" action="{% url 'store:login' %}" method="POST">
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        <button type="submit">Log In</button>
-    </form>
+        {% if message %}
+            {{ message }}
+        {% endif %}
+        {% if errors %}
+            <div>
+                {% for key, error in errors %}
+                    {% autoescape off %}
+                        {{ error }}
+                    {% endautoescape %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <form class="form-group w-10 align-self-center" action="{% url 'store:login' %}" method="POST">
+            {% csrf_token %}
+            {% bootstrap_form UForm %}
+            <button type="submit">Log In</button>
+        </form>
     </div>
 </div>
 {% endblock %}
