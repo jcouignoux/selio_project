@@ -35,31 +35,20 @@
                 {{ booking.contact.default_shipping_address.city }}
             </td>
             <td>
-                {% for booking_detail in booking_detail_list %}
-                    {% if booking_detail.booking.id == booking.id %}
-                        <form action="{% url 'store:booking' %}" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="booking_detail_id" value="{{ booking_detail.id }}" >
-                            <a class="open-ouvrage" href="{% url 'store:detail' ouvrage_id=booking_detail.ouvrage.id %}"
-                            data-popup-url="{% url 'store:detail' ouvrage_id=booking_detail.ouvrage.id %}">
-                            {{ booking_detail.ouvrage.title }}</a>
-                            <button type="submit" name="action" value="X" class="bi bi-x-square btn btn-primary-outline" onclick="return confirm('Etes-vous sûr ?');"></button>
-                        </form>
-                    {% endif %}
+                {% for booking_detail in booking.booking_details %}
+                    <a class="open-ouvrage" href="{% url 'store:detail' ouvrage_id=booking_detail.ouvrage.id %}"
+                    data-popup-url="{% url 'store:detail' ouvrage_id=booking_detail.ouvrage.id %}">
+                    {{ booking_detail.ouvrage.title }}<br /></a>
                 {% endfor %}
             </td>
             <td>
-                {% for booking_detail in booking_detail_list %}
-                    {% if booking_detail.booking.id == booking.id %}
-                        {{ booking_detail.qty }}<br /><br />
-                    {% endif %}
+                {% for booking_detail in booking.booking_details %}
+                {{ booking_detail.qty }}<br />
                 {% endfor %}
             </td>
             <td>
-                {% for booking_detail in booking_detail_list %}
-                    {% if booking_detail.booking.id == booking.id %}
-                        {{ booking_detail.ouvrage.price }} €<br /><br />
-                    {% endif %}
+                {% for booking_detail in booking.booking_details %}
+                {{ booking_detail.ouvrage.price }} €<br />
                 {% endfor %}
             </td>
             <td>
