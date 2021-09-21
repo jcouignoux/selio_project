@@ -1,5 +1,14 @@
 
-from .models import Booking, BookingDetail, Categorie, Author, Publisher
+from .models import Booking, BookingDetail, Categorie, Author, Publisher, User, Contact
+from django.contrib.auth.decorators import login_required
+
+
+def get_contact(request):
+    if request.user.is_authenticated and not request.user.is_staff:
+        contact = Contact.objects.filter(user=request.user).first()
+    else:
+        contact = 0
+    return {'contact': contact}
 
 def get_booking(request):
     # bookings_list = Booking.objects.filter(contacted=False).order_by('created_at')

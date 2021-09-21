@@ -86,6 +86,7 @@ TEMPLATES = [
                 'store.context_processors.get_authors',
                 'store.context_processors.get_publishers',
                 'store.context_processors.get_categories',
+                'store.context_processors.get_contact',
             ],
         },
     },
