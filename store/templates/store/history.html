@@ -3,6 +3,9 @@
 
 {% block content %}
     {% if user.is_staff %}
+    <hr class="detail-separator">
+    <h1 class="intro-text text-center">Historique</h1>
+    <hr class="detail-separator">
     <div class="container px-4 px-lg-5">
         <form class="d-flex" action="{% url 'store:history' %}" method="POST">
         {% csrf_token %}
