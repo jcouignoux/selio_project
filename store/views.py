@@ -417,6 +417,21 @@ def contact_detail(request, contact_id):
 
     return render(request, 'store/contact_detail.html', context)
 
+@login_required
+def profil(request, contact_id):
+    contact = get_object_or_404(Contact, id=contact_id)
+    CForm_dsa = AddressForm(contact.default_shipping_address.__dict__)
+    CForm_dia = AddressForm(contact.default_invoicing_address.__dict__)
+    user = get_object_or_404(User, id=contact.user.id)
+    UForm = UserForm(user.__dict__)
+    context = {
+        'contact': contact,
+        'CForm_dsa': CForm_dsa,
+        'CForm_dia': CForm_dia,
+        'UForm': UForm,
+    }
+
+    return render(request, 'store/profil.html', context)
 
 @login_required
 def dataBase(request):
@@ -467,6 +482,9 @@ def connexion(request):
                 contact = Contact.objects.get(user=user)
                 CForm_dsa = AddressForm(contact.default_shipping_address.__dict__)
                 CForm_dia = AddressForm(contact.default_invoicing_address.__dict__)
+                context = {
+                    'contact': contact,
+                }
             login(request, user)
 
             return render(request, 'store/index.html', context)
