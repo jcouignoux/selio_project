@@ -2,6 +2,9 @@
 {% load static %}
 
 {% block content %}
+<hr class="detail-separator">
+<h1 class="intro-text text-center">Commandes en Cours</h1>
+<hr class="detail-separator">
 {% if user.is_staff %}
     <div class="container px-4 px-lg-4">
         <form class="d-flex" action="{% url 'store:booking' %}" method="POST">
@@ -22,13 +25,13 @@
         <th>Contacté</th>
         {% for booking in bookings_list_sel %}
         <tr>
-            <td><a class="open-booking" href="{% url 'store:booking_detail' booking_id=booking.id %}"
+            <td><a class="open-item" href="{% url 'store:booking_detail' booking_id=booking.id %}"
                 data-popup-url="{% url 'store:booking_detail' booking_id=booking.id %}">
                 {{ booking.id }}</a>
             </td>
             <td>{{ booking.created_at|date:'Y-m-d' }}</td>
             <td>
-                <a class="open-contact" href="{% url 'store:contact_detail' contact_id=booking.contact.id %}"
+                <a class="open-item" href="{% url 'store:contact_detail' contact_id=booking.contact.id %}"
                 data-popup-url="{% url 'store:contact_detail' contact_id=booking.contact.id %}">
                 {{ booking.contact }}</a><br />
                 {{ booking.contact.user.email }}<br />
@@ -36,7 +39,7 @@
             </td>
             <td>
                 {% for booking_detail in booking.booking_details %}
-                    <a class="open-ouvrage" href="{% url 'store:detail' ouvrage_id=booking_detail.ouvrage.id %}"
+                    <a class="open-item" href="{% url 'store:detail' ouvrage_id=booking_detail.ouvrage.id %}"
                     data-popup-url="{% url 'store:detail' ouvrage_id=booking_detail.ouvrage.id %}">
                     {{ booking_detail.ouvrage.title }}<br /></a>
                 {% endfor %}
@@ -96,8 +99,6 @@
         </tr>
         {% endfor %}
     </tbody></table>
-{% include "store/booking_modal.html" %}
-{% include "store/contact_modal.html" %}
-{% include "store/ouvrage_modal.html" %}
+{% include "store/item_modal.html" %}
 {% endif %}
 {% endblock %}

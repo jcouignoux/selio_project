@@ -17,28 +17,17 @@
             <div class="col">
                 <div class="row">
                     <div class="col form-group">
-                        <label class="form-control" for="{{ CForm_dsa.id_for_label }}">Ad. de facturation</label><br />
+                        <label class="form-control" for="{{ CForm_dsa.id_for_label }}">Adresse de facturation</label><br />
                         {% bootstrap_form CForm_dsa %}
                     </div>
                     <div class="col form-group">
-                        <label class="form-control" for="{{ CForm_dsa.id_for_label }}">Ad. de livraison</label><br />
+                        <label class="form-control" for="{{ CForm_dsa.id_for_label }}">Adresse de livraison</label><br />
                         {% bootstrap_form CForm_dia %}
                     </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="row form-group">
-                    <label class="form-control" for="{{ CForm_dsa.id_for_label }}">Historique de Commandes</label><br />
-                    {% for booking in contact.bookings.all %}
-                        <p><a class="open-booking" href="{% url 'store:booking_detail' booking_id=booking.id %}"
-                            data-popup-url="{% url 'store:booking_detail' booking_id=booking.id %}">
-                            {{ booking.created_at }}
-                        </a></p>
-                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
 {% endif %}
-{% include "store/booking_modal.html" %}
+{% include "store/item_modal.html" %}
 {% endblock %}

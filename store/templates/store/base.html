@@ -67,12 +67,16 @@
                             </a>
                         {% endif %}
                         {% if user.is_authenticated %}
-                        <a  href="{% url 'store:logout' %}">
-                            <button class="btn btn-outline-dark" type="submit">
-                                Hi {{ user.username }}!
-                                <i class="bi bi-box-arrow-right me-1"></i>
-                            </button>
-                        </a>
+                        <div class="dropdown">
+                            <div class="dropdown-toggle btn btn-outline-dark" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">{{ user.username }}</div>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                {% if contact != 0 %}
+                                    <li><a class="dropdown-item" 
+                                        href="{% if contact != 0 %}{% url 'store:profil' contact_id=contact.id %}{% else %}{% url 'store:index' %}{% endif %}">Profil</a></li>
+                                {% endif %}
+                                <li><a class="dropdown-item" href="{% url 'store:logout' %}">Déconnexion</a></li>
+                            </ul>
+                        </div>
                         {% else %}
                             <a href="{% url 'store:login' %}">
                                 <button class="btn btn-outline-dark" type="submit">

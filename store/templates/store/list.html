@@ -1,5 +1,8 @@
 {% load static %}
 
+<hr class="detail-separator">
+<h1 class="intro-text text-center">Nos Ouvrages</h1>
+<hr class="detail-separator">
 {% if ouvrages|length_is:"0" %}
     <div class="text-center">
         Palsambleu ! Nous n'avons trouvé aucun résultat à cette requête. Même pas de quoi se ronger la chique !
@@ -50,4 +53,4 @@
     {% endif %}
     </section>
 {% endif %}
-{% include "store/ouvrage_modal.html" %}
+{% include "store/item_modal.html" %}

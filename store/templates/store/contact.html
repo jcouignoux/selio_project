@@ -1,13 +1,10 @@
 {% extends 'store/base.html' %}
 
-{% block extra_js%}
-    <script src="http://malsup.github.com/jquery.form.js"></script>
-{% endblock %}
-
 {% block content %}
 <section class="card h-100">
-    <div class="text-center">Panier</div>
-        <label>Contacts</label>
+    <hr class="detail-separator">
+    <h1 class="intro-text text-center">Contacts</h1>
+    <hr class="detail-separator">
         {% if contacts_list %}
         <table class="table">
                 <thead>
@@ -24,21 +21,28 @@
                 <tbody>
                 {% for contact in contacts_list.all %}
                 <tr>
-                    <td><a class="open-contact" href="{% url 'store:contact_detail' contact_id=contact.id %}"
+                    <td>
+                        <a class="open-item" href="{% url 'store:contact_detail' contact_id=contact.id %}"
                         data-popup-url="{% url 'store:contact_detail' contact_id=contact.id %}">
                         {{ contact.default_shipping_address.last_name }}</a>
                     </td>
                     <td>{{ contact.default_shipping_address.first_name }}</td>
                     <td>{{ contact.user.email }}</td>
-                    <td>{{ contact.default_shipping_address }}</td>
+                    <td>
+                        <a class="open-item" href="{% url 'store:contact_detail' contact_id=contact.id %}"
+                        data-popup-url="{% url 'store:contact_detail' contact_id=contact.id %}">
+                        {{ contact.default_shipping_address }}</a>
+                    </td>
                     <td>
                         {% for booking in contact.bookings %}
                             Commande<br />
                         {% endfor %}
                     </td>
-                    <td>{% for booking in contact.bookings %}
-                                {{ booking.id }}<br />
-                                ----------------<br />
+                    <td>
+                        {% for booking in contact.bookings %}
+                            <a class="open-item" href="{% url 'store:booking_detail' booking_id=booking.id %}"
+                            data-popup-url="{% url 'store:booking_detail' booking_id=booking.id %}">
+                            {{ booking.id }}</a><br />
                         {% endfor %}
                     </td>
                     <td>
@@ -56,5 +60,5 @@
             <p>Aucun contact enregistré</p>
         {% endif %}
 </section>
-{% include "store/contact_modal.html" %}
+{% include "store/item_modal.html" %}
 {% endblock %}
