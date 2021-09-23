@@ -2,16 +2,22 @@
 
 {% block content %}
 {% if user.is_staff or user.id == contact.user.id %}
+<hr class="detail-separator">
+<h1 class="intro-text text-center">{{ contact.user.username }}</h1>
+<hr class="detail-separator">
 <div class="row">
-    <div class="col">
+    <div class="col-3">
+        {% include 'store/user_detail.html' %}
+    </div>
+    <div class="col-6">
         {% include 'store/contact_detail.html' %}
     </div>
 
-    <div class="col">
+    <div class="col-3">
         <div class="row form-group">
             <label class="form-control" for="{{ CForm_dsa.id_for_label }}">Historique de Commandes</label><br />
             {% for booking in contact.bookings.all %}
-                <p><a class="open-booking" href="{% url 'store:booking_detail' booking_id=booking.id %}"
+                <p><a class="open-item" href="{% url 'store:booking_detail' booking_id=booking.id %}"
                     data-popup-url="{% url 'store:booking_detail' booking_id=booking.id %}">
                     {{ booking.created_at }}
                 </a></p>

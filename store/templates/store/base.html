@@ -44,6 +44,7 @@
                                 <li><hr class="dropdown-divider" /></li>
                                 <li><a class="dropdown-item" href="{% url 'store:dataBase' %}">Base</a></li>
                                 <li><a class="dropdown-item" href="{% url 'store:contact' %}">Contacts</a></li>
+                                <li><a class="dropdown-item" href="{% url 'store:test' %}">Test</a></li>
                             </ul>
                         </li>
                         {% endif %}
@@ -71,8 +72,9 @@
                             <div class="dropdown-toggle btn btn-outline-dark" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">{{ user.username }}</div>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 {% if contact != 0 %}
-                                    <li><a class="dropdown-item" 
-                                        href="{% if contact != 0 %}{% url 'store:profil' contact_id=contact.id %}{% else %}{% url 'store:index' %}{% endif %}">Profil</a></li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% if contact != 0 %}{% url 'store:profil' contact_id=contact.id %}{% else %}{% url 'store:index' %}{% endif %}">Profil</a>
+                                    </li>
                                 {% endif %}
                                 <li><a class="dropdown-item" href="{% url 'store:logout' %}">Déconnexion</a></li>
                             </ul>

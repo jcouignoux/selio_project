@@ -47,13 +47,13 @@ class Contact(models.Model):
     default_shipping_address = models.ForeignKey("Address",
                                                  related_name="default_shipping_address",
                                                  null=True,
-                                                 verbose_name="Adresse de livraison par défaut",
+                                                 verbose_name="Adresse de livraison",
                                                  on_delete=models.CASCADE
                                                  )
     default_invoicing_address = models.ForeignKey("Address",
                                                   related_name="default_invoicing_address",
                                                   null=True,
-                                                  verbose_name="Adresse de facturation par défaut",
+                                                  verbose_name="Adresse de facturation",
                                                   on_delete=models.CASCADE
                                                   )
 
@@ -145,7 +145,7 @@ class Booking(models.Model):
     status = models.CharField(max_length=1, choices=STATUS, default='W', verbose_name="Statut de la commande", null=True, blank=True)
 
     def __str__(self):
-        return self
+        return str(self.id)
 
     class Meta:
         verbose_name = "réservation"
@@ -158,6 +158,7 @@ class Booking(models.Model):
             total += booking_detail.total()
         return round(total,2)
 
+    @property
     def ouvrages_qty(self):
         qtys = 0
         booking_details = BookingDetail.objects.filter(booking_id=self.id)
