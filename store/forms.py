@@ -1,12 +1,13 @@
 from django import forms
-from django.forms import ModelForm
+from django.db.models.fields import CharField
+from django.forms import ModelForm, BaseFormSet
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms.forms import Form
 from django.forms.utils import ErrorList
 from django.forms.widgets import CheckboxInput, EmailInput, PasswordInput, SelectMultiple, TextInput, NumberInput, Textarea, CheckboxSelectMultiple
 from django.contrib.auth.models import User
 from bootstrap_datepicker_plus import DatePickerInput
-from django.forms import formset_factory
+from django.forms import formset_factory, modelformset_factory
 
 from .models import History, Booking, Contact, Address
 
@@ -65,6 +66,21 @@ class AddressForm(ModelForm):
         fields = ['gender', 'first_name', 'last_name', 'address', 'additional_address',
                   'postcode', 'city', 'phone', 'mobilephone']
 
+
+
+AddressFormSet = modelformset_factory(Address, form=AddressForm, extra=0, max_num=2)
+#class AddressFormSet(BaseFormSet):
+#    class Meta:
+#        model = Address
+#        extra = 0
+#        max_num = 2
+#        fields = ['gender', 'first_name', 'last_name', 'address', 'additional_address',
+#                  'postcode', 'city', 'phone', 'mobilephone']
+#
+#    def __init__(self, *args, **kwargs):
+#        super().__init__(*args, **kwargs)
+#        self.queryset = Address.objects.filter(contact=Contact)
+#
 
 class BookingForm(forms.Form):
     WAITING = 'W'

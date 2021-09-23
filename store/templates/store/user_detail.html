@@ -1,0 +1,14 @@
+{% load bootstrap4 %}
+
+{% block content %}
+{% if user.is_staff or user.id == contact.user.id %}
+    <div class="container card">
+        <div class="row">
+            <div class="col form-group">
+                {% bootstrap_form UForm %}
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% include "store/item_modal.html" %}
+{% endblock %}

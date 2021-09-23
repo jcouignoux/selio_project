@@ -1,33 +1,18 @@
-
 {% load bootstrap4 %}
-{% load static %}
 
 {% block content %}
 {% if user.is_staff or user.id == contact.user.id %}
-    <hr class="detail-separator">
-    <h1 class="intro-text text-center">{{ contact.user.username }}</h1>
-    <hr class="detail-separator">
-    <div class="container card h-50">
-        <div class="row">
-            <div class="col form-group">
-                {% bootstrap_form UForm %}
-            </div>
+    <form class="form-group row" action="{% url 'store:contact_detail' contact_id=contact.id %}" method="post">
+        {% csrf_token %}
+        <div class="col-6">
+            <p class="form-title" for="{{ CForm_dsa.id_for_label }}">Adresse de facturation</p><br />
+            {% bootstrap_form CForm_dsa %}
         </div>
-        <div class="row">
-            <div class="col">
-                <div class="row">
-                    <div class="col form-group">
-                        <label class="form-control" for="{{ CForm_dsa.id_for_label }}">Adresse de facturation</label><br />
-                        {% bootstrap_form CForm_dsa %}
-                    </div>
-                    <div class="col form-group">
-                        <label class="form-control" for="{{ CForm_dsa.id_for_label }}">Adresse de livraison</label><br />
-                        {% bootstrap_form CForm_dia %}
-                    </div>
-                </div>
-            </div>
+        <div class="col-6">
+            <p class="form-title" for="{{ CForm_dia.id_for_label }}">Adresse de livraison</p><br />
+            {% bootstrap_form CForm_dia %}
         </div>
-    </div>
+        <button type="submit" class="btn btn-success">Modifier</button>
+    </form>
 {% endif %}
-{% include "store/item_modal.html" %}
 {% endblock %}

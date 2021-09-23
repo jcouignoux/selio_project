@@ -1,5 +1,6 @@
 from datetime import datetime
 import operator
+from django import forms
 from django.conf import settings
 from django.http.response import FileResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
@@ -10,16 +11,13 @@ from django.urls import reverse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction, IntegrityError
 from django.db.models import Q
-# from functools import reduce
-from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.forms import formset_factory
 
-# from django.views.decorators.csrf import csrf_protect
 
 from .models import Address, Ouvrage, Author, Publisher, Categorie, Contact, Booking, BookingDetail, History
 from .forms import BookingForm, ConnexionForm, UserForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, AddressForm
-from .store import add_to_history
+from .store import add_to_history, send_email
 from .contacts import create_contact
 from .xlsx import xlsx, exportXLSX
 from .basket import update_basket
@@ -200,7 +198,10 @@ def add_to_basket(request):
 
 def basket(request):
     if 'basket' in request.session:
+        # basket = request.session['basket']
         ouvrage_to_mod = request.GET.get('ouvrage_to_mod')
+        # quantity = request.GET.get('quantity')
+        # basket, ouvrages = update_basket(basket, ouvrage_to_mod, quantity)
         if request.GET.get('quantity') == '-':
             request.session['basket'][ouvrage_to_mod] -= 1
         elif request.GET.get('quantity') == '+':
@@ -221,83 +222,114 @@ def basket(request):
     else:
         context = {}
 
+
     if request.user.is_authenticated:
         contact = Contact.objects.get(user=request.user)
         context['contact'] = contact
         CForm_dsa = AddressForm(contact.default_shipping_address.__dict__)
         CForm_dia = AddressForm(contact.default_invoicing_address.__dict__)
         user = get_object_or_404(User, id=contact.user.id)
-    
-    errors= {}
+        context['CForm_dsa'] = CForm_dsa
+        context['CForm_dia'] = CForm_dia
+
+    context['errors'] = []
 
     if request.method == 'POST':
-        AddressFormSet = formset_factory(AddressForm)
-        CFormSet = AddressFormSet(request.POST, error_class=ParagraphErrorList)
         if request.user.is_authenticated:
             test_user = True
+            dict = {}
         else:
+            CForm_dsa = AddressForm(request.POST, error_class=ParagraphErrorList, prefix="CForm_dsa")
+            CForm_dia = AddressForm(request.POST, error_class=ParagraphErrorList, prefix="CForm_dia")
             user = User.objects.filter(email=request.POST.get('email')).all()
             if len(user) >= 1 and not request.user.is_authenticated:
                 test_user = False
-                errors['email'] = "Cette Adresse Mail existe déjà, merci de vous connecter ou d'en utiliser une autre."
+                context['errors'].append("Cette Adresse Mail existe déjà, merci de vous connecter ou d'en utiliser une autre.")
+                if CForm_dsa.is_valid():
+                    context['CForm_dsa'] = CForm_dsa
+                if CForm_dia.is_valid():
+                    context['CForm_dia'] = CForm_dia
             else:
                 test_user = True
-        if 'basket' in request.session and CFormSet.is_valid() and test_user:
-            dict = {}
-            if len(CFormSet.forms) == 1:
-                dict['dsa'] = CFormSet.forms[0].cleaned_data
-                dict['dia'] = CFormSet.forms[0].cleaned_data
-            else:
-                dict['dsa'] = CFormSet.forms[0].cleaned_data
-                dict['dia'] = CFormSet.forms[1].cleaned_data
-            dict['email'] = request.POST.get('email')
+                dict = {}
+                dict['email'] = request.POST.get('email')
+                if CForm_dsa.is_valid():
+                    dict['dsa'] = {}
+                    dict['dsa']['gender'] = CForm_dsa.cleaned_data['gender']
+                    dict['dsa']['first_name'] = CForm_dsa.cleaned_data['first_name']
+                    dict['dsa']['last_name'] = CForm_dsa.cleaned_data['last_name']
+                    dict['dsa']['address'] = CForm_dsa.cleaned_data['address']
+                    dict['dsa']['additional_address'] = CForm_dsa.cleaned_data['additional_address']
+                    dict['dsa']['postcode'] = CForm_dsa.cleaned_data['postcode']
+                    dict['dsa']['city'] = CForm_dsa.cleaned_data['city']
+                    dict['dsa']['phone'] = CForm_dsa.cleaned_data['phone']
+                    dict['dsa']['mobilephone'] = CForm_dsa.cleaned_data['mobilephone']
+                if CForm_dia.is_valid():
+                    dict['dia'] = {}
+                    dict['dia']['gender'] = CForm_dia.cleaned_data['gender']
+                    dict['dia']['first_name'] = CForm_dia.cleaned_data['first_name']
+                    dict['dia']['last_name'] = CForm_dia.cleaned_data['last_name']
+                    dict['dia']['address'] = CForm_dia.cleaned_data['address']
+                    dict['dia']['additional_address'] = CForm_dia.cleaned_data['additional_address']
+                    dict['dia']['postcode'] = CForm_dia.cleaned_data['postcode']
+                    dict['dia']['city'] = CForm_dia.cleaned_data['city']
+                    dict['dia']['phone'] = CForm_dia.cleaned_data['phone']
+                    dict['dia']['mobilephone'] = CForm_dia.cleaned_data['mobilephone']
+                else:
+                    dict['dia'] = dict['dsa']
+        if 'basket' in request.session and CForm_dsa.is_valid() and test_user:
             # Bug refresh page thanks
             basket = request.session['basket']
-            try:
-                with transaction.atomic():
-                    if not request.user.is_authenticated:
-                        contact = create_contact(dict)
-                    booking = Booking()
-                    booking.contact=contact
-                    booking.status='W'
-                    booking.save()
-                    for ouvrage in ouvrages:
-                        booking_detail = BookingDetail()
-                        booking_detail.booking = booking
-                        booking_detail.ouvrage = ouvrage
-                        booking_detail.qty = ouvrage.qty
-                        booking_detail.save()
-                    del request.session['basket']
-                    context = {
-                        'booking': booking,
-                        'dict': dict,
-                    }
-            except IntegrityError:
-                errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."
-            except Exception as e:
-                errors['error'] = e
+            #try:
+            with transaction.atomic():
+                contact = create_contact(dict)
+                booking = Booking()
+                booking.contact=contact
+                booking.status='W'
+                booking.save()
+                for ouvrage in ouvrages:
+                    booking_detail = BookingDetail()
+                    booking_detail.booking = booking
+                    booking_detail.ouvrage = ouvrage
+                    booking_detail.qty = ouvrage.qty
+                    booking_detail.save()
+                del request.session['basket']
+                context = {
+                    'booking': booking,
+                    'dict': dict,
+                }
+                content = {
+                    'subject': 'Commande ' + str(booking.id),
+                    'booking': booking,
+                }
+                response = str(send_email(contact.user.email, content))
+            #except IntegrityError:
+            #    errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."
+            #except Exception as e:
+            #    errors['error'] = e
             return render(request, 'store/thanks.html', context)
         else:
-            pass
+            if CForm_dsa.is_valid():
+                context['CForm_dsa'] = CForm_dsa
+            if CForm_dia.is_valid():
+                context['CForm_dia'] = CForm_dia
+            if not 'basket' in request.session:
+                context['errors'].append("Votre panier est vide.")
     else:
         if not request.user.is_authenticated:
             if request.GET.get('check'):
                 context['checked'] = request.GET.get('check')
-                AddressFormSet = formset_factory(AddressForm, extra=2)
-                CFormSet = AddressFormSet()
-            else:
-                AddressFormSet = formset_factory(AddressForm, extra=1)
-                CFormSet = AddressFormSet()
+ 
+            CForm_dsa = AddressForm(prefix="CForm_dsa")
+            CForm_dia = AddressForm(prefix="CForm_dia")
 
         else:
-            contact = Contact.objects.get(user=request.user)
-            context['contact'] = contact
             CForm_dsa = AddressForm(contact.default_shipping_address.__dict__)
             CForm_dia = AddressForm(contact.default_invoicing_address.__dict__)
-            user = get_object_or_404(User, id=contact.user.id)
 
-    context['CFormSet'] = CFormSet
-    context['errors'] = errors
+        context['CForm_dsa'] = CForm_dsa
+        context['CForm_dia'] = CForm_dia
+
 
     return render(request, 'store/basket.html', context)
 
@@ -404,16 +436,28 @@ def contact(request):
 def contact_detail(request, contact_id):
 
     contact = get_object_or_404(Contact, id=contact_id)
-    CForm_dsa = AddressForm(contact.default_shipping_address.__dict__)
-    CForm_dia = AddressForm(contact.default_invoicing_address.__dict__)
-    user = get_object_or_404(User, id=contact.user.id)
-    UForm = UserForm(user.__dict__)
     context = {
         'contact': contact,
-        'CForm_dsa': CForm_dsa,
-        'CForm_dia': CForm_dia,
-        'UForm': UForm,
     }
+
+    if request.method == "POST":
+        # AFormSet = AddressFormSet(queryset=Address.objects.filter(contact=contact).order_by('id'))
+        CForm_dsa = AddressForm(request.POST)
+        CForm_dia = AddressForm(request.POST)
+        if CForm_dsa.is_valid():
+            print('dsa')
+        if CForm_dia.is_valid():
+            print('dia')
+        if request.user.is_staff:
+            return redirect(reverse('store:contact'))
+        else:
+            return redirect(reverse('store:profil', kwargs={'contact_id': contact.id}))
+    else:
+        CForm_dsa = AddressForm(contact.default_shipping_address.__dict__)
+        CForm_dia = AddressForm(contact.default_invoicing_address.__dict__)
+    
+    context['CForm_dsa'] = CForm_dsa
+    context['CForm_dia'] = CForm_dia
 
     return render(request, 'store/contact_detail.html', context)
 
@@ -497,7 +541,30 @@ def connexion(request):
 
 @login_required    
 def deconnexion(request):
+    if 'basket' in request.session:
+        del request.session['basket']
     logout(request)
 
     return render(request, 'store/index.html')
+
+
+def test(request):
+    
+    if request.method == "POST":
+        address = 'j.couignoux@gmail.com'
+        booking = get_object_or_404(Booking, pk=30)
+        content = {
+            'subject': 'test email',
+            'message': 'contenu email',
+            'attachments': '',
+            'booking': booking,
+        }
+        response = str(send_email(address, content))
+        context = {
+            'message': response,
+        }
+    else:
+        context = {}
+
+    return render(request, 'store/test.html', context)
 
