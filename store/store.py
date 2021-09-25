@@ -39,8 +39,9 @@ def send_email(address, content):
     auth_user = User.objects.get(username='jcouignoux').email
     auth_password = User.objects.get(username='jcouignoux').password
     
-    
-    html_content = render_to_string('store/email.html', {'booking': content['booking']})
+    html = content['html']
+    # html_content = render_to_string('store/email.html', {'booking': content['booking']})
+    html_content = render_to_string('store/' + str(html), {'message': content['message']})
     text_content = strip_tags(html_content)
     # d = {'username': 'username' }
 

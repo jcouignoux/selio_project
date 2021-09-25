@@ -16,7 +16,7 @@ from django.forms import formset_factory
 
 
 from .models import Address, Ouvrage, Author, Publisher, Categorie, Contact, Booking, BookingDetail, History
-from .forms import BookingForm, ConnexionForm, UserForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, AddressForm
+from .forms import BookingForm, ConnexionForm, UserForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, AddressForm, MessageForm
 from .store import add_to_history, send_email
 from .contacts import create_contact
 from .xlsx import xlsx, exportXLSX
@@ -301,7 +301,8 @@ def basket(request):
                 }
                 content = {
                     'subject': 'Commande ' + str(booking.id),
-                    'booking': booking,
+                    'message': booking,
+                    'html': 'email_vente.html',
                 }
                 response = str(send_email(contact.user.email, content))
             #except IntegrityError:
@@ -534,6 +535,31 @@ def histBase(request):
         pass
 
     return render(request, 'store/history.html')
+
+
+def contact_us(request):
+
+    if request.method == "POST":
+        MForm = MessageForm(request.POST, error_class=ParagraphErrorList)
+        if MForm.is_valid():
+            address = MForm.cleaned_data['email']
+            message = MForm.cleaned_data['message']
+            content = {}
+            content['subject'] = 'message'
+            content['message'] = message
+            content['html'] = 'email_message.html'
+            response = send_email(address, content)
+            
+            return redirect(reverse('store:propos'))
+    else:
+        MForm = MessageForm()
+
+    context = {
+        'MForm': MForm,
+    }
+
+    return render(request, 'store/message.html', context)
+
 
 def connexion(request):
     if 'basket' in request.session:

@@ -1,0 +1,13 @@
+{% load bootstrap4 %}
+
+{% block content %}
+<div class="card container">
+    <form class="form-group row" action="{% url 'store:contact_us' %}" method="post">
+        {% csrf_token %}
+        {% bootstrap_form MForm %}
+        <div class="row">
+            <button type="submit" class="btn btn-secondary btn-outline-dark mt-auto text-white col-2 ms-sm-3">Envoyer</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

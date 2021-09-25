@@ -4,7 +4,7 @@ from django.forms import ModelForm, BaseFormSet
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms.forms import Form
 from django.forms.utils import ErrorList
-from django.forms.widgets import CheckboxInput, EmailInput, PasswordInput, SelectMultiple, TextInput, NumberInput, Textarea, CheckboxSelectMultiple
+from django.forms.widgets import CheckboxInput, EmailInput, PasswordInput, SelectMultiple, TextInput, NumberInput, Textarea, CheckboxSelectMultiple, Widget
 from django.contrib.auth.models import User
 from bootstrap_datepicker_plus import DatePickerInput
 from django.forms import formset_factory, modelformset_factory
@@ -113,3 +113,12 @@ class DateRangeForm(Form):
 
 class DictForm(Form):
     dict = forms.model_to_dict
+
+
+class MessageForm(Form):
+    email = forms.EmailField(
+        widget = EmailInput(attrs={"required": True, "placeholder": "Votre email"})
+    )
+    message = forms.CharField (
+        widget = Textarea(attrs={"rows":5, "cols":20, "required": True, "placeholder": "Votre message"})
+    )
