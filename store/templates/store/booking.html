@@ -25,21 +25,23 @@
         <th>Contacté</th>
         {% for booking in bookings_list_sel %}
         <tr>
-            <td><a class="open-item" href="{% url 'store:booking_detail' booking_id=booking.id %}"
+            <td><a class="open-item text-decoration-none text-body" href="{% url 'store:booking_detail' booking_id=booking.id %}"
                 data-popup-url="{% url 'store:booking_detail' booking_id=booking.id %}">
                 {{ booking.id }}</a>
             </td>
             <td>{{ booking.created_at|date:'Y-m-d' }}</td>
             <td>
-                <a class="open-item" href="{% url 'store:contact_detail' contact_id=booking.contact.id %}"
-                data-popup-url="{% url 'store:contact_detail' contact_id=booking.contact.id %}">
+                <a class="open-item text-decoration-none text-body" href="{% url 'store:user_detail' user_id=booking.contact.user.id %}"
+                data-popup-url="{% url 'store:user_detail' user_id=booking.contact.user.id %}">
                 {{ booking.contact }}</a><br />
                 {{ booking.contact.user.email }}<br />
-                {{ booking.contact.default_shipping_address.city }}
+                <a class="open-item text-decoration-none text-body" href="{% url 'store:contact_detail' contact_id=booking.contact.id %}"
+                data-popup-url="{% url 'store:contact_detail' contact_id=booking.contact.id %}">
+                {{ booking.contact.default_shipping_address.city }}</a>
             </td>
             <td>
                 {% for booking_detail in booking.booking_details %}
-                    <a class="open-item" href="{% url 'store:detail' ouvrage_id=booking_detail.ouvrage.id %}"
+                    <a class="open-item text-decoration-none text-body" href="{% url 'store:detail' ouvrage_id=booking_detail.ouvrage.id %}"
                     data-popup-url="{% url 'store:detail' ouvrage_id=booking_detail.ouvrage.id %}">
                     {{ booking_detail.ouvrage.title }}<br /></a>
                 {% endfor %}

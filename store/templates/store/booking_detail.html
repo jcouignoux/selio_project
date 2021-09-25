@@ -9,15 +9,26 @@
     <h2 class="intro-text text-center">Commande N° {{ booking.id }}</h2>
     <hr class="detail-separator">    
     
-    <div class="container card">
+    <div class="card container">
         <div class="row">
             <div class="col form-group">
-                    <p>{{ booking.created_at }}</p>
-                    <p>{{ booking.contact.user.username }}</p>
-                    {% for booking_detail in booking.booking_details.all %}
-                        <p>{{ booking_detail.ouvrage.title }}</p>
-                    {% endfor %}
-                    <p>{{ booking.total }}</p>
+                    <label class="fw-bolder">Commande du : </label> {{ booking.created_at }}<br />
+                    <label class="fw-bolder">Client : </label> {{ booking.contact.default_shipping_address.last_name }}, {{ booking.contact.default_shipping_address.first_name }}<br />
+                    <table class="table"><tbody>
+                        <th>Titre</th>
+                        <th>Quantity</th>
+                        <th>Prix</th>
+                        <th>Total</th>
+                        {% for booking_detail in booking.booking_details.all %}
+                        <tr>
+                            <td>{{ booking_detail.ouvrage.title }}</td>
+                            <td>{{ booking_detail.qty }}</td>
+                            <td>{{ booking_detail.ouvrage.price }} €</td>
+                            <td>{{ booking_detail.total }} €</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody></table>
+                    <label class="fw-bolder">Total Achat : </label> {{ booking.total }} €<br />
             </div>
         </div>
     </div>

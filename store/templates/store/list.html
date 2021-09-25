@@ -18,28 +18,27 @@
                 {% for ouvrage in ouvrages %}
                     <div class="col mb-5">
                         <div class="card h-100">
-                            <!-- Product image-->
-                            {% if ouvrage.picture != "" %}
-                            <img class="card-img-top img-height-fix" src="{% static 'store/couv/' %}{{ ouvrage.picture }}" alt="..." />
-                            {% else %}
-                            <img class="card-img-top img-height-fix" src="{% static 'store/couv/' %}sans-couverture.png" alt="..." />
-                            {% endif %}
-                            <!-- Product details-->
-                            <div class="card-body p-4">
-                                <div class="text-center">
-                                    <!-- Product name-->
-                                    <h5 class="fw-bolder">{{ ouvrage.title}}</h5>
-                                    <!-- Product price-->
-                                    <span class="text-muted">{{ ouvrage.price }} €</span>
+                            <div class="row">
+                                <div class="col-4">
+                                    {% if ouvrage.picture != "" %}
+                                        <img class="card-img-top img-height-fix" src="{% static 'store/couv/' %}{{ ouvrage.picture }}" alt="..." />
+                                    {% else %}
+                                        <img class="card-img-top img-height-fix" src="{% static 'store/couv/' %}sans-couverture.png" alt="..." />
+                                    {% endif %}
                                 </div>
-                            </div>
-                            <!-- Product actions-->
-                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center">
-                                    <a class="btn btn-outline-dark mt-auto open-item" href="{% url 'store:detail' ouvrage_id=ouvrage.id %}"
-                                    data-popup-url="{% url 'store:detail' ouvrage_id=ouvrage.id %}">
-                                    Sélectionner
-                                    </a>
+                                <div class="col-8">
+                                    <div class="card-body h-75 p-4">
+                                        <div class="text-center">
+                                            <h5 class="fw-bolder">{{ ouvrage.title}}</h5>
+                                            <span class="text-muted">{{ ouvrage.price }} €</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer h-25 p-4 pt-0 border-top-0 bg-transparent">
+                                            <a class="open-item btn btn-outline-dark mt-auto" href="{% url 'store:detail' ouvrage_id=ouvrage.id %}"
+                                            data-popup-url="{% url 'store:detail' ouvrage_id=ouvrage.id %}">
+                                            Sélectionner
+                                            </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

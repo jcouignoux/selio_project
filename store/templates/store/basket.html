@@ -63,16 +63,16 @@
             <form class="col-2" action="{% url 'store:basket' %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="basket" value="{{ basket }}" >
-                <button type="submit" class="btn btn-success" onclick="return confirm('Merci de confirmer');">Commander</button>
+                <button type="submit" class="btn btn-dark btn-outline-secondary mt-auto text-white" onclick="return confirm('Merci de confirmer');">Commander</button>
             </form>
     {% else %}
         {% if errors %}
         <div>
-          {% for error in errors %}
-          {% autoescape off %}
-            <p class="alert-danger">{{ error }}</p>
-          {% endautoescape %}
-          {% endfor %}
+            {% for error in errors %}
+            {% autoescape off %}
+                <p class="alert-danger">{{ error }}</p>
+            {% endautoescape %}
+            {% endfor %}
         </div>
         <form class="form-label row" action="{% url 'store:login' %}" method="get">
             {% csrf_token %}

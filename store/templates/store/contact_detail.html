@@ -2,17 +2,19 @@
 
 {% block content %}
 {% if user.is_staff or user.id == contact.user.id %}
-    <form class="form-group row" action="{% url 'store:contact_detail' contact_id=contact.id %}" method="post">
-        {% csrf_token %}
-        <div class="col-6">
-            <p class="form-title" for="{{ CForm_dsa.id_for_label }}">Adresse de facturation</p><br />
-            {% bootstrap_form CForm_dsa %}
-        </div>
-        <div class="col-6">
-            <p class="form-title" for="{{ CForm_dia.id_for_label }}">Adresse de livraison</p><br />
-            {% bootstrap_form CForm_dia %}
-        </div>
-        <button type="submit" class="btn btn-success">Modifier</button>
-    </form>
+    <div class="card container">
+        <form class="form-group row" action="{% url 'store:contact_detail' contact_id=contact.id %}" method="post">
+            {% csrf_token %}
+                <div class="col-6">
+                    <p class="form-control bg-dark fs-5 fw-bold text-light" for="{{ CForm_dsa.id_for_label }}">Adresse de facturation</p><br />
+                    {% bootstrap_form CForm_dsa %}
+                </div>
+                <div class="col-6">
+                    <p class="form-control bg-dark fs-5 fw-bold text-light" for="{{ CForm_dia.id_for_label }}">Adresse de livraison</p><br />
+                    {% bootstrap_form CForm_dia %}
+                </div>
+                <button type="submit" class="btn btn-dark btn-outline-secondary mt-auto text-white">Modifier</button>
+        </form>
+    </div>
 {% endif %}
 {% endblock %}

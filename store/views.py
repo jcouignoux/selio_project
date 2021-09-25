@@ -91,24 +91,25 @@ def store(request, select_type, select_id):
 
 def detail(request, ouvrage_id):
     ouvrage = get_object_or_404(Ouvrage, pk=ouvrage_id)
-    auteurs = " et ".join([auteur.name for auteur in ouvrage.auteurs.all()])
-    auteurs_name = " ".join(auteurs)
-    editeurs = " ".join([editeur.name for editeur in ouvrage.editeurs.all()])
-    editeurs_name = " ".join(editeurs)
-    categories = " ".join([categorie.name for categorie in ouvrage.categories.all()])
-    categories_name = " ".join(categories)
+    # auteurs = " et ".join([auteur.name for auteur in ouvrage.auteurs.all()])
+    # auteurs_name = " ".join(auteurs)
+    # editeurs = " ".join([editeur.name for editeur in ouvrage.editeurs.all()])
+    # editeurs_name = " ".join(editeurs)
+    # categories = " ".join([categorie.name for categorie in ouvrage.categories.all()])
+    # categories_name = " ".join(categories)
     context = {
-        'ouvrage_id': ouvrage.id,
-        'ouvrage_title': ouvrage.title,
-        'ouvrage_reference': ouvrage.reference,
-        'auteurs_name': auteurs_name,
-        'editeurs_name': editeurs_name,
-        'categories_name': categories_name,
-        'ouvrage_publication': ouvrage.publication,
-        'ouvrage_price': ouvrage.price,
-        'ouvrage_stock': ouvrage.stock,
-        'ouvrage_picture': ouvrage.picture,
-        'ouvrage_note': ouvrage.note,
+        # 'ouvrage_id': ouvrage.id,
+        # 'ouvrage_title': ouvrage.title,
+        # 'ouvrage_reference': ouvrage.reference,
+        # 'auteurs_name': auteurs_name,
+        # 'editeurs_name': editeurs_name,
+        # 'categories_name': categories_name,
+        # 'ouvrage_publication': ouvrage.publication,
+        # 'ouvrage_price': ouvrage.price,
+        # 'ouvrage_stock': ouvrage.stock,
+        # 'ouvrage_picture': ouvrage.picture,
+        # 'ouvrage_note': ouvrage.note,
+        'ouvrage': ouvrage,
     }
     if request.method == 'POST':
         VForm = VenteForm(request.POST, error_class=ParagraphErrorList)
@@ -444,10 +445,10 @@ def contact_detail(request, contact_id):
         # AFormSet = AddressFormSet(queryset=Address.objects.filter(contact=contact).order_by('id'))
         CForm_dsa = AddressForm(request.POST)
         CForm_dia = AddressForm(request.POST)
-        if CForm_dsa.is_valid():
-            print('dsa')
-        if CForm_dia.is_valid():
-            print('dia')
+        # if CForm_dsa.is_valid():
+        #     print('dsa')
+        # if CForm_dia.is_valid():
+        #     print('dia')
         if request.user.is_staff:
             return redirect(reverse('store:contact'))
         else:
@@ -460,6 +461,34 @@ def contact_detail(request, contact_id):
     context['CForm_dia'] = CForm_dia
 
     return render(request, 'store/contact_detail.html', context)
+
+@login_required
+def user_detail(request, user_id):
+
+    user = get_object_or_404(User, id=user_id)
+    contact = get_object_or_404(Contact, user=user)
+    context = {}
+    
+    if request.method == "POST":
+        context['messages'] = []
+        password = request.POST.get('new_password')
+        control_password = request.POST.get('control_password')
+        print(password, control_password)
+        if control_password == password:
+            # response = user.set_password(password)
+            response = True
+            if response:
+                context['messages'].append("Votre mot de passe a été modifié.")
+            else:
+                context['messages'].append(response)
+            return redirect(reverse('store:profil', kwargs={'contact_id': contact.id}), context)
+        else:
+            context['messages'].append("Vos mots de passe ne correspondent pas.")
+            # return redirect(reverse('store:profil', kwargs={'contact_id': contact.id}), context)
+            return redirect(request.path_info, context)
+
+
+    return render(request, 'store/user_detail.html', context)
 
 @login_required
 def profil(request, contact_id):
@@ -538,6 +567,17 @@ def connexion(request):
     context['UForm'] = UForm    
 
     return render(request, 'store/login.html', context)
+
+ 
+def update_contact(request):
+
+    if request.method == "POST":
+        UForm = UserForm(data=request.POST, instance=request.user)
+        if UForm.is_valid():
+            pass
+    else:
+        pass
+
 
 @login_required    
 def deconnexion(request):

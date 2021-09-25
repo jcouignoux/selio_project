@@ -4,77 +4,58 @@
 
 {% block content %}
 <hr class="detail-separator">
-<h1 class="intro-text text-center">{{ ouvrage_title }}</h1>
+<h1 class="intro-text text-center">{{ ouvrage.title }}</h1>
 <hr class="detail-separator">
 
-<div class="container row gx-4 gx-lg-5 row-cols-auto row-cols-md-auto row-cols-xl-4 justify-content-center">
-    <div class="card">
-        <!-- Sale badge-->
-        <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
-        <!-- Product image-->
-        <img class="card-img-top" src="{% static 'store/couv/' %}{{ ouvrage_picture }}" alt="..." />
-        <!-- Product details-->
-        <div class="card-body p-4">
-            <div class="text-center">
-                <!-- Product name-->
-                <h5 class="fw-bolder">{{ ouvrage_title }}</h5>
-                <!-- Product reviews-->
-                <div class="d-flex justify-content-center small text-warning mb-2">
-                    <div class="bi-star-fill"></div>
-                    <div class="bi-star-fill"></div>
-                    <div class="bi-star-fill"></div>
-                    <div class="bi-star-fill"></div>
-                    <div class="bi-star-fill"></div>
-                </div>
-                <!-- Product price-->
-                <span class="text-muted">{{ ouvrage_price }} €</span>
+<div class="container row">
+    <div class="card col-5">
+        <img class="img-fluid" src="{% static 'store/couv/' %}{{ ouvrage.picture }}" alt="..." />
+        <div class="card-body">
+            <table class="table table-borderless"><tbody>
+                <tr><td class="fw-bolder col-md-1">Prix: </td><td class="text-body col-md-4">{{ ouvrage.price }} €</td></tr>
+                <tr><td class="fw-bolder col-md-1">Référence: </td><td class="text-body col-md-4">{{ ouvrage.reference }}</td></tr>
+                <tr><td class="fw-bolder col-md-1">Auteur(s): </td><td class="text-body col-md-4">{% for auteur in ouvrage.auteurs.all %}{{ auteur.name }} {% endfor %}</td></tr>
+                <tr><td class="fw-bolder col-md-1">Editeur: </td><td class="text-body col-md-4">{% for editeur in ouvrage.editeurs.all %}{{ editeur.name }} {% endfor %}</td></tr>
+                <tr><td class="fw-bolder col-md-1">Catégorie: </td><td class="text-body col-md-4">{% for categorie in ouvrage.categories.all %}{{ categorie.name }} {% endfor %}</td></tr>
+                <tr><td class="fw-bolder col-md-1">Stock: </td><td class="text-body col-md-4">{{ ouvrage.stock }}</td></tr>
+            </tbody></table>
+        </div>
+    </div>
+    {% if user.is_staff %}
+    <div class="card col-4">
+        <div class="text-center">Magasin</div>
+        <form class="form-group" action="{% url 'store:detail' ouvrage_id=ouvrage.id %}" method="post">
+            {% csrf_token %}
+            {% bootstrap_form Vform %}{{ Vform.media }}
+            <button type="submit" class="btn btn-dark btn-outline-secondary mt-auto text-white">Vendre</button>
+        </form>
+    </div>
+    <div class="card col-3">
+        <div class="text-center">Arrivage</div>
+        <form class="form-group" action="{% url 'store:detail' ouvrage_id=ouvrage.id %}" method="post">
+            {% csrf_token %}
+            {% bootstrap_form Aform %}{{ Aform.media }}
+            <button type="submit" class="btn btn-dark btn-outline-secondary mt-auto text-white">Valider</button>
+        </form>
+    </div>
+    {% else %}
+    <div class="card col-5">
+        <div class="fw-bolder">Note de la SELIO</div><br />
+            {% if ouvrage.note != None %}
+                <p class="truncate">{{ ouvrage.note }}</p>
+            {% endif %}
+    </div>
+    <div class="card col-2">
+        <div class="fw-bolder">Quantité</div><br />
+        <form class="form-label" action="{% url 'store:add_to_basket' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="ouvrage_id" value="{{ ouvrage.id }}" >
+            <input class="form-control" type="number" name="quantity" min="1" step="1" value="1" placeholder="Quantité"><br />
+            <div>
+                <button type="submit" class="btn btn-dark btn-outline-secondary mt-auto text-white">Ajouter au Panier</button>
             </div>
-        </div>
-        <!-- Product actions-->
+        </form>
     </div>
-    <div class="card text-start">
-        <label class="fw-bolder">Référence: {{ ouvrage_reference }}</label>
-        <label class="fw-bolder">Auteur(s): {{ auteurs_name }}</label>
-        <label class="fw-bolder">Editeur: {{ editeurs_name }}</label>
-        <label class="fw-bolder">Catégorie: {{ categories_name }}</label>
-        <label class="fw-bolder">Publication: {{ ouvrage_publication }}</label>
-        <label class="fw-bolder">Stock: {{ ouvrage_stock }}</label><br />
-    </div>
-        {% if user.is_staff %}
-        <div class="card">
-            <div class="text-center">Magasin</div>
-            <form class="form-group" action="{% url 'store:detail' ouvrage_id=ouvrage_id %}" method="post">
-                {% csrf_token %}
-                {% bootstrap_form Vform %}{{ Vform.media }}
-                <button type="submit" class="btn btn-success">Vendre</button>
-            </form>
-        </div>
-        {% endif %}
-        {% if user.is_staff %}
-        <div class="card">
-            <div class="text-center">Arrivage</div>
-            <form class="form-group" action="{% url 'store:detail' ouvrage_id=ouvrage_id %}" method="post">
-                {% csrf_token %}
-                {% bootstrap_form Aform %}{{ Aform.media }}
-                <button type="submit" class="btn btn-success">Valider</button>
-            </form>
-        </div>
-        {% else %}
-        <div class="card h-100 text-start">
-            <div class="form-label">Note de la SELIO</div>
-                <label class="fw-bolder">{{ ouvrage_note }}</label><br />
-        </div>
-        <div class="card h-100 text-start">
-            <div class="form-label">Commande</div>
-            <form class="form-label" action="{% url 'store:add_to_basket' %}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="ouvrage_id" value="{{ ouvrage_id }}" >
-                <input class="" type="number" name="quantity" min="1" step="1" value="1" placeholder="Quantité"><br /><br />
-                <div>
-                    <button type="submit" class="btn btn-success" >Ajouter au Panier</button>
-                </div>
-            </form>
-        </div>
     {% endif %}
 </div>
 {% if errors %}

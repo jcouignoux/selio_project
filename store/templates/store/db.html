@@ -5,15 +5,36 @@
 <hr class="detail-separator">
 <h1 class="intro-text text-center">Gestion Base</h1>
 <hr class="detail-separator">
-{% if user.is_authenticated %}
-<div>
-    <form class="form-label" action="{% url 'store:dataBase' %}" method=post enctype=multipart/form-data>
+{% if user.is_staff %}
+<div class="card container">
+    <br />
+    <form class="form-group row" action="{% url 'store:dataBase' %}" method=post enctype=multipart/form-data>
         {% csrf_token %}
-        <div class="form-control">
-            <p><label> Fichier : </label> <input class="form-label" type="file" value='' name="xls" /></p>
+        <div class="row">
+            <hr class="detail-separator">
+            <h5 class="intro-text text-center">Importer Base</h5>
+            <hr class="detail-separator"></div>
+        <div class="col-6">
+            <input class="form-control" type="file" value='' name="xls" />
         </div>
-        <input class="btn btn-primary btn-block" type="submit" value="Importer">
+        <div class="col-5">
+            <input class="btn btn-dark btn-outline-secondary mt-auto text-white" type="submit" value="Importer">
+        </div>
     </form>
-</div>
+    <br />
+    <form class="form-group row" action="" method=post enctype=multipart/form-data>
+        {% csrf_token %}
+        <div class="row">
+            <hr class="detail-separator">
+            <h5 class="intro-text text-center">Exporter Base</h5>
+            <hr class="detail-separator"></div>
+        <div class="col-6">
+            <input class="form-control" type="file" value='' name="xls" />
+        </div>
+        <div class="col-5">
+            <input class="btn btn-dark btn-outline-secondary mt-auto text-white" type="submit" value="Importer">
+        </div>
+    </form>
+</div><br />
 {% endif %}
 {% endblock %}

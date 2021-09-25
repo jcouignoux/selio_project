@@ -6,7 +6,7 @@
     <h1 class="intro-text text-center">Contacts</h1>
     <hr class="detail-separator">
         {% if contacts_list %}
-        <table class="table">
+        <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Nom</th>
@@ -22,27 +22,35 @@
                 {% for contact in contacts_list.all %}
                 <tr>
                     <td>
-                        <a class="open-item" href="{% url 'store:contact_detail' contact_id=contact.id %}"
-                        data-popup-url="{% url 'store:contact_detail' contact_id=contact.id %}">
+                        <a class="open-item text-decoration-none text-body" href="{% url 'store:user_detail' user_id=contact.user.id %}"
+                        data-popup-url="{% url 'store:user_detail' user_id=contact.user.id %}">
                         {{ contact.default_shipping_address.last_name }}</a>
                     </td>
                     <td>{{ contact.default_shipping_address.first_name }}</td>
                     <td>{{ contact.user.email }}</td>
                     <td>
-                        <a class="open-item" href="{% url 'store:contact_detail' contact_id=contact.id %}"
+                        <a class="open-item text-decoration-none text-body" href="{% url 'store:contact_detail' contact_id=contact.id %}"
                         data-popup-url="{% url 'store:contact_detail' contact_id=contact.id %}">
                         {{ contact.default_shipping_address }}</a>
                     </td>
                     <td>
                         {% for booking in contact.bookings %}
-                            Commande<br />
+                            {% if booking.status == "S" %}
+                                <a class="open-item text-decoration-none text-body" href="{% url 'store:booking_detail' booking_id=booking.id %}"
+                                data-popup-url="{% url 'store:booking_detail' booking_id=booking.id %}">
+                                <i class="bi bi-basket3 me-1"></i> Commande N° {{ booking.id }}<br />
+                                du {{ booking.created_at }}</a><br />
+                            {% endif %}
                         {% endfor %}
                     </td>
                     <td>
                         {% for booking in contact.bookings %}
-                            <a class="open-item" href="{% url 'store:booking_detail' booking_id=booking.id %}"
-                            data-popup-url="{% url 'store:booking_detail' booking_id=booking.id %}">
-                            {{ booking.id }}</a><br />
+                            {% if booking.status != "S" %}
+                                <a class="open-item text-decoration-none text-body" href="{% url 'store:booking_detail' booking_id=booking.id %}"
+                                data-popup-url="{% url 'store:booking_detail' booking_id=booking.id %}">
+                                <i class="bi bi-basket3 me-1"></i> Commande N° {{ booking.id }}<br />
+                                du {{ booking.created_at }}</a><br />
+                            {% endif %}
                         {% endfor %}
                     </td>
                     <td>

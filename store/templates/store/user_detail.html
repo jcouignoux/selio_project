@@ -1,14 +1,27 @@
 {% load bootstrap4 %}
 
 {% block content %}
-{% if user.is_staff or user.id == contact.user.id %}
-    <div class="container card">
-        <div class="row">
-            <div class="col form-group">
-                {% bootstrap_form UForm %}
-            </div>
+{% if user.is_staff or user.is_authenticated %}
+    <div class="card  container">
+        <p class="form-control bg-dark fs-5 fw-bold text-light" for="{{ UForm.id_for_label }}">Identifiants</p><br />
+        <div class="col">
+            {{ user.email }}
         </div>
+        <form class="row justify-items-center" action="{% url 'store:user_detail' user_id=user.id %}" method="POST">
+            {% csrf_token %}
+            <input type="password" name="new_password" placeholder="Entrez votre nouveau mot de passe" required></input>
+            <input type="password" name="control_password" placeholder="Entrez de nouveau votre nouveau mot de passe" required></input>
+            <div class="justify-items-center row">
+                <button type="submit" name="updatePwd" class="btn btn-light">Modifier mon Mot de Passe</button><br />
+            </div>
+        </form>
+        {% if messages %}
+            {% for message in messages %}
+            {% autoescape off %}
+                <p class="">{{ message }}</p>
+            {% endautoescape %}
+            {% endfor %}
+        {% endif %}
     </div>
 {% endif %}
-{% include "store/item_modal.html" %}
 {% endblock %}
