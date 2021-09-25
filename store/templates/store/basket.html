@@ -3,117 +3,119 @@
 {% load bootstrap4 %}
 
 {% block content %}
-<div class="card container">
-    {% if basket %}
-        <label>Commande</label>
-        <table class="table row-cols-1">
-                <thead>
+<section class="bg-light py-5">
+    <div class="card container">
+        {% if basket %}
+            <label>Commande</label>
+            <table class="table row-cols-1">
+                    <thead>
+                        <tr>
+                            <th>Ouvrage</th>
+                            <th>Prix</th>
+                            <th>Quantité</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for ouvrage in ouvrages %}
                     <tr>
-                        <th>Ouvrage</th>
-                        <th>Prix</th>
-                        <th>Quantité</th>
+                        <td>{{ ouvrage.title }}</td>
+                        <td>{{ ouvrage.price }} €</td>
+                        <td>
+                            <form class="form-check-inline"><a  href="{% url 'store:add_to_basket' %}">
+                                <button class="btn btn-outline-dark mt-auto" type="submit">
+                                    <input type="hidden" name="ouvrage_to_mod" value="{{ ouvrage.id }}" >
+                                    <input type="hidden" name="quantity" value="-" >
+                                    <i class="bi bi-cart-dash"></i>
+                                </button>
+                            </a></form>
+                            <p class="form-check-inline" >{{ ouvrage.qty }}</p>
+                            <form class="form-check-inline"><a  href="{% url 'store:add_to_basket' %}">
+                                <button class="btn btn-outline-dark mt-auto" type="submit">
+                                    <input type="hidden" name="ouvrage_to_mod" value="{{ ouvrage.id }}" >
+                                    <input type="hidden" name="quantity" value="+" >
+                                    <i class="bi bi-cart-plus"></i>
+                                </button>
+                            </a></form>
+                            <form class="form-check-inline"><a  href="{% url 'store:add_to_basket' %}">
+                                <button class="btn btn-outline-dark mt-auto" type="submit">
+                                    <input type="hidden" name="ouvrage_to_mod" value="{{ ouvrage.id }}" >
+                                    <input type="hidden" name="quantity" value="x" >
+                                    <i class="bi bi-cart-x"></i>
+                                </button>
+                            </a></form>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                {% for ouvrage in ouvrages %}
-                <tr>
-                    <td>{{ ouvrage.title }}</td>
-                    <td>{{ ouvrage.price }} €</td>
-                    <td>
-                        <form class="form-check-inline"><a  href="{% url 'store:add_to_basket' %}">
-                            <button class="btn btn-outline-dark mt-auto" type="submit">
-                                <input type="hidden" name="ouvrage_to_mod" value="{{ ouvrage.id }}" >
-                                <input type="hidden" name="quantity" value="-" >
-                                <i class="bi bi-cart-dash"></i>
-                            </button>
-                        </a></form>
-                        <p class="form-check-inline" >{{ ouvrage.qty }}</p>
-                        <form class="form-check-inline"><a  href="{% url 'store:add_to_basket' %}">
-                            <button class="btn btn-outline-dark mt-auto" type="submit">
-                                <input type="hidden" name="ouvrage_to_mod" value="{{ ouvrage.id }}" >
-                                <input type="hidden" name="quantity" value="+" >
-                                <i class="bi bi-cart-plus"></i>
-                            </button>
-                        </a></form>
-                        <form class="form-check-inline"><a  href="{% url 'store:add_to_basket' %}">
-                            <button class="btn btn-outline-dark mt-auto" type="submit">
-                                <input type="hidden" name="ouvrage_to_mod" value="{{ ouvrage.id }}" >
-                                <input type="hidden" name="quantity" value="x" >
-                                <i class="bi bi-cart-x"></i>
-                            </button>
-                        </a></form>
-                    </td>
-                </tr>
-                {% endfor %}
-                </tbody>
-        </table>
-    {% else %}
-        <div class="alert alert-warning row" role="alert">
-            <a href="{% url 'store:store' select_type='All' select_id='All' %}" class="btn btn-default btn-lg pull-right">Remplir mon panier !</a>
-            <i class="bi bi-shop-window pull-left"></i> <h4>Votre panier est vide :'(</h4>
-            <p>Commencez dès maintenant à rechercher votre article préféré dans notre vaste catalogue de produits !</p>
-        </div>
-    {% endif %}<br /><br />
-    {% if user.is_authenticated %}
-            {% csrf_token %}
-            <input type="hidden" name="basket" value="{{ basket }}" >
-            <div class="col-10">
-                {% include 'store/contact_detail.html' %}
+                    {% endfor %}
+                    </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-warning row" role="alert">
+                <a href="{% url 'store:store' select_type='All' select_id='All' %}" class="btn btn-default btn-lg pull-right">Remplir mon panier !</a>
+                <i class="bi bi-shop-window pull-left"></i> <h4>Votre panier est vide :'(</h4>
+                <p>Commencez dès maintenant à rechercher votre article préféré dans notre vaste catalogue de produits !</p>
             </div>
-            <form class="col-2" action="{% url 'store:basket' %}" method="post">
+        {% endif %}<br /><br />
+        {% if user.is_authenticated %}
                 {% csrf_token %}
                 <input type="hidden" name="basket" value="{{ basket }}" >
-                <button type="submit" class="btn btn-dark btn-outline-secondary mt-auto text-white" onclick="return confirm('Merci de confirmer');">Commander</button>
-            </form>
-    {% else %}
-        {% if errors %}
-        <div>
-            {% for error in errors %}
-            {% autoescape off %}
-                <p class="alert-danger">{{ error }}</p>
-            {% endautoescape %}
-            {% endfor %}
-        </div>
-        <form class="form-label row" action="{% url 'store:login' %}" method="get">
-            {% csrf_token %}
-            <input type="hidden" name="basket" value="{{ basket }}" >
-            <button type="submit" class="col-4 btn" >Si vous avez déjà un compte, identifiez vous</button>
-        </form>
-        {% endif %}
-        <div class="row">
-                <form action="{% url 'store:basket' %}" method="get">
-                    <input type="hidden" name="basket" value="{{ basket }}" >
-                    {% csrf_token %}
-                    {% if checked == 'checked' %}
-                        <input type="checkbox" class="input-sm" name="check" value="unchecked" onclick='this.form.submit();' checked="checked">
-                        <i>Cocher si l'adresse de livraison est défférente.</i>
-                    {% else %}
-                        <input type="checkbox" class="input-sm" name="check" value="checked" onclick='this.form.submit();'>
-                        <i>Cocher si l'adresse de livraison est défférente.</i>
-                    {% endif %}
-                </form>
-        </div>
-            <form class="row" action="{% url 'store:basket' %}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="basket" value="{{ basket }}" >
-                <div class="row">
-                <input class="form-control col-3" type="email" name="email" placeholder="Email" required><br /></div>
-                <div class="row">
-                    <div class="col-5">
-                        <p class="form-title" for="{{ CForm_dsa.id_for_label }}">Adresse de facturation</p><br />
-                        {% bootstrap_form CForm_dsa %}
-                    </div>
-                    {% if checked == 'checked' %}
-                    <div class="col-5">
-                        <p class="form-title" for="{{ CForm_dia.id_for_label }}">Adresse de livraison</p><br />
-                        {% bootstrap_form CForm_dia %}
-                    </div>
-                    {% endif %}
-                    <div class="col-2">
-                        <br /><br /><button type="submit" class="btn btn-success" onclick="return confirm('Merci de confirmer');">Commander</button>
-                    </div>
+                <div class="col-10">
+                    {% include 'store/contact_detail.html' %}
                 </div>
+                <form class="col-2" action="{% url 'store:basket' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="basket" value="{{ basket }}" >
+                    <button type="submit" class="btn btn-dark btn-outline-secondary mt-auto text-white" onclick="return confirm('Merci de confirmer');">Commander</button>
+                </form>
+        {% else %}
+            {% if errors %}
+            <div>
+                {% for error in errors %}
+                {% autoescape off %}
+                    <p class="alert-danger">{{ error }}</p>
+                {% endautoescape %}
+                {% endfor %}
+            </div>
+            <form class="form-label row" action="{% url 'store:login' %}" method="get">
+                {% csrf_token %}
+                <input type="hidden" name="basket" value="{{ basket }}" >
+                <button type="submit" class="col-4 btn" >Si vous avez déjà un compte, identifiez vous</button>
             </form>
-    {% endif %}
-</div>
+            {% endif %}
+            <div class="row">
+                    <form action="{% url 'store:basket' %}" method="get">
+                        <input type="hidden" name="basket" value="{{ basket }}" >
+                        {% csrf_token %}
+                        {% if checked == 'checked' %}
+                            <input type="checkbox" class="input-sm" name="check" value="unchecked" onclick='this.form.submit();' checked="checked">
+                            <i>Cocher si l'adresse de livraison est défférente.</i>
+                        {% else %}
+                            <input type="checkbox" class="input-sm" name="check" value="checked" onclick='this.form.submit();'>
+                            <i>Cocher si l'adresse de livraison est défférente.</i>
+                        {% endif %}
+                    </form>
+            </div>
+                <form class="row" action="{% url 'store:basket' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="basket" value="{{ basket }}" >
+                    <div class="row">
+                    <input class="form-control col-3" type="email" name="email" placeholder="Email" required><br /></div>
+                    <div class="row">
+                        <div class="col-5">
+                            <p class="form-title" for="{{ CForm_dsa.id_for_label }}">Adresse de facturation</p><br />
+                            {% bootstrap_form CForm_dsa %}
+                        </div>
+                        {% if checked == 'checked' %}
+                        <div class="col-5">
+                            <p class="form-title" for="{{ CForm_dia.id_for_label }}">Adresse de livraison</p><br />
+                            {% bootstrap_form CForm_dia %}
+                        </div>
+                        {% endif %}
+                        <div class="col-2">
+                            <br /><br /><button type="submit" class="btn btn-success" onclick="return confirm('Merci de confirmer');">Commander</button>
+                        </div>
+                    </div>
+                </form>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}

@@ -3,13 +3,13 @@
 <hr class="detail-separator">
 <h1 class="intro-text text-center">Nos Ouvrages</h1>
 <hr class="detail-separator">
-{% if ouvrages|length_is:"0" %}
-    <div class="text-center">
-        Palsambleu ! Nous n'avons trouvé aucun résultat à cette requête. Même pas de quoi se ronger la chique !
-        Partez de nouveau à l'abordage !
-    </div>
-{% else %}
-    <section class="py-5">
+    <section class="bg-light py-1">
+    {% if ouvrages|length_is:"0" %}
+        <div class="text-center">
+            Palsambleu ! Nous n'avons trouvé aucun résultat à cette requête. Même pas de quoi se ronger la chique !
+            Partez de nouveau à l'abordage !
+        </div>
+    {% else %}
     {% if paginate %}
         {% include 'store/paginate.html' %}
     {% endif %}

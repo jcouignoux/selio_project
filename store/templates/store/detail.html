@@ -23,16 +23,16 @@
     </div>
     {% if user.is_staff %}
     <div class="card col-4">
-        <div class="text-center">Magasin</div>
-        <form class="form-group" action="{% url 'store:detail' ouvrage_id=ouvrage.id %}" method="post">
+        <div class="card-header fw-bolder text-center">Magasin</div>
+        <form class="form-group card-body h-75" action="{% url 'store:detail' ouvrage_id=ouvrage.id %}" method="post">
             {% csrf_token %}
             {% bootstrap_form Vform %}{{ Vform.media }}
             <button type="submit" class="btn btn-dark btn-outline-secondary mt-auto text-white">Vendre</button>
         </form>
     </div>
     <div class="card col-3">
-        <div class="text-center">Arrivage</div>
-        <form class="form-group" action="{% url 'store:detail' ouvrage_id=ouvrage.id %}" method="post">
+        <div class="card-header fw-bolder text-center">Arrivage</div>
+        <form class="form-group card-body h-75" action="{% url 'store:detail' ouvrage_id=ouvrage.id %}" method="post">
             {% csrf_token %}
             {% bootstrap_form Aform %}{{ Aform.media }}
             <button type="submit" class="btn btn-dark btn-outline-secondary mt-auto text-white">Valider</button>
@@ -40,14 +40,14 @@
     </div>
     {% else %}
     <div class="card col-5">
-        <div class="fw-bolder">Note de la SELIO</div><br />
+        <div class="card-header fw-bolder text-center">Note de la SELIO</div><br />
             {% if ouvrage.note != None %}
-                <p class="truncate">{{ ouvrage.note }}</p>
+                <p class="card-body text-justify">{{ ouvrage.note }}</p>
             {% endif %}
     </div>
     <div class="card col-2">
-        <div class="fw-bolder">Quantité</div><br />
-        <form class="form-label" action="{% url 'store:add_to_basket' %}" method="post">
+        <div class="card-header fw-bolder text-center">Quantité</div><br />
+        <form class="form-label card-body" action="{% url 'store:add_to_basket' %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="ouvrage_id" value="{{ ouvrage.id }}" >
             <input class="form-control" type="number" name="quantity" min="1" step="1" value="1" placeholder="Quantité"><br />

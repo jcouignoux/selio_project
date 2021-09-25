@@ -5,6 +5,7 @@
 <hr class="detail-separator">
 <h1 class="intro-text text-center">Commandes en Cours</h1>
 <hr class="detail-separator">
+<section class="bg-light py-5">
 {% if user.is_staff %}
     <div class="container px-4 px-lg-4">
         <form class="d-flex" action="{% url 'store:booking' %}" method="POST">
@@ -94,7 +95,7 @@
                     {% if 'D' in booking.status %}
                         <button type="submit" name="action" value="D" class="btn btn-danger">Supprimé</button>
                     {% else %}
-                        <button type="submit" name="action" value="D" class="btn btn-danger" onclick="return confirm('Etes-vous sûr ?');">Supprimé</button>
+                        <button type="submit" name="action" value="D" class="btn btn-danger" onclick="return confirm('Etes-vous sûr ?');">Supprimer</button>
                     {% endif %}
                 </form>
             </td>
@@ -103,4 +104,5 @@
     </tbody></table>
 {% include "store/item_modal.html" %}
 {% endif %}
+</section>
 {% endblock %}
