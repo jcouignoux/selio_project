@@ -56,7 +56,7 @@
             </div>
         {% endif %}<br /><br />
         {% if user.is_authenticated %}
-                {% csrf_token %}
+            <div class="row">
                 <input type="hidden" name="basket" value="{{ basket }}" >
                 <div class="col-10">
                     {% include 'store/contact_detail.html' %}
@@ -64,8 +64,9 @@
                 <form class="col-2" action="{% url 'store:basket' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="basket" value="{{ basket }}" >
-                    <button type="submit" class="btn btn-dark btn-outline-secondary mt-auto text-white" onclick="return confirm('Merci de confirmer');">Commander</button>
+                    <button type="submit" class="btn btn-light btn-outline-secondary mt-auto text-body" onclick="return confirm('Merci de confirmer');">Commander</button>
                 </form>
+            </div>
         {% else %}
             {% if errors %}
             <div>

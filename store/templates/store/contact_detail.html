@@ -3,17 +3,21 @@
 {% block content %}
 {% if user.is_staff or user.id == contact.user.id %}
     <div class="card container">
-        <form class="form-group row" action="{% url 'store:contact_detail' contact_id=contact.id %}" method="post">
+        <form class="form-group" action="{% url 'store:contact_detail' contact_id=contact.id %}" method="post">
             {% csrf_token %}
-                <div class="col-6">
+            <div class="row row-col-2">
+                <div class="col">
                     <p class="card-header fw-bolder text-center" for="{{ CForm_dsa.id_for_label }}">Adresse de facturation</p><br />
                     {% bootstrap_form CForm_dsa %}
                 </div>
-                <div class="col-6">
+                <div class="col">
                     <p class="card-header fw-bolder text-center" for="{{ CForm_dia.id_for_label }}">Adresse de livraison</p><br />
                     {% bootstrap_form CForm_dia %}
                 </div>
-                <button type="submit" class="btn btn-dark btn-outline-secondary mt-auto text-white">Modifier</button>
+            </div>
+            <div class="row">
+                <button type="submit" class="btn btn-light btn-outline-secondary mt-auto text-body col-2">Modifier</button>
+            </div>
         </form>
     </div>
 {% endif %}

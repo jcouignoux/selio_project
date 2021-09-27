@@ -11,7 +11,7 @@
         {% csrf_token %}
             {{ form.start_date }}{{ form.media }}
             {{ form.end_date }}{{ form.media }}
-            <input class="btn btn-outline-dark mt-auto" type="submit" value="Sélectionner" />
+            <input class="btn btn-light btn-outline-secondary mt-auto text-body" type="submit" value="Sélectionner" />
         </form>
     </div>
     <table class="table table-striped"><tbody>
@@ -46,6 +46,6 @@
     <form class="d-flex justify-content-center" action="{% url 'store:histBase' %}" method="POST">
         {% csrf_token %}
         <input type="hidden" value="{{ start_date }},{{ end_date }}" name="dateRange" />
-        <input class="btn btn-dark" type="submit" value="Exporter" />
+        <input class="btn btn-light btn-outline-secondary mt-auto text-body" type="submit" value="Exporter" />
     </form>
 {% endblock %}

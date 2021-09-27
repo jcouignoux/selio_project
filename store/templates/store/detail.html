@@ -27,7 +27,7 @@
         <form class="form-group card-body h-75" action="{% url 'store:detail' ouvrage_id=ouvrage.id %}" method="post">
             {% csrf_token %}
             {% bootstrap_form Vform %}{{ Vform.media }}
-            <button type="submit" class="btn btn-dark btn-outline-secondary mt-auto text-white">Vendre</button>
+            <button type="submit" class="btn btn-light btn-outline-secondary mt-auto text-body">Vendre</button>
         </form>
     </div>
     <div class="card col-3">
@@ -35,7 +35,7 @@
         <form class="form-group card-body h-75" action="{% url 'store:detail' ouvrage_id=ouvrage.id %}" method="post">
             {% csrf_token %}
             {% bootstrap_form Aform %}{{ Aform.media }}
-            <button type="submit" class="btn btn-dark btn-outline-secondary mt-auto text-white">Valider</button>
+            <button type="submit" class="btn btn-light btn-outline-secondary mt-auto text-body">Valider</button>
         </form>
     </div>
     {% else %}
@@ -52,7 +52,7 @@
             <input type="hidden" name="ouvrage_id" value="{{ ouvrage.id }}" >
             <input class="form-control" type="number" name="quantity" min="1" step="1" value="1" placeholder="Quantité"><br />
             <div>
-                <button type="submit" class="btn btn-dark btn-outline-secondary mt-auto text-white">Ajouter au Panier</button>
+                <button type="submit" class="btn btn-light btn-outline-secondary mt-auto text-body">Ajouter au Panier</button>
             </div>
         </form>
     </div>
