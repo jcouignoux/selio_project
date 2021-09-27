@@ -21,15 +21,15 @@
                             <div class="row">
                                 <div class="col-4">
                                     {% if ouvrage.picture != "" %}
-                                        <img class="card-img-top img-height-fix" src="{% static 'store/couv/' %}{{ ouvrage.picture }}" alt="..." />
+                                        <img class="card card-img-top img-height-fix" src="{% static 'store/couv/' %}{{ ouvrage.picture }}" alt="..." />
                                     {% else %}
-                                        <img class="card-img-top img-height-fix" src="{% static 'store/couv/' %}sans-couverture.png" alt="..." />
+                                        <img class="card card-img-top img-height-fix" src="{% static 'store/couv/' %}sans-couverture.png" alt="..." />
                                     {% endif %}
                                 </div>
                                 <div class="col-8">
                                     <div class="card-body h-75 p-4">
                                         <div class="text-center">
-                                            <h5 class="fw-bolder">{{ ouvrage.title}}</h5>
+                                            <h5 class="fw-bolder">{{ ouvrage.title|title }}</h5>
                                             <span class="text-muted">{{ ouvrage.price }} €</span>
                                         </div>
                                     </div>

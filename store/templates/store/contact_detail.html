@@ -6,11 +6,11 @@
         <form class="form-group row" action="{% url 'store:contact_detail' contact_id=contact.id %}" method="post">
             {% csrf_token %}
                 <div class="col-6">
-                    <p class="form-control bg-dark fs-5 fw-bold text-light" for="{{ CForm_dsa.id_for_label }}">Adresse de facturation</p><br />
+                    <p class="card-header fw-bolder text-center" for="{{ CForm_dsa.id_for_label }}">Adresse de facturation</p><br />
                     {% bootstrap_form CForm_dsa %}
                 </div>
                 <div class="col-6">
-                    <p class="form-control bg-dark fs-5 fw-bold text-light" for="{{ CForm_dia.id_for_label }}">Adresse de livraison</p><br />
+                    <p class="card-header fw-bolder text-center" for="{{ CForm_dia.id_for_label }}">Adresse de livraison</p><br />
                     {% bootstrap_form CForm_dia %}
                 </div>
                 <button type="submit" class="btn btn-dark btn-outline-secondary mt-auto text-white">Modifier</button>

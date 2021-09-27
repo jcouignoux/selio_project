@@ -8,8 +8,8 @@
         <h1 class="intro-text text-center">{{ contact.default_shipping_address.first_name }} {{ contact.default_shipping_address.last_name }}</h1>
         <hr class="detail-separator">
         <div class="row">
-            <div class="col-3">
-                <label class="form-control bg-dark fs-5 fw-bold text-light">Mes Identifiants</label><br />
+            <div class="card col-3">
+                <label class="card-header fw-bolder text-center">Mes Identifiants</label><br />
                 <a class="open-item text-decoration-none text-body" href="{% url 'store:user_detail' user_id=user.id %}"
                     data-popup-url="{% url 'store:user_detail' user_id=user.id %}">
                     {{ contact.user.username }}</a>
@@ -26,16 +26,14 @@
             </div>
         
             <div class="card col-3">
-                <div class="row form-group">
-                    <label class="form-control bg-dark fs-5 fw-bold text-light">Historique de Commandes</label><br />
-                    {% for booking in contact.bookings.all %}
-                        <p><a class="open-item text-decoration-none text-body" href="{% url 'store:booking_detail' booking_id=booking.id %}"
-                            data-popup-url="{% url 'store:booking_detail' booking_id=booking.id %}">
-                            <i class="bi bi-basket3 me-1"></i> Commande N° {{ booking.id }}<br />
-                            du {{ booking.created_at }}
-                        </a></p>
-                    {% endfor %}
-                </div>
+                <label class="card-header fw-bolder text-center">Historique de Commandes</label><br />
+                {% for booking in contact.bookings.all %}
+                    <p><a class="open-item text-decoration-none text-body" href="{% url 'store:booking_detail' booking_id=booking.id %}"
+                        data-popup-url="{% url 'store:booking_detail' booking_id=booking.id %}">
+                        <i class="bi bi-basket3 me-1"></i> Commande N° {{ booking.id }}<br />
+                        du {{ booking.created_at }}
+                    </a></p>
+                {% endfor %}
             </div>
         </div>
     </div>
