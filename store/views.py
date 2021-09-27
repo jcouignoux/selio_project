@@ -16,7 +16,7 @@ from django.forms import formset_factory
 
 
 from .models import Address, Ouvrage, Author, Publisher, Categorie, Contact, Booking, BookingDetail, History
-from .forms import BookingForm, ConnexionForm, UserForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, AddressForm, MessageForm
+from .forms import BookingForm, ConnexionForm, UserForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, AddressForm, MessageForm, ContactForm
 from .store import add_to_history, send_email
 from .contacts import create_contact
 from .xlsx import xlsx, exportXLSX
@@ -342,7 +342,8 @@ def booking(request):
 
     if request.method == 'POST':
         booking_list = Booking.objects.all().order_by('created_at')
-        BForm = BookingForm(request.POST, error_class=ParagraphErrorList)   
+        BForm = BookingForm(request.POST, error_class=ParagraphErrorList)
+        CForm = ContactForm(request.POST, error_class=ParagraphErrorList)
         action = request.POST.get('action')
         if action == 'X':
             booking_detail_id = request.POST.get('booking_detail_id')
@@ -366,24 +367,32 @@ def booking(request):
             if action == "D":
                 booking.delete()
         else:
-            if BForm.is_valid():
-                status = BForm.cleaned_data.get('status')
-                # booking_list = Booking.objects.filter(status__contains=status).order_by('created_at')
-                my_filter_qs = Q()
-                for stat in status:
-                    # my_filter_qs = my_filter_qs | Q(status__contains=[stat])
-                    my_filter_qs = my_filter_qs | Q(status=stat)
-                # booking_list = Booking.objects.in_bulk(status)
-                booking_list = Booking.objects.filter(my_filter_qs).order_by('created_at')
-                # booking_list = Booking.objects.filter(status__0=status).order_by('created_at')
+            if BForm.is_valid() or CForm.is_valid():
+                my_filter_cs = Q()
+                print(CForm.data.get('contact'))
+                if CForm.is_valid():
+                    if CForm.data.get('contact') != "":
+                        contact = CForm.cleaned_data.get('contact')
+                        my_filter_c = Q(contact=contact)
+                    else:
+                        my_filter_c = Q()
+                    if BForm.is_valid():
+                        status = BForm.cleaned_data.get('status')
+                        my_filter_s = Q()
+                        for stat in status:
+                            my_filter_s = my_filter_s | Q(status=stat)
+                    my_filter_cs = my_filter_c & my_filter_s
+                print(my_filter_cs)
+                booking_list = Booking.objects.filter(my_filter_cs).order_by('created_at')
 
     else:
         BForm = BookingForm()
-        # booking_list = Booking.objects.filter(contacted=False).order_by('created_at')
+        CForm = ContactForm()
         booking_list = Booking.objects.exclude(status='S').order_by('created_at')
         
     context['bookings_list_sel']=booking_list
     context['BForm']=BForm
+    context['CForm']=CForm
 
     return render(request, 'store/booking.html', context)
 

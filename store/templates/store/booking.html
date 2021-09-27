@@ -1,5 +1,6 @@
 {% extends 'store/base.html' %}
 {% load static %}
+{% load bootstrap4 %}
 
 {% block content %}
 <hr class="detail-separator">
@@ -7,12 +8,19 @@
 <hr class="detail-separator">
 <section class="bg-light py-5">
 {% if user.is_staff %}
-    <div class="container px-4 px-lg-4">
-        <form class="d-flex" action="{% url 'store:booking' %}" method="POST">
-            {% csrf_token %}
-            {{ BForm.as_p }}
-            <input class="btn" type="submit" value="Filtrer" />
-        </form>
+    <div class="container">
+            <form class="row" action="{% url 'store:booking' %}" method="POST">
+                {% csrf_token %}
+                <div class="col-2">
+                    {% bootstrap_form CForm %}
+                </div>
+                <div class="col-2">
+                    {% bootstrap_form BForm %}
+                </div>
+                <div class="col-2">
+                    <input class="btn btn-light btn-outline-secondary mt-auto text-body" type="submit" value="Filtrer" />
+                </div>
+            </form>
     </div>
     <table class="table"><tbody>
         <th>Numéro</th>

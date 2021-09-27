@@ -60,6 +60,20 @@ class UserForm(ModelForm):
         }
 
 
+# class ContactForm(forms.Form):
+#     contacts = Contact.objects.all()
+#     CHOICE = list(Contact.objects.all())
+#     contact = forms.ChoiceField(
+#         required=False,
+#         widget=forms.Select,
+#         choices=CHOICE,
+#     )
+class ContactForm(forms.Form):
+    contact = forms.ModelChoiceField(
+        queryset=Contact.objects.all(),
+        required=False,
+    )
+
 class AddressForm(ModelForm):
     class Meta:
         model = Address
