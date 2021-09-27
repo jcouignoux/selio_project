@@ -8,18 +8,8 @@
         <h1 class="intro-text text-center">{{ contact.default_shipping_address.first_name }} {{ contact.default_shipping_address.last_name }}</h1>
         <hr class="detail-separator">
         <div class="row">
-            <div class="card col-3">
-                <label class="card-header fw-bolder text-center">Mes Identifiants</label><br />
-                <a class="open-item text-decoration-none text-body" href="{% url 'store:user_detail' user_id=user.id %}"
-                    data-popup-url="{% url 'store:user_detail' user_id=user.id %}">
-                    {{ contact.user.username }}</a>
-                {% if messages %}
-                    {% for message in messages %}
-                    {% autoescape off %}
-                        <p class="">{{ message }}</p>
-                    {% endautoescape %}
-                    {% endfor %}
-                {% endif %}
+            <div class="col-3">
+                {% include "store/user_detail.html" %}
             </div>
             <div class="col-6">
                 {% include 'store/contact_detail.html' %}
@@ -37,7 +27,6 @@
             </div>
         </div>
     </div>
-    {% include "store/item_modal.html" %}
     {% endif %}
 </section>
 {% endblock %}

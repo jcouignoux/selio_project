@@ -452,13 +452,8 @@ def contact_detail(request, contact_id):
     }
 
     if request.method == "POST":
-        # AFormSet = AddressFormSet(queryset=Address.objects.filter(contact=contact).order_by('id'))
-        CForm_dsa = AddressForm(request.POST)
-        CForm_dia = AddressForm(request.POST)
-        # if CForm_dsa.is_valid():
-        #     print('dsa')
-        # if CForm_dia.is_valid():
-        #     print('dia')
+        CForm_dsa = AddressForm(request.POST, error_class=ParagraphErrorList)
+        CForm_dia = AddressForm(request.POST, error_class=ParagraphErrorList)
         if request.user.is_staff:
             return redirect(reverse('store:contact'))
         else:
@@ -477,27 +472,12 @@ def user_detail(request, user_id):
 
     user = get_object_or_404(User, id=user_id)
     contact = get_object_or_404(Contact, user=user)
-    context = {}
+    UForm = UserForm(user.__dict__)
+    context = {
+        'contact': contact,
+        'UForm': UForm,
+    }
     
-    if request.method == "POST":
-        context['messages'] = []
-        password = request.POST.get('new_password')
-        control_password = request.POST.get('control_password')
-        print(password, control_password)
-        if control_password == password:
-            # response = user.set_password(password)
-            response = True
-            if response:
-                context['messages'].append("Votre mot de passe a été modifié.")
-            else:
-                context['messages'].append(response)
-            return redirect(reverse('store:profil', kwargs={'contact_id': contact.id}), context)
-        else:
-            context['messages'].append("Vos mots de passe ne correspondent pas.")
-            # return redirect(reverse('store:profil', kwargs={'contact_id': contact.id}), context)
-            return redirect(request.path_info, context)
-
-
     return render(request, 'store/user_detail.html', context)
 
 @login_required
@@ -507,15 +487,35 @@ def profil(request, contact_id):
     CForm_dia = AddressForm(contact.default_invoicing_address.__dict__)
     user = get_object_or_404(User, id=contact.user.id)
     UForm = UserForm(user.__dict__)
-    context = {
-        'contact': contact,
-        'CForm_dsa': CForm_dsa,
-        'CForm_dia': CForm_dia,
-        'UForm': UForm,
-    }
+    context = {}
+
+    if request.method == "POST":
+        if request.POST.get('update') == 'password':
+            UForm = UserForm(data=request.POST, instance=request.user)
+            if UForm.is_valid():
+                context['messages'] = []
+                context['errors'] = []
+                password = request.POST.get('new_password')
+                control_password = request.POST.get('control_password')
+                print(password, control_password)
+                if control_password == password:
+                    # response = user.set_password(password)
+                    response = True
+                    if response:
+                        context['messages'].append("Votre mot de passe a été modifié.")
+                        print(context['messages'])
+                else:
+                    context['errors'].append("Vos mots de passe ne correspondent pas.")
+
+
+    context['contact'] = contact
+    context['CForm_dsa'] = CForm_dsa
+    context['CForm_dia'] = CForm_dia
+    context['UForm'] = UForm
 
     return render(request, 'store/profil.html', context)
 
+ 
 @login_required
 def dataBase(request):
     if request.method == "POST":
@@ -526,6 +526,7 @@ def dataBase(request):
         pass
 
     return render(request, 'store/db.html')
+
 
 @login_required
 def histBase(request):
@@ -602,16 +603,6 @@ def connexion(request):
     context['UForm'] = UForm    
 
     return render(request, 'store/login.html', context)
-
- 
-def update_contact(request):
-
-    if request.method == "POST":
-        UForm = UserForm(data=request.POST, instance=request.user)
-        if UForm.is_valid():
-            pass
-    else:
-        pass
 
 
 @login_required    

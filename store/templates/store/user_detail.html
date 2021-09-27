@@ -2,26 +2,31 @@
 
 {% block content %}
 {% if user.is_staff or user.is_authenticated %}
-    <div class="card  container">
-        <p class="form-control bg-dark fs-5 fw-bold text-light" for="{{ UForm.id_for_label }}">Identifiants</p><br />
-        <div class="col">
-            {{ user.email }}
-        </div>
-        <form class="row justify-items-center" action="{% url 'store:user_detail' user_id=user.id %}" method="POST">
+    <div class="card container">
+        <p class="card-header fw-bolder text-center" for="{{ UForm.id_for_label }}">Mes Identifiants</p><br />
+        <form class="row justify-items-center" action="{% url 'store:profil' contact_id=contact.id %}" method="POST">
             {% csrf_token %}
-            <input type="password" name="new_password" placeholder="Entrez votre nouveau mot de passe" required></input>
-            <input type="password" name="control_password" placeholder="Entrez de nouveau votre nouveau mot de passe" required></input>
+            {% bootstrap_form UForm %}
+            <input type="password" class="form-control" name="new_password" placeholder="Entrez votre nouveau mot de passe" required></input><br />
+            <input type="password" class="form-control" name="control_password" placeholder="Entrez de nouveau votre nouveau mot de passe" required></input>
+            {% if errors %}
+                {% for error in errors %}
+                {% autoescape off %}
+                    <p class="alert-danger">{{ error }}</p>
+                {% endautoescape %}
+                {% endfor %}
+            {% endif %}
             <div class="justify-items-center row">
-                <button type="submit" name="updatePwd" class="btn btn-light">Modifier mon Mot de Passe</button><br />
+                <button type="submit" value="password" name="update" class="btn btn-light">Modifier</button><br />
             </div>
+            {% if messages %}
+                {% for message in messages %}
+                {% autoescape off %}
+                    <p class="alert-success">{{ message }}</p>
+                {% endautoescape %}
+                {% endfor %}
+            {% endif %}
         </form>
-        {% if messages %}
-            {% for message in messages %}
-            {% autoescape off %}
-                <p class="">{{ message }}</p>
-            {% endautoescape %}
-            {% endfor %}
-        {% endif %}
     </div>
 {% endif %}
 {% endblock %}
