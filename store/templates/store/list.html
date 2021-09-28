@@ -3,7 +3,41 @@
 <hr class="detail-separator">
 <h1 class="intro-text text-center">Nos Ouvrages</h1>
 <hr class="detail-separator">
-    <section class="bg-light py-1">
+    <section class="bg-light py-1"><br />
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            <div class="d-flex col">
+                <div class="dropdown-toggle active px-4 px-lg-5" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Catégories</div>
+                <select class="dropdown-menu" aria-labelledby="navbarDropdown" size="8" onchange="location = this.value;">
+                    {% for category in categories_list %}
+                    <option class="dropdown-item" value="{% url 'store:store' select_type='categories' select_id=category.id %}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+                <div class="dropdown-toggle active px-4 px-lg-5" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Auteurs</div>
+                <select class="dropdown-menu" aria-labelledby="navbarDropdown" size="8" onchange="location = this.value;">
+                    {% for author in authors_list %}
+                    <option class="dropdown-item" value="{% url 'store:store' select_type='authors' select_id=author.id %}">{{ author.name }}</option>
+                    {% endfor %}
+                </select>
+                <div class="dropdown-toggle active px-4 px-lg-5" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Editeurs</div>
+                <select class="dropdown-menu" aria-labelledby="navbarDropdown" size="8" onchange="location = this.value;">
+                    {% for publisher in publishers_list %}
+                    <option class="dropdown-item" value="{% url 'store:store' select_type='publishers' select_id=publisher.id %}">{{ publisher.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <form class="d-flex col" action="{% url 'store:store' select_type='All' select_id='All' %}" method="POST">
+                {% csrf_token %}
+                <input class="search col" type="search" name="search" value="{{ search }}" placeholder="Recherche dans les titres">
+                <button class="btn btn-outline-dark mt-auto" type="submit"> 
+                    <i class="bi bi-search me-1"></i>
+                </button>
+            </form>
+        </div>
+        {% if type_filter %}
+            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 offcanvas-title justify-content-center">
+                {{ type_filter }} : {{ sel_id }}
+            </div>
+        {% endif %}
     {% if ouvrages|length_is:"0" %}
         <div class="text-center">
             Palsambleu ! Nous n'avons trouvé aucun résultat à cette requête. Même pas de quoi se ronger la chique !
@@ -21,19 +55,19 @@
                             <div class="row">
                                 <div class="col-4">
                                     {% if ouvrage.picture != "" %}
-                                        <img class="card card-img-top img-height-fix" src="{% static 'store/couv/' %}{{ ouvrage.picture }}" alt="..." />
+                                        <img class="cardcard-img-top img-height-fix" src="{% static 'store/couv/' %}{{ ouvrage.picture }}" alt="..." />
                                     {% else %}
-                                        <img class="card card-img-top img-height-fix" src="{% static 'store/couv/' %}sans-couverture.png" alt="..." />
+                                        <img class="card-img-top img-height-fix" src="{% static 'store/couv/' %}sans-couverture.png" alt="..." />
                                     {% endif %}
                                 </div>
                                 <div class="col-8">
-                                    <div class="card-body h-75 p-4">
+                                    <div class="card-body h-75">
                                         <div class="text-center">
                                             <h5 class="fw-bolder">{{ ouvrage.title|title }}</h5>
                                             <span class="text-muted">{{ ouvrage.price }} €</span>
                                         </div>
                                     </div>
-                                    <div class="card-footer h-25 p-4 pt-0 border-top-0 bg-transparent">
+                                    <div class="card-footer h-25 border-top-0 bg-transparent bottom-0">
                                             <a class="open-item btn btn-outline-dark mt-auto" href="{% url 'store:detail' ouvrage_id=ouvrage.id %}"
                                             data-popup-url="{% url 'store:detail' ouvrage_id=ouvrage.id %}">
                                             Sélectionner

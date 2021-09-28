@@ -47,10 +47,11 @@ def propos(request):
     return render(request, 'store/propos.html', context)
 
 def store(request, select_type, select_id):
+    context = {}
     if request.method == 'POST':
         search = request.POST['search']
         ouvrages_list = Ouvrage.objects.filter(title__icontains=search).order_by('title')
-        context = {}
+        context['search'] = search
     else:
         if select_type != 'All':
             if select_type == 'categories':
@@ -91,24 +92,7 @@ def store(request, select_type, select_id):
 
 def detail(request, ouvrage_id):
     ouvrage = get_object_or_404(Ouvrage, pk=ouvrage_id)
-    # auteurs = " et ".join([auteur.name for auteur in ouvrage.auteurs.all()])
-    # auteurs_name = " ".join(auteurs)
-    # editeurs = " ".join([editeur.name for editeur in ouvrage.editeurs.all()])
-    # editeurs_name = " ".join(editeurs)
-    # categories = " ".join([categorie.name for categorie in ouvrage.categories.all()])
-    # categories_name = " ".join(categories)
     context = {
-        # 'ouvrage_id': ouvrage.id,
-        # 'ouvrage_title': ouvrage.title,
-        # 'ouvrage_reference': ouvrage.reference,
-        # 'auteurs_name': auteurs_name,
-        # 'editeurs_name': editeurs_name,
-        # 'categories_name': categories_name,
-        # 'ouvrage_publication': ouvrage.publication,
-        # 'ouvrage_price': ouvrage.price,
-        # 'ouvrage_stock': ouvrage.stock,
-        # 'ouvrage_picture': ouvrage.picture,
-        # 'ouvrage_note': ouvrage.note,
         'ouvrage': ouvrage,
     }
     if request.method == 'POST':
