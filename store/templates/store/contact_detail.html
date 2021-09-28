@@ -3,21 +3,37 @@
 {% block content %}
 {% if user.is_staff or user.id == contact.user.id %}
     <div class="card container">
-        <form class="form-group" action="{% url 'store:contact_detail' contact_id=contact.id %}" method="post">
+        <form class="form-group" action="{% url 'store:profil' contact_id=contact.id %}" method="post">
             {% csrf_token %}
             <div class="row row-col-2">
                 <div class="col">
-                    <p class="card-header fw-bolder text-center" for="{{ CForm_dsa.id_for_label }}">Adresse de facturation</p><br />
+                    <p class="card-header fw-bolder text-center form-title" for="{{ CForm_dsa.id_for_label }}">Adresse de facturation</p><br />
                     {% bootstrap_form CForm_dsa %}
                 </div>
                 <div class="col">
-                    <p class="card-header fw-bolder text-center" for="{{ CForm_dia.id_for_label }}">Adresse de livraison</p><br />
+                    <p class="card-header fw-bolder text-center form-title" for="{{ CForm_dia.id_for_label }}">Adresse de livraison</p><br />
                     {% bootstrap_form CForm_dia %}
                 </div>
             </div>
-            <div class="row">
-                <button type="submit" class="btn btn-light btn-outline-secondary mt-auto text-body col-2">Modifier</button>
-            </div>
+            {% if not user.is_staff %}
+                <div class="row">
+                    <button type="submit" value="address" name="update" class="btn btn-light btn-outline-secondary mt-auto text-body col-2">Modifier</button>
+                </div>
+                {% if adr_errors %}
+                    {% for error in adr_errors %}
+                    {% autoescape off %}
+                        <p class="alert-danger">{{ error }}</p>
+                    {% endautoescape %}
+                    {% endfor %}
+                {% endif %}
+                {% if adr_messages %}
+                    {% for message in adr_messages %}
+                    {% autoescape off %}
+                        <p class="alert-success">{{ message }}</p>
+                    {% endautoescape %}
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
         </form>
     </div>
 {% endif %}

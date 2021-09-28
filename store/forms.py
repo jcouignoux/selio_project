@@ -75,11 +75,24 @@ class ContactForm(forms.Form):
     )
 
 class AddressForm(ModelForm):
+    #extra_field = Contact
+
     class Meta:
         model = Address
+        # fields = '__all__'
         fields = ['gender', 'first_name', 'last_name', 'address', 'additional_address',
                   'postcode', 'city', 'phone', 'mobilephone']
-
+# 
+    # def __init__(self, *args, **kwargs):
+    #     initial = kwargs.get('initial', None)
+    #     updated_initial = {}
+    #     if initial:
+    #         user = initial.get('user', None)
+    #         if user:
+    #             contact = Contact.objects.filter(user=user).first()
+    #             updated_initial['contact'] = getattr(contact, 'contact', None)
+    #     kwargs.update(initial=updated_initial)
+    #     super(AddressForm, self).__init__(*args, **kwargs)
 
 
 AddressFormSet = modelformset_factory(Address, form=AddressForm, extra=0, max_num=2)

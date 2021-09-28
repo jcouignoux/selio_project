@@ -406,26 +406,6 @@ def booking_detail(request, booking_id):
 
     return render(request, 'store/booking_detail.html', context)
 
-@login_required
-def history(request):
-    if request.method == "POST":
-        form = DateRangeForm(request.POST)
-        start_date = form.data['start_date']
-        end_date = form.data['end_date']
-        histories = History.objects.filter(date__range=(start_date, end_date))
-    else:
-        form = DateRangeForm()
-        histories = History.objects.all()
-        start_date = 'old'
-        end_date = 'new'
-
-    context = {
-        'form': form,
-        'histories': histories,
-        'start_date': start_date,
-        'end_date': end_date,
-    }
-    return render(request, 'store/history.html', context)
 
 @login_required
 def contact(request):
@@ -447,23 +427,13 @@ def contact(request):
 def contact_detail(request, contact_id):
 
     contact = get_object_or_404(Contact, id=contact_id)
+    CForm_dsa = AddressForm(instance=contact.default_shipping_address)
+    CForm_dia = AddressForm(instance=contact.default_invoicing_address)
     context = {
         'contact': contact,
+        'CForm_dsa': CForm_dsa,
+        'CForm_dia': CForm_dia,
     }
-
-    if request.method == "POST":
-        CForm_dsa = AddressForm(request.POST, error_class=ParagraphErrorList)
-        CForm_dia = AddressForm(request.POST, error_class=ParagraphErrorList)
-        if request.user.is_staff:
-            return redirect(reverse('store:contact'))
-        else:
-            return redirect(reverse('store:profil', kwargs={'contact_id': contact.id}))
-    else:
-        CForm_dsa = AddressForm(contact.default_shipping_address.__dict__)
-        CForm_dia = AddressForm(contact.default_invoicing_address.__dict__)
-    
-    context['CForm_dsa'] = CForm_dsa
-    context['CForm_dia'] = CForm_dia
 
     return render(request, 'store/contact_detail.html', context)
 
@@ -472,7 +442,7 @@ def user_detail(request, user_id):
 
     user = get_object_or_404(User, id=user_id)
     contact = get_object_or_404(Contact, user=user)
-    UForm = UserForm(user.__dict__)
+    UForm = UserForm(instance=user)
     context = {
         'contact': contact,
         'UForm': UForm,
@@ -480,33 +450,92 @@ def user_detail(request, user_id):
     
     return render(request, 'store/user_detail.html', context)
 
+
 @login_required
 def profil(request, contact_id):
     contact = get_object_or_404(Contact, id=contact_id)
-    CForm_dsa = AddressForm(contact.default_shipping_address.__dict__)
-    CForm_dia = AddressForm(contact.default_invoicing_address.__dict__)
     user = get_object_or_404(User, id=contact.user.id)
-    UForm = UserForm(user.__dict__)
     context = {}
 
     if request.method == "POST":
+        UForm = UserForm(data=request.POST, instance=user, error_class=ParagraphErrorList)
+        CForm_dsa = AddressForm(data=request.POST, initial=contact.default_shipping_address.__dict__, error_class=ParagraphErrorList, prefix="CForm_dsa")
+        CForm_dia = AddressForm(data=request.POST, initial=contact.default_invoicing_address.__dict__, error_class=ParagraphErrorList, prefix="CForm_dia")
         if request.POST.get('update') == 'password':
-            UForm = UserForm(data=request.POST, instance=request.user)
-            if UForm.is_valid():
-                context['messages'] = []
-                context['errors'] = []
+            print(UForm.has_changed())
+            if UForm.is_valid() and UForm.has_changed():
+                context['pwd_messages'] = []
+                context['pwd_errors'] = []
                 password = request.POST.get('new_password')
                 control_password = request.POST.get('control_password')
-                print(password, control_password)
                 if control_password == password:
                     # response = user.set_password(password)
                     response = True
                     if response:
-                        context['messages'].append("Votre mot de passe a été modifié.")
-                        print(context['messages'])
+                        context['pwd_messages'].append("Votre mot de passe a été modifié.")
                 else:
-                    context['errors'].append("Vos mots de passe ne correspondent pas.")
+                    context['pwd_errors'].append("Vos mots de passe ne correspondent pas.")
+            CForm_dsa = AddressForm(instance=contact.default_shipping_address, prefix="CForm_dsa")
+            CForm_dia = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia")
+        else:
+            UForm = UserForm(instance=user)
 
+        if request.POST.get('update') == 'address':
+            context['adr_messages'] = []
+            context['adr_errors'] = []
+            print(CForm_dsa.has_changed())
+            print(CForm_dia.has_changed())
+            if CForm_dsa.is_valid() and CForm_dsa.has_changed():
+                # CForm_dsa.save(commit=False)
+                # CForm_dsa.cleaned_data['contact'] = contact
+                # CForm_dsa.save()
+                # print(CForm_dsa.cleaned_data)
+                ad = Address.objects.filter(id=contact.default_shipping_address.id).first()
+                # for key, value in dict(CForm_dsa.cleaned_data):
+                #     print(key, value)
+                #     ad[key] = value
+                ad.gender = CForm_dsa.cleaned_data['gender']
+                ad.first_name = CForm_dsa.cleaned_data['first_name']
+                ad.last_name = CForm_dsa.cleaned_data['last_name']
+                ad.address = CForm_dsa.cleaned_data['address']
+                ad.additional_address = CForm_dsa.cleaned_data['additional_address']
+                ad.postcode = CForm_dsa.cleaned_data['postcode']
+                ad.city = CForm_dsa.cleaned_data['city']
+                ad.phone = CForm_dsa.cleaned_data['phone']
+                ad.mobilephone = CForm_dsa.cleaned_data['mobilephone']
+                ad.save()
+                contact.default_shipping_address.refresh_from_db()
+                response = True
+                if response:
+                    context['adr_messages'].append("Votre adresse a été modifiée.")
+                else:
+                    context['adr_errors'].append("erreur.")
+            if CForm_dia.is_valid() and CForm_dia.has_changed():
+                ad = Address.objects.filter(id=contact.default_invoicing_address.id).first()
+                ad.gender = CForm_dia.cleaned_data['gender']
+                ad.first_name = CForm_dia.cleaned_data['first_name']
+                ad.last_name = CForm_dia.cleaned_data['last_name']
+                ad.address = CForm_dia.cleaned_data['address']
+                ad.additional_address = CForm_dia.cleaned_data['additional_address']
+                ad.postcode = CForm_dia.cleaned_data['postcode']
+                ad.city = CForm_dia.cleaned_data['city']
+                ad.phone = CForm_dia.cleaned_data['phone']
+                ad.mobilephone = CForm_dia.cleaned_data['mobilephone']
+                ad.save()
+                contact.default_invoicing_address.refresh_from_db()
+                response = True
+                if response:
+                    context['adr_messages'].append("Votre adresse a été modifiée.")
+                else:
+                    context['adr_errors'].append("erreur.")
+            
+            CForm_dsa = AddressForm(instance=contact.default_shipping_address, prefix="CForm_dsa")
+            CForm_dia = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia")
+            UForm = UserForm(instance=user)
+    else:
+        CForm_dsa = AddressForm(instance=contact.default_shipping_address, prefix="CForm_dsa")
+        CForm_dia = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia")
+        UForm = UserForm(instance=user)
 
     context['contact'] = contact
     context['CForm_dsa'] = CForm_dsa
@@ -515,7 +544,29 @@ def profil(request, contact_id):
 
     return render(request, 'store/profil.html', context)
 
+
+@login_required
+def history(request):
+    if request.method == "POST":
+        form = DateRangeForm(request.POST)
+        start_date = form.data['start_date']
+        end_date = form.data['end_date']
+        histories = History.objects.filter(date__range=(start_date, end_date))
+    else:
+        form = DateRangeForm()
+        histories = History.objects.all()
+        start_date = 'old'
+        end_date = 'new'
+
+    context = {
+        'form': form,
+        'histories': histories,
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+    return render(request, 'store/history.html', context)
  
+
 @login_required
 def dataBase(request):
     if request.method == "POST":
