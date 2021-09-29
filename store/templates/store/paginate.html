@@ -5,7 +5,7 @@
             <ul class="pagination">
             {% if ouvrages.has_previous %}
                 <li class="page-item">
-                    <a class="btn btn-outline-secondary mt-auto" href="?page=1"><i class="bi bi-chevron-bar-left me-1"></i></a>
+                    <a class="btn btn-outline-secondary mt-auto" href="?page=1"><i class="bi bi-chevron-bar-left ps-1 me-1"></i></a>
                 </li>
                 {% if ouvrages.previous_page_number|add:'-1' >= 1 %}
                     <li class="page-item">
@@ -27,7 +27,7 @@
                     </li>
                 {% endif %}
                 <li class="page-item">
-                    <a class="btn btn-outline-secondary mt-auto" href="?page={{ ouvrages.paginator.num_pages }}"><i class="bi bi-chevron-bar-right me-1"></i></a>
+                    <a class="btn btn-outline-secondary mt-auto" href="?page={{ ouvrages.paginator.num_pages }}"><i class="bi bi-chevron-bar-right ps-1 me-1"></i></a>
                 </li>
             {% endif %}
             </ul>

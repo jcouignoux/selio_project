@@ -18,7 +18,7 @@ from django.forms import formset_factory
 from .models import Address, Ouvrage, Author, Publisher, Categorie, Contact, Booking, BookingDetail, History
 from .forms import BookingForm, ConnexionForm, UserForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, AddressForm, MessageForm, ContactForm
 from .store import add_to_history, send_email
-from .contacts import create_contact
+from .contacts import create_contact, create_contact_test
 from .xlsx import xlsx, exportXLSX
 from .basket import update_basket
 
@@ -215,17 +215,22 @@ def basket(request):
     context['errors'] = []
 
     if request.method == 'POST':
-        CForm_dsa = AddressForm(request.POST, error_class=ParagraphErrorList, prefix="CForm_dsa")
-        CForm_dia = AddressForm(request.POST, error_class=ParagraphErrorList, prefix="CForm_dia")
+        if request.user.is_authenticated:
+            CForm_dsa = AddressForm(request.POST, initial=contact.default_shipping_address.__dict__, error_class=ParagraphErrorList, prefix="CForm_dsa")
+            CForm_dia = AddressForm(request.POST, initial=contact.default_invoicing_address.__dict__, error_class=ParagraphErrorList, prefix="CForm_dia")
+        else:
+            CForm_dsa = AddressForm(request.POST, error_class=ParagraphErrorList, prefix="CForm_dsa")
+            CForm_dia = AddressForm(request.POST, error_class=ParagraphErrorList, prefix="CForm_dia")
 
-        print(request.POST.get('order'))
         if request.POST.get('order') == "commander":
             dict = {}
 
             if not 'basket' in request.session:
                 context['errors'].append("Votre panier est vide.")
-                context['CForm_dsa'] = CForm_dsa
-                context['CForm_dia'] = CForm_dia
+                # context['CForm_dsa'] = CForm_dsa
+                # context['CForm_dia'] = CForm_dia
+                context['CForm_dsa'] = AddressForm(instance=contact.default_shipping_address, prefix="CForm_dsa" )
+                context['CForm_dia'] = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia" )
                 return render(request, 'store/basket.html', context)
 
             if not request.user.is_authenticated:
@@ -300,12 +305,7 @@ def basket(request):
                 #    errors['error'] = e
                 return render(request, 'store/thanks.html', context)
             else:
-                if CForm_dsa.is_valid():
-                    context['CForm_dsa'] = CForm_dsa
-                if CForm_dia.is_valid():
-                    context['CForm_dia'] = CForm_dia
-                if not 'basket' in request.session:
-                    context['errors'].append("Votre panier est vide.")
+                context['errors'].append("Une erreur est survenue.")
     else:
         if not request.user.is_authenticated:
             if request.GET.get('check'):
@@ -358,7 +358,6 @@ def booking(request):
         else:
             if BForm.is_valid() or CForm.is_valid():
                 my_filter_cs = Q()
-                print(CForm.data.get('contact'))
                 if CForm.is_valid():
                     if CForm.data.get('contact') != "":
                         contact = CForm.cleaned_data.get('contact')
@@ -371,7 +370,6 @@ def booking(request):
                         for stat in status:
                             my_filter_s = my_filter_s | Q(status=stat)
                     my_filter_cs = my_filter_c & my_filter_s
-                print(my_filter_cs)
                 booking_list = Booking.objects.filter(my_filter_cs).order_by('created_at')
 
     else:
@@ -448,8 +446,8 @@ def profil(request, contact_id):
 
     if request.method == "POST":
         UForm = UserForm(data=request.POST, instance=user, error_class=ParagraphErrorList)
-        CForm_dsa = AddressForm(data=request.POST, initial=contact.default_shipping_address.__dict__, error_class=ParagraphErrorList, prefix="CForm_dsa")
-        CForm_dia = AddressForm(data=request.POST, initial=contact.default_invoicing_address.__dict__, error_class=ParagraphErrorList, prefix="CForm_dia")
+        CForm_dsa = AddressForm(request.POST, initial=contact.default_shipping_address.__dict__, error_class=ParagraphErrorList, prefix="CForm_dsa")
+        CForm_dia = AddressForm(request.POST, initial=contact.default_invoicing_address.__dict__, error_class=ParagraphErrorList, prefix="CForm_dia")
         if request.POST.get('update') == 'password':
             if UForm.is_valid() and UForm.has_changed():
                 context['pwd_messages'] = []
@@ -472,14 +470,7 @@ def profil(request, contact_id):
             context['adr_messages'] = []
             context['adr_errors'] = []
             if CForm_dsa.is_valid() and CForm_dsa.has_changed():
-                # CForm_dsa.save(commit=False)
-                # CForm_dsa.cleaned_data['contact'] = contact
-                # CForm_dsa.save()
-                # print(CForm_dsa.cleaned_data)
                 ad = Address.objects.filter(id=contact.default_shipping_address.id).first()
-                # for key, value in dict(CForm_dsa.cleaned_data):
-                #     print(key, value)
-                #     ad[key] = value
                 ad.gender = CForm_dsa.cleaned_data['gender']
                 ad.first_name = CForm_dsa.cleaned_data['first_name']
                 ad.last_name = CForm_dsa.cleaned_data['last_name']
@@ -518,6 +509,8 @@ def profil(request, contact_id):
             CForm_dsa = AddressForm(instance=contact.default_shipping_address, prefix="CForm_dsa")
             CForm_dia = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia")
             UForm = UserForm(instance=user)
+
+            return redirect(request.META.get('HTTP_REFERER'))
     else:
         CForm_dsa = AddressForm(instance=contact.default_shipping_address, prefix="CForm_dsa")
         CForm_dia = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia")
@@ -652,22 +645,38 @@ def deconnexion(request):
 
 
 def test(request):
+    context = {}
     
     if request.method == "POST":
-        address = 'j.couignoux@gmail.com'
-        booking = get_object_or_404(Booking, pk=30)
-        content = {
-            'subject': 'test email',
-            'message': 'contenu email',
-            'attachments': '',
-            'booking': booking,
-        }
-        response = str(send_email(address, content))
-        context = {
-            'message': response,
-        }
+        # address = 'j.couignoux@gmail.com'
+        # booking = get_object_or_404(Booking, pk=30)
+        # content = {
+        #     'subject': 'test email',
+        #     'message': 'contenu email',
+        #     'attachments': '',
+        #     'booking': booking,
+        # }
+        # response = str(send_email(address, content))
+        # context = {
+        #     'message': response,
+        # }
+        email = request.POST.get('email')
+        CForm_dsa = AddressForm(request.POST, error_class=ParagraphErrorList, prefix="CForm_dsa")
+        CForm_dia = AddressForm(request.POST, error_class=ParagraphErrorList, prefix="CForm_dia")
+        if CForm_dsa.is_valid():
+            if not CForm_dia.is_valid():
+                CForm_dia = CForm_dsa
+            contact = create_contact_test(email, CForm_dsa, CForm_dia)
+            context['contact'] = contact
+
     else:
-        context = {}
+        if request.GET.get('check'):
+            context['checked'] = request.GET.get('check')
+        CForm_dsa = AddressForm(prefix="CForm_dsa")
+        CForm_dia = AddressForm(prefix="CForm_dia")
+
+    context['CForm_dsa'] = CForm_dsa
+    context['CForm_dia'] = CForm_dia
 
     return render(request, 'store/test.html', context)
 
