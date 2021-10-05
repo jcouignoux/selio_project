@@ -2,20 +2,11 @@
 {% load bootstrap4 %}
 
 {% block content %}
-<div class="col mb-4">
-    <div class="card text-center">
-        {% if message %}
-            {{ message }}
-        {% endif %}
         {% if errors %}
-            <div>
-                {% for key, error in errors %}
-                    {% autoescape off %}
-                        {{ error }}
-                    {% endautoescape %}
-                {% endfor %}
-            </div>
+        {% include "store/popup.html" with errors=errors %}
         {% endif %}
+        <div class="col mb-4">
+            <div class="card text-center">
         <form class="form-group w-10 align-self-center" action="{% url 'store:login' %}" method="POST">
             {% csrf_token %}
             {% bootstrap_form UForm %}

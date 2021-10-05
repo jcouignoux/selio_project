@@ -11,11 +11,7 @@
                 <input type="password" class="form-control" name="new_password" placeholder="Entrez votre nouveau mot de passe" required></input><br />
                 <input type="password" class="form-control" name="control_password" placeholder="Entrez de nouveau votre nouveau mot de passe" required></input>
                 {% if pwd_errors %}
-                    {% for error in pwd_errors %}
-                    {% autoescape off %}
-                        <p class="alert-danger">{{ error }}</p>
-                    {% endautoescape %}
-                    {% endfor %}
+                    {% include "store/popup.html" with errors=pwd_errors %}
                 {% endif %}
                 <div class="justify-items-center row">
                     <button type="submit" value="password" name="update" class="btn btn-light btn-outline-secondary mt-auto text-body col-5">Modifier</button><br />

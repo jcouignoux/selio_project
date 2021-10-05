@@ -1,5 +1,4 @@
 from datetime import datetime
-import operator
 from django import forms
 from django.conf import settings
 from django.http.response import FileResponse, HttpResponse, HttpResponseRedirect
@@ -18,7 +17,7 @@ from django.forms import formset_factory
 from .models import Address, Ouvrage, Author, Publisher, Categorie, Contact, Booking, BookingDetail, History
 from .forms import BookingForm, ConnexionForm, UserForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, AddressForm, MessageForm, ContactForm
 from .store import add_to_history, send_email
-from .contacts import create_contact, create_contact_test
+from .contacts import create_contact, update_contact
 from .xlsx import xlsx, exportXLSX
 from .basket import update_basket
 
@@ -183,10 +182,7 @@ def add_to_basket(request):
 
 def basket(request):
     if 'basket' in request.session:
-        # basket = request.session['basket']
         ouvrage_to_mod = request.GET.get('ouvrage_to_mod')
-        # quantity = request.GET.get('quantity')
-        # basket, ouvrages = update_basket(basket, ouvrage_to_mod, quantity)
         if request.GET.get('quantity') == '-':
             request.session['basket'][ouvrage_to_mod] -= 1
         elif request.GET.get('quantity') == '+':
@@ -227,8 +223,6 @@ def basket(request):
 
             if not 'basket' in request.session:
                 context['errors'].append("Votre panier est vide.")
-                # context['CForm_dsa'] = CForm_dsa
-                # context['CForm_dia'] = CForm_dia
                 context['CForm_dsa'] = AddressForm(instance=contact.default_shipping_address, prefix="CForm_dsa" )
                 context['CForm_dia'] = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia" )
                 return render(request, 'store/basket.html', context)
@@ -243,37 +237,15 @@ def basket(request):
                     return render(request, 'store/basket.html', context)
                 else:
                     test_user = True
-                    dict['email'] = (user.email or request.POST.get('email'))
-                    if CForm_dsa.is_valid() and CForm_dsa.has_changed():
-                        dict['dsa'] = {}
-                        dict['dsa']['gender'] = CForm_dsa.cleaned_data['gender']
-                        dict['dsa']['first_name'] = CForm_dsa.cleaned_data['first_name']
-                        dict['dsa']['last_name'] = CForm_dsa.cleaned_data['last_name']
-                        dict['dsa']['address'] = CForm_dsa.cleaned_data['address']
-                        dict['dsa']['additional_address'] = CForm_dsa.cleaned_data['additional_address']
-                        dict['dsa']['postcode'] = CForm_dsa.cleaned_data['postcode']
-                        dict['dsa']['city'] = CForm_dsa.cleaned_data['city']
-                        dict['dsa']['phone'] = CForm_dsa.cleaned_data['phone']
-                        dict['dsa']['mobilephone'] = CForm_dsa.cleaned_data['mobilephone']
-                    if CForm_dia.is_valid() and CForm_dia.has_changed():
-                        dict['dia'] = {}
-                        dict['dia']['gender'] = CForm_dia.cleaned_data['gender']
-                        dict['dia']['first_name'] = CForm_dia.cleaned_data['first_name']
-                        dict['dia']['last_name'] = CForm_dia.cleaned_data['last_name']
-                        dict['dia']['address'] = CForm_dia.cleaned_data['address']
-                        dict['dia']['additional_address'] = CForm_dia.cleaned_data['additional_address']
-                        dict['dia']['postcode'] = CForm_dia.cleaned_data['postcode']
-                        dict['dia']['city'] = CForm_dia.cleaned_data['city']
-                        dict['dia']['phone'] = CForm_dia.cleaned_data['phone']
-                        dict['dia']['mobilephone'] = CForm_dia.cleaned_data['mobilephone']
-                    else:
-                        dict['dia'] = dict['dsa']
-
-                    contact = create_contact(dict)
+                    email = request.POST.get('email')
+                    if CForm_dsa.is_valid():
+                        if not CForm_dia.is_valid():
+                            CForm_dia = CForm_dsa
+                    contact = create_contact(email, CForm_dsa, CForm_dia)
             else:
                 test_user = True
 
-            if 'basket' in request.session and CForm_dsa.has_changed() and test_user:
+            if 'basket' in request.session and CForm_dsa.is_valid() and test_user:
                 # Bug refresh page thanks
                 basket = request.session['basket']
                 #try:
@@ -446,8 +418,8 @@ def profil(request, contact_id):
 
     if request.method == "POST":
         UForm = UserForm(data=request.POST, instance=user, error_class=ParagraphErrorList)
-        CForm_dsa = AddressForm(request.POST, initial=contact.default_shipping_address.__dict__, error_class=ParagraphErrorList, prefix="CForm_dsa")
-        CForm_dia = AddressForm(request.POST, initial=contact.default_invoicing_address.__dict__, error_class=ParagraphErrorList, prefix="CForm_dia")
+        CForm_dsa = AddressForm(request.POST, error_class=ParagraphErrorList,instance=contact.default_shipping_address, prefix="CForm_dsa")
+        CForm_dia = AddressForm(request.POST, error_class=ParagraphErrorList,instance=contact.default_invoicing_address, prefix="CForm_dia")
         if request.POST.get('update') == 'password':
             if UForm.is_valid() and UForm.has_changed():
                 context['pwd_messages'] = []
@@ -469,36 +441,16 @@ def profil(request, contact_id):
         if request.POST.get('update') == 'address':
             context['adr_messages'] = []
             context['adr_errors'] = []
-            if CForm_dsa.is_valid() and CForm_dsa.has_changed():
-                ad = Address.objects.filter(id=contact.default_shipping_address.id).first()
-                ad.gender = CForm_dsa.cleaned_data['gender']
-                ad.first_name = CForm_dsa.cleaned_data['first_name']
-                ad.last_name = CForm_dsa.cleaned_data['last_name']
-                ad.address = CForm_dsa.cleaned_data['address']
-                ad.additional_address = CForm_dsa.cleaned_data['additional_address']
-                ad.postcode = CForm_dsa.cleaned_data['postcode']
-                ad.city = CForm_dsa.cleaned_data['city']
-                ad.phone = CForm_dsa.cleaned_data['phone']
-                ad.mobilephone = CForm_dsa.cleaned_data['mobilephone']
-                ad.save()
+            if CForm_dsa.is_valid():
+                CForm_dsa.save()
                 contact.default_shipping_address.refresh_from_db()
                 response = True
                 if response:
                     context['adr_messages'].append("Votre adresse a été modifiée.")
                 else:
                     context['adr_errors'].append("erreur.")
-            if CForm_dia.is_valid() and CForm_dia.has_changed():
-                ad = Address.objects.filter(id=contact.default_invoicing_address.id).first()
-                ad.gender = CForm_dia.cleaned_data['gender']
-                ad.first_name = CForm_dia.cleaned_data['first_name']
-                ad.last_name = CForm_dia.cleaned_data['last_name']
-                ad.address = CForm_dia.cleaned_data['address']
-                ad.additional_address = CForm_dia.cleaned_data['additional_address']
-                ad.postcode = CForm_dia.cleaned_data['postcode']
-                ad.city = CForm_dia.cleaned_data['city']
-                ad.phone = CForm_dia.cleaned_data['phone']
-                ad.mobilephone = CForm_dia.cleaned_data['mobilephone']
-                ad.save()
+            if CForm_dia.is_valid():
+                CForm_dia.save()
                 contact.default_invoicing_address.refresh_from_db()
                 response = True
                 if response:
@@ -510,7 +462,7 @@ def profil(request, contact_id):
             CForm_dia = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia")
             UForm = UserForm(instance=user)
 
-            return redirect(request.META.get('HTTP_REFERER'))
+            return redirect(request.META.get('HTTP_REFERER'), context)
     else:
         CForm_dsa = AddressForm(instance=contact.default_shipping_address, prefix="CForm_dsa")
         CForm_dia = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia")
@@ -610,23 +562,27 @@ def connexion(request):
         context = {}
 
     if request.method == "POST":
+        context['errors'] = []
         UForm = UserForm(data=request.POST, error_class=ParagraphErrorList)
         if UForm.is_valid():
             email = UForm.cleaned_data['email']
             user = User.objects.filter(email=email).exclude(username__startswith='selio').first()
-            print(user.email)
             password = UForm.cleaned_data['password']
             # user = authenticate(request, username=user.username, password=password)
-            if not user.is_staff:
-                contact = Contact.objects.get(user=user)
-                CForm_dsa = AddressForm(contact.default_shipping_address.__dict__)
-                CForm_dia = AddressForm(contact.default_invoicing_address.__dict__)
-                context = {
-                    'contact': contact,
-                }
-            login(request, user)
+            if user:
+                if not user.is_staff:
+                    print('test')
+                    contact = Contact.objects.get(user=user)
+                    CForm_dsa = AddressForm(contact.default_shipping_address.__dict__)
+                    CForm_dia = AddressForm(contact.default_invoicing_address.__dict__)
+                    context = {
+                        'contact': contact,
+                    }
+                login(request, user)
 
-            return render(request, 'store/index.html', context)
+                return render(request, 'store/index.html', context)
+            else:
+                context['errors'].append("Identifiant ou mot de passe incorrect.")
     else:
         UForm = UserForm()
     
@@ -645,38 +601,28 @@ def deconnexion(request):
 
 
 def test(request):
+    cont = Contact.objects.filter(id=25).first()
+    print(cont)
     context = {}
     
     if request.method == "POST":
-        # address = 'j.couignoux@gmail.com'
-        # booking = get_object_or_404(Booking, pk=30)
-        # content = {
-        #     'subject': 'test email',
-        #     'message': 'contenu email',
-        #     'attachments': '',
-        #     'booking': booking,
-        # }
-        # response = str(send_email(address, content))
-        # context = {
-        #     'message': response,
-        # }
-        email = request.POST.get('email')
-        CForm_dsa = AddressForm(request.POST, error_class=ParagraphErrorList, prefix="CForm_dsa")
-        CForm_dia = AddressForm(request.POST, error_class=ParagraphErrorList, prefix="CForm_dia")
+        CForm_dsa = AddressForm(request.POST, error_class=ParagraphErrorList,instance=cont.default_shipping_address, prefix="CForm_dsa")
+        CForm_dia = AddressForm(request.POST, error_class=ParagraphErrorList,instance=cont.default_invoicing_address, prefix="CForm_dia")
         if CForm_dsa.is_valid():
             if not CForm_dia.is_valid():
                 CForm_dia = CForm_dsa
-            contact = create_contact_test(email, CForm_dsa, CForm_dia)
-            context['contact'] = contact
+            cont = update_contact(cont, CForm_dsa, CForm_dia)
+            context['cont'] = cont
 
     else:
         if request.GET.get('check'):
             context['checked'] = request.GET.get('check')
-        CForm_dsa = AddressForm(prefix="CForm_dsa")
-        CForm_dia = AddressForm(prefix="CForm_dia")
+        CForm_dsa = AddressForm(instance=cont.default_shipping_address, prefix="CForm_dsa")
+        CForm_dia = AddressForm(instance=cont.default_invoicing_address, prefix="CForm_dia")
 
     context['CForm_dsa'] = CForm_dsa
     context['CForm_dia'] = CForm_dia
+    context['cont'] = cont
 
     return render(request, 'store/test.html', context)
 

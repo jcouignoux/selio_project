@@ -1,0 +1,24 @@
+<script>
+  $(document).ready(function() {
+      $(".toast").toast('show');
+      $(".close").click(function() {
+        $('.window').toast('hide');
+      });
+  });
+</script>
+
+
+
+{% for error in errors %}
+<div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
+  <div class="toast fade window" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+      <div class="toast-header">
+        <h4 class="toast-title" data-dismiss="toast">{{ toast_title }}</h4>
+        <button type="button" class="btn btn-close btn-outline-secondary mt-auto close" aria-hidden="true"></button>
+      </div>
+      <div class="toast-body alert-danger">
+        {{ error }}
+      </div>
+  </div>
+</div>
+{% endfor %}

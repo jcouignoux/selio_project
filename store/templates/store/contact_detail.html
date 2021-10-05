@@ -20,11 +20,7 @@
                     <button type="submit" value="address" name="update" class="btn btn-light btn-outline-secondary mt-auto text-body col-2">Modifier</button>
                 </div>
                 {% if adr_errors %}
-                    {% for error in adr_errors %}
-                    {% autoescape off %}
-                        <p class="alert-danger">{{ error }}</p>
-                    {% endautoescape %}
-                    {% endfor %}
+                    {% include "store/popup.html" with errors=adr_errors %}
                 {% endif %}
                 {% if adr_messages %}
                     {% for message in adr_messages %}
