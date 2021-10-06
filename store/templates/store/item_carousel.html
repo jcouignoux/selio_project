@@ -1,0 +1,33 @@
+{% load static %}
+<div class="container">
+      <div id="demo" class="carousel slide carousel-fade" data-ride="carousel">
+          <!-- Indicateurs -->
+          <ul class="carousel-indicators">
+              {% for id in ouvrages %}
+                  <li data-target="#demo" data-slide-to="{{ forloop.counter0 }}" class="{% if forloop.counter0 == 0 %}active{% endif %}"></li>
+              {% endfor %}
+          </ul>
+
+          <!-- Carrousel -->
+          <div class="carousel-inner">
+          {% for ouvrage in ouvrages %}
+              <div class="carousel-item {% if forloop.counter0 == 0 %} active{% endif %}" id="slide{{ forloop.counter0 }}">
+                  <img src="{% static 'store/couv/' %}{{ ouvrage.picture }}" alt="..." class="d-block card-img-top img-height-fix">
+                  <div class="carousel-caption d-none d-md-block">
+                      <h4>{{ ouvrage.title }}</h4>
+                  </div>
+              </div>
+          {% endfor %}
+          </div>
+          
+          <!-- Contrôles -->
+          <a class="carousel-control-prev" href="#demo" role="button" data-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only">Précédent</span>
+          </a>
+          <a class="carousel-control-next" href="#demo" role="button" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only">Suivant</span>
+          </a>
+      </div>
+  </div>

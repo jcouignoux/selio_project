@@ -66,18 +66,10 @@
                     <button type="submit" value="commander" name="order" class="btn btn-light btn-outline-secondary mt-auto text-body"
                         onclick="return confirm('Merci de confirmer');">Commander</button>
                     {% if errors %}
-                        {% for error in errors %}
-                        {% autoescape off %}
-                            <p class="alert-danger">{{ error }}</p>
-                        {% endautoescape %}
-                        {% endfor %}
+                        {% include "store/item_popup.html" with errors=adr_errors %}
                     {% endif %}
                     {% if messages %}
-                        {% for message in messages %}
-                        {% autoescape off %}
-                            <p class="alert-success">{{ message }}</p>
-                        {% endautoescape %}
-                        {% endfor %}
+                        {% include "store/item_popup.html" with messages=messages %}
                     {% endif %}
                 </form>
             </div>

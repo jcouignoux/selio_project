@@ -16,7 +16,7 @@
             </div>
         
             <div class="card col-3">
-                <label class="card-header fw-bolder text-center">Historique de Commandes</label><br />
+                <p class="card-header fw-bolder text-center">Historique de Commandes</p><br />
                 {% for booking in contact.bookings.all %}
                     <p><a class="open-item text-decoration-none text-body" href="{% url 'store:booking_detail' booking_id=booking.id %}"
                         data-popup-url="{% url 'store:booking_detail' booking_id=booking.id %}">

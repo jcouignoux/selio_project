@@ -1,0 +1,56 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% load bootstrap4 %}
+
+{% block content %}
+<div class="container">
+    {{ cont.user.email }}
+    {{ cont.default_shipping_address }}
+    {{ cont.default_invoicing_address }}
+<div class="row">
+        <form action="{% url 'store:test' %}" method="get">
+            <input type="hidden" name="basket" value="{{ basket }}" >
+            {% csrf_token %}
+            {% if checked == 'checked' %}
+                <input type="checkbox" class="input-sm" name="check" value="unchecked" onclick='this.form.submit();' checked="checked">
+                <i>Cocher si l'adresse de livraison est défférente.</i>
+            {% else %}
+                <input type="checkbox" class="input-sm" name="check" value="checked" onclick='this.form.submit();'>
+                <i>Cocher si l'adresse de livraison est défférente.</i>
+            {% endif %}
+        </form>
+</div>
+<form class="row" action="{% url 'store:test' %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="basket" value="{{ basket }}" >
+    <div class="row">
+    <input class="form-control col-3" type="email" name="email" placeholder="Email" required><br /></div>
+    <div class="row">
+        <div class="col-5">
+            <p class="form-title" for="{{ CForm_dsa.id_for_label }}">Adresse de facturation</p><br />
+            {% bootstrap_form CForm_dsa %}
+        </div>
+        {% if checked == 'checked' %}
+        <div class="col-5">
+            <p class="form-title" for="{{ CForm_dia.id_for_label }}">Adresse de livraison</p><br />
+            {% bootstrap_form CForm_dia %}
+        </div>
+        {% endif %}
+        <div class="col-2">
+            <br /><br /><button type="submit" value="commander" name="order" class="btn btn-light btn-outline-secondary mt-auto text-body" 
+                onclick="return confirm('Merci de confirmer');">Commander</button>
+        </div>
+    </div>
+</form>
+</div>
+
+
+    <form action="{% url 'store:test' %}" method="POST">
+        {% csrf_token %}
+        <div class = "form-group">
+        <p><h3>{{ message }}</h3></p>
+        <br>
+        <input type="submit" name="Test" value="Test" class='btn btn-primary btn-lg'>
+            </div>
+    </form>
+{% endblock %}

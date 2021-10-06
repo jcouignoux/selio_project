@@ -79,7 +79,7 @@ class Address(models.Model):
     """
     Une adresse est liée à un client et pourra être utilisée pour la livraison ou la facturation d'une commande.
     """
-    contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
+    contact = models.ForeignKey(Contact, on_delete=models.PROTECT)
     MISTER = 'MR'
     MISS = 'MISS'
     MISSES = 'MRS'

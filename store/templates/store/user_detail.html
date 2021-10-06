@@ -2,26 +2,22 @@
 
 {% block content %}
 {% if user.is_staff or user.is_authenticated %}
-    <div class="card container">
+    <div class="card h-100 justify-items-center">
         <p class="card-header fw-bolder text-center" for="{{ UForm.id_for_label }}">Mes Identifiants</p><br />
-        <form class="row justify-items-center" action="{% url 'store:profil' contact_id=contact.id %}" method="POST">
+        <form class="card-body" action="{% url 'store:profil' contact_id=contact.id %}" method="POST">
             {% csrf_token %}
             {% bootstrap_form UForm %}
             {% if not user.is_staff %}
-                <input type="password" class="form-control" name="new_password" placeholder="Entrez votre nouveau mot de passe" required></input><br />
-                <input type="password" class="form-control" name="control_password" placeholder="Entrez de nouveau votre nouveau mot de passe" required></input>
+                <input type="password" class="form-control" name="new_password" placeholder="Nouveau mot de passe" required></input><br />
+                <input type="password" class="form-control" name="control_password" placeholder="Validation nouveau mot de passe" required></input><br />
                 {% if pwd_errors %}
-                    {% include "store/popup.html" with errors=pwd_errors %}
+                    {% include "store/item_popup.html" with errors=pwd_errors %}
                 {% endif %}
-                <div class="justify-items-center row">
-                    <button type="submit" value="password" name="update" class="btn btn-light btn-outline-secondary mt-auto text-body col-5">Modifier</button><br />
+                <div class="card-footer bg-transparent">
+                    <button type="submit" value="password" name="update" class="btn btn-light btn-outline-secondary mt-auto text-body">Modifier</button><br />
                 </div>
                 {% if pwd_messages %}
-                    {% for message in pwd_messages %}
-                    {% autoescape off %}
-                        <p class="alert-success">{{ message }}</p>
-                    {% endautoescape %}
-                    {% endfor %}
+                    {% include "store/item_popup.html" with messages=pwd_messages %}
                 {% endif %}
             {% endif %}
         </form>

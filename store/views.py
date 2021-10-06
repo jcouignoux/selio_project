@@ -32,6 +32,10 @@ def index(request):
         context = {
             'basket': ''
         }
+
+    author = Author.objects.filter(name='SERAC').first()
+    ouvrages = Ouvrage.objects.filter(auteurs__name=author).all()
+    context['ouvrages'] = ouvrages
     
     return render(request, 'store/index.html', context)
 
@@ -462,7 +466,7 @@ def profil(request, contact_id):
             CForm_dia = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia")
             UForm = UserForm(instance=user)
 
-            return redirect(request.META.get('HTTP_REFERER'), context)
+        # return redirect(request.META.get('HTTP_REFERER'), context)
     else:
         CForm_dsa = AddressForm(instance=contact.default_shipping_address, prefix="CForm_dsa")
         CForm_dia = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia")

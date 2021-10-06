@@ -67,16 +67,26 @@ class BookingTestCase(TestCase):
         self.user = User.objects.get(email='john.doe@gmail.com')
         contact = Contact.objects.create(user=user)
         self.contact = Contact.objects.get(user=user)
-        address = Address.objects.create(
-            contact=contact,
+        self.address = Address(
             first_name='John',
             last_name='Doe',
             address='123 Maple Street',
             postcode='17101',
             city='Anytown',
-            phone='0123456789',
+            phone='0123456789'
         )
-        self.address = Address.objects.get(first_name='John')
+        # self.address = Address.objects.get(first_name='John')
+        # self.address = {
+        #     'gender': 'MR',
+        #     'first_name':'John',
+        #     'last_name':'Doe',
+        #     'address':'123 Maple Street',
+        #     'additional_address': '',
+        #     'postcode':'17101',
+        #     'city':'Anytown',
+        #     'phone':'0123456789',
+        #     'mobilephone': ''
+        # }
 
     def test_new_basket_is_registered(self):
         ouvrage_id = str(self.ouvrage.id)
@@ -89,19 +99,23 @@ class BookingTestCase(TestCase):
         new_basket = self.client.session['basket']
         self.assertEqual(new_basket, {ouvrage_id: quantity})
 
-#    def test_booking_is_registered(self):
-#        CForm = AddressForm(self.address.__dict__)
-#        ouvrage_id = str(self.ouvrage.id)
-#        session = self.client.session
-#        self.client.login(username=self.user.username, password=self.user.password)
-#        session['basket'] = {ouvrage_id: self.quantity}
-#        session.save()
-#        email = self.user.email
-#        old_booking = Booking.objects.count()
-#        response = self.client.post(reverse('store:basket'), {
-#            'CForm': CForm,
-#            'email': email,
-#        }) # make sure 1 ouvrage with quantity was added
-#        print(response)
-#        new_booking = Booking.objects.count()
-#        self.assertEqual(new_booking, old_booking + 1)
+    def test_booking_is_registered(self):
+        print(self.address)
+        CForm_dsa = AddressForm(instance=self.address, prefix="CForm_dsa")
+        CForm_dsa.is_valid
+        print(CForm_dsa.is_valid())
+        ouvrage_id = str(self.ouvrage.id)
+        session = self.client.session
+        session['basket'] = {ouvrage_id: self.quantity}
+        session.modified = True
+        email = 'john2.doe@gmail.com'
+        old_booking = Booking.objects.count()
+        response = self.client.post(reverse('store:basket'), {
+            'CForm_dsa': CForm_dsa,
+            'email': email,
+        }) # make sure 1 ouvrage with quantity was added
+        # booking = response.context
+        new_booking = Booking.objects.count()
+        self.assertEqual(new_booking, old_booking + 1)
+
+

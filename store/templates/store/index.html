@@ -2,5 +2,13 @@
 {% load static %}
 
 {% block content %}
-    <img class="card-img-top" src="{% static 'store/img/accueil1.jpg' %}" alt="..." />
+    <hr class="detail-separator">
+    <h1 class="intro-text text-center">Bienvenue</h1>
+    <hr class="detail-separator">
+    <div>
+        <img class="card-img-top" src="{% static 'store/img/accueil1.jpg' %}" alt="..." />
+    </div>
+    <div class="card bg-light">
+        {% include "store/item_carousel.html" with ouvrages=ouvrages%}
+    </div>
 {% endblock %}
