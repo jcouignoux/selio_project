@@ -8,6 +8,7 @@ from django.forms.widgets import CheckboxInput, EmailInput, PasswordInput, Selec
 from django.contrib.auth.models import User
 from bootstrap_datepicker_plus import DatePickerInput
 from django.forms import formset_factory, modelformset_factory
+from django.utils.safestring import mark_safe
 
 from .models import History, Booking, Contact, Address
 
@@ -142,10 +143,67 @@ class DictForm(Form):
     dict = forms.model_to_dict
 
 
+class EmailWidget(Widget):
+
+    def __init__(self, base_widget, data, *args, **kwargs):
+        """Initialise widget and get base instance"""
+        super(EmailWidget, self).__init__(*args, **kwargs)
+        self.base_widget = base_widget(*args, **kwargs)
+        self.data = data
+
+    def render(self, name, value, attrs=None, renderer=None):
+        """Render base widget and add bootstrap spans"""
+        field = self.base_widget.render(name, value, attrs)
+        return mark_safe((
+            '<div class="input-group mb-3">'
+            '  <div class="input-group-prepend">'
+            '    <span class="input-group-text" id="basic-addon1">@</span>'
+            '  </div>'
+            '  <input type="email" name="email" class="form-control" placeholder="Votre email" aria-label="Username" aria-describedby="basic-addon1">'
+            '</div>'
+        ) % {'field': field, 'data': self.data})
+
+
+class TextareaWidget(Widget):
+
+    def __init__(self, base_widget, data, *args, **kwargs):
+        """Initialise widget and get base instance"""
+        super(TextareaWidget, self).__init__(*args, **kwargs)
+        self.base_widget = base_widget(*args, **kwargs)
+        self.data = data
+
+    def render(self, name, value, attrs=None, renderer=None):
+        """Render base widget and add bootstrap spans"""
+        field = self.base_widget.render(name, value, attrs)
+        return mark_safe((
+            '<div class="input-group">'
+            '  <div class="input-group-prepend">'
+            '    <span class="input-group-text">Message</span>'
+            '  </div>'
+            '  <textarea name="message" rows="5" cols="20" class="form-control" placeholder="Votre message" aria-label="Message"></textarea>'
+            '</div>'
+        ) % {'field': field, 'data': self.data})
+
+
 class MessageForm(Form):
     email = forms.EmailField(
-        widget = EmailInput(attrs={"required": True, "placeholder": "Votre email"})
+        required = True,
+        # widget = EmailInput(attrs={"required": True, "placeholder": "Votre email"})
+        widget = EmailWidget(base_widget=EmailInput, data='$')
+    )
+    SUBJECTS = (
+        ('commande', 'Suivi de Commande'),
+        ('info', "Demande d'informations"),
+        ('autre', 'Autre'),
+    )
+    subject = forms.ChoiceField(
+        required=True,
+        widget=forms.Select,
+        choices=SUBJECTS,
+        initial=('commande', 'Suivi de Commande'),
     )
     message = forms.CharField (
-        widget = Textarea(attrs={"rows":5, "cols":20, "required": True, "placeholder": "Votre message"})
+        # widget = Textarea(attrs={"rows":5, "cols":20, "required": True, "placeholder": "Votre message"})
+        required = True,
+        widget = TextareaWidget(base_widget=Textarea, data='$')
     )

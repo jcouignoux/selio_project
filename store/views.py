@@ -540,12 +540,13 @@ def histBase(request):
 def contact_us(request):
 
     if request.method == "POST":
-        MForm = MessageForm(request.POST, error_class=ParagraphErrorList)
+        MForm = MessageForm(request.POST)
         if MForm.is_valid():
             email_contact = MForm.cleaned_data['email']
             message = MForm.cleaned_data['message']
+            subject = MForm.cleaned_data['subject']
             content = {}
-            content['subject'] = 'message'
+            content['subject'] = subject
             content['message'] = message
             content['html'] = 'email_message.html'
             content['email_contact'] = email_contact

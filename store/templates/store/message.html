@@ -1,6 +1,5 @@
 {% load bootstrap4 %}
 
-{% block content %}
 <div class="card container">
     <form class="form-group row" action="{% url 'store:contact_us' %}" method="post">
         {% csrf_token %}
@@ -10,4 +9,3 @@
         </div>
     </form>
 </div>
-{% endblock %}
