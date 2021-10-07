@@ -524,6 +524,7 @@ def histBase(request):
         if 'old' not in histSelect:
             start_date = histSelect.split(',')[0]
             end_date = histSelect.split(',')[0]
+            histDict = History.objects.filter(date__range=[start_date, end_date])
         else:
             histDict = History.objects.all()
         name = 'Comptes.xlsx'
