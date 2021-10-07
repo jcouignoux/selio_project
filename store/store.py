@@ -38,10 +38,11 @@ def send_email(address, content):
     # attachments = ['attachments', ]
     auth_user = User.objects.get(username='jcouignoux').email
     auth_password = User.objects.get(username='jcouignoux').password
+    email_contact = content['email_contact']
     
     html = content['html']
     # html_content = render_to_string('store/email.html', {'booking': content['booking']})
-    html_content = render_to_string('store/' + str(html), {'message': content['message']})
+    html_content = render_to_string('store/' + str(html), {'message': content['message'], 'email_contact': content['email_contact']})
     text_content = strip_tags(html_content)
     # d = {'username': 'username' }
 

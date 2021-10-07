@@ -245,11 +245,13 @@ def basket(request):
                     if CForm_dsa.is_valid():
                         if not CForm_dia.is_valid():
                             CForm_dia = CForm_dsa
-                    contact = create_contact(email, CForm_dsa, CForm_dia)
+                        contact = create_contact(email, CForm_dsa, CForm_dia)
+                    else:
+                        return render(request, 'store/basket.html', context)
             else:
                 test_user = True
 
-            if 'basket' in request.session and CForm_dsa.is_valid() and test_user:
+            if 'basket' in request.session and test_user:
                 # Bug refresh page thanks
                 basket = request.session['basket']
                 #try:
@@ -273,6 +275,7 @@ def basket(request):
                         'subject': 'Commande ' + str(booking.id),
                         'message': booking,
                         'html': 'email_vente.html',
+                        'email_contact': '',
                     }
                     response = str(send_email(contact.user.email, content))
                 #except IntegrityError:
@@ -538,13 +541,14 @@ def contact_us(request):
     if request.method == "POST":
         MForm = MessageForm(request.POST, error_class=ParagraphErrorList)
         if MForm.is_valid():
-            address = MForm.cleaned_data['email']
+            email_contact = MForm.cleaned_data['email']
             message = MForm.cleaned_data['message']
             content = {}
             content['subject'] = 'message'
             content['message'] = message
             content['html'] = 'email_message.html'
-            response = send_email(address, content)
+            content['email_contact'] = email_contact
+            response = send_email('selio4pro@gmail.com', content)
             
             return redirect(reverse('store:propos'))
     else:
