@@ -189,7 +189,8 @@ class MessageForm(Form):
     email = forms.EmailField(
         required = True,
         # widget = EmailInput(attrs={"required": True, "placeholder": "Votre email"})
-        widget = EmailWidget(base_widget=EmailInput, data='$')
+        widget = EmailWidget(base_widget=EmailInput, data='$'),
+        label="Entrez votre adresse email :",
     )
     SUBJECTS = (
         ('commande', 'Suivi de Commande'),
@@ -201,9 +202,11 @@ class MessageForm(Form):
         widget=forms.Select,
         choices=SUBJECTS,
         initial=('commande', 'Suivi de Commande'),
+        label="Indiquez le sujet du message :",
     )
     message = forms.CharField (
         # widget = Textarea(attrs={"rows":5, "cols":20, "required": True, "placeholder": "Votre message"})
         required = True,
-        widget = TextareaWidget(base_widget=Textarea, data='$')
+        widget = TextareaWidget(base_widget=Textarea, data='$'),
+        label="",
     )

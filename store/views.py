@@ -553,6 +553,8 @@ def contact_us(request):
             response = send_email('selio4pro@gmail.com', content)
             
             return redirect(reverse('store:propos'))
+        else:
+            return redirect(reverse('store:propos'))
     else:
         MForm = MessageForm()
 
