@@ -37,7 +37,10 @@ else:
 BOOTSTRAP4 = {
     'include_jquery': True,
 }
-
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger'
+}
 # Application definition
 
 INSTALLED_APPS = [

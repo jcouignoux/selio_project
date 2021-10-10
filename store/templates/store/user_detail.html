@@ -10,15 +10,9 @@
             {% if not user.is_staff %}
                 <input type="password" class="form-control" name="new_password" placeholder="Nouveau mot de passe" required></input><br />
                 <input type="password" class="form-control" name="control_password" placeholder="Validation nouveau mot de passe" required></input><br />
-                {% if pwd_errors %}
-                    {% include "store/item_popup.html" with errors=pwd_errors %}
-                {% endif %}
                 <div class="card-footer bg-transparent">
                     <button type="submit" value="password" name="update" class="btn btn-light btn-outline-secondary mt-auto text-body">Modifier</button><br />
                 </div>
-                {% if pwd_messages %}
-                    {% include "store/item_popup.html" with messages=pwd_messages %}
-                {% endif %}
             {% endif %}
         </form>
     </div>

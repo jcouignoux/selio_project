@@ -19,12 +19,6 @@
                 <div class="card-footer bg-transparent">
                     <button type="submit" value="address" name="update" class="btn btn-light btn-outline-secondary mt-auto text-body">Modifier</button>
                 </div>
-                {% if adr_errors %}
-                    {% include "store/item_popup.html" with errors=adr_errors %}
-                {% endif %}
-                {% if adr_messages %}
-                    {% include "store/item_popup.html" with messages=adr_messages %}
-                {% endif %}
             {% endif %}
         </form>
     </div>

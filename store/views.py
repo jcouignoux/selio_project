@@ -1,25 +1,22 @@
 from datetime import datetime
-from django import forms
 from django.conf import settings
-from django.http.response import FileResponse, HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.views.generic import UpdateView, ListView
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import transaction, IntegrityError
 from django.db.models import Q
 from django.contrib.auth.models import User
-from django.forms import formset_factory
+from django.views.generic import FormView
+from django.contrib.messages.views import SuccessMessageMixin
 
-
-from .models import Address, Ouvrage, Author, Publisher, Categorie, Contact, Booking, BookingDetail, History
-from .forms import BookingForm, ConnexionForm, UserForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, DictForm, AddressForm, MessageForm, ContactForm
+from .models import Ouvrage, Author, Publisher, Categorie, Contact, Booking, BookingDetail, History
+from .forms import BookingForm, UserForm, VenteForm, ArrivageForm, ParagraphErrorList, DateRangeForm, AddressForm, MessageForm, ContactForm
 from .store import add_to_history, send_email
 from .contacts import create_contact, update_contact
 from .xlsx import xlsx, exportXLSX
-from .basket import update_basket
 
 
 # Create your views here.
@@ -93,6 +90,35 @@ def store(request, select_type, select_id):
 
     return render(request, 'store/store.html', context)
 
+class AjaxTemplateMixin(object):
+
+    def dispatch(self, request, *args, **kwargs):
+        if not hasattr(self, 'ajax_template_name'):
+            split = self.template_name.split('.html')
+            split[-1] = '_inner'
+            split.append('.html')
+            self.ajax_template_name = ''.join(split)
+        if request.is_ajax():
+            self.template_name = self.ajax_template_name
+        return super(AjaxTemplateMixin, self).dispatch(request, *args, **kwargs)
+
+class DetailView(SuccessMessageMixin, AjaxTemplateMixin, FormView):
+    template_name = 'store/detail.html'
+    form_class = VenteForm, ArrivageForm
+    success_url = reverse_lazy('store')
+    success_message = "Way to go!"
+
+    def get(self, request, ouvrage_id):
+        ouvrage = get_object_or_404(Ouvrage, pk=ouvrage_id)
+        context = {
+            'ouvrage': ouvrage,
+        }
+        VForm = VenteForm()
+        AForm = ArrivageForm()
+
+        return render(request, 'store/detail.html', context)
+
+
 def detail(request, ouvrage_id):
     ouvrage = get_object_or_404(Ouvrage, pk=ouvrage_id)
     context = {
@@ -142,6 +168,7 @@ def detail(request, ouvrage_id):
                     }
                     # return render(request, 'store/store.html', context)
                     return HttpResponseRedirect(request.META.get('HTTP_REFERER','/'))
+                    
             except IntegrityError:
                 VForm.errors['internal'] = "Une erreur interne est apparue. Merci de recommencer votre requête."
 
@@ -180,6 +207,8 @@ def add_to_basket(request):
             basket[ouvrage_id] = quantity
         
         request.session['basket'] = basket
+        success_message = "L'ouvrage a été ajouté à votre panier."
+        messages.success(request, success_message)
 
         return redirect(reverse('store:store', kwargs={'select_type':'All', 'select_id':'All'}))
 
@@ -429,47 +458,43 @@ def profil(request, contact_id):
         CForm_dia = AddressForm(request.POST, error_class=ParagraphErrorList,instance=contact.default_invoicing_address, prefix="CForm_dia")
         if request.POST.get('update') == 'password':
             if UForm.is_valid() and UForm.has_changed():
-                context['pwd_messages'] = []
-                context['pwd_errors'] = []
                 password = request.POST.get('new_password')
                 control_password = request.POST.get('control_password')
                 if control_password == password:
                     # response = user.set_password(password)
-                    response = True
-                    if response:
-                        context['pwd_messages'].append("Votre mot de passe a été modifié.")
+                    success_message = "Votre mode passe a été modifié."
+                    messages.success(request, success_message)
                 else:
-                    context['pwd_errors'].append("Vos mots de passe ne correspondent pas.")
+                    error_message = "Une erreur s'est produite."
+                    messages.error(request, error_message)
             CForm_dsa = AddressForm(instance=contact.default_shipping_address, prefix="CForm_dsa")
             CForm_dia = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia")
         else:
             UForm = UserForm(instance=user)
 
         if request.POST.get('update') == 'address':
-            context['adr_messages'] = []
-            context['adr_errors'] = []
-            if CForm_dsa.is_valid():
+            if CForm_dsa.is_valid() and CForm_dsa.has_changed():
                 CForm_dsa.save()
+                success_message = "Votre adresse de facturation a été modifiée."
+                messages.success(request, success_message)
                 contact.default_shipping_address.refresh_from_db()
-                response = True
-                if response:
-                    context['adr_messages'].append("Votre adresse a été modifiée.")
-                else:
-                    context['adr_errors'].append("erreur.")
-            if CForm_dia.is_valid():
+            # else:
+            #     error_message = "Une erreur s'est produite."
+            #     messages.error(request, error_message)
+            if CForm_dia.is_valid() and CForm_dia.has_changed():
                 CForm_dia.save()
+                success_message = "Votre adresse de livraison a été modifiée."
+                messages.success(request, success_message)
                 contact.default_invoicing_address.refresh_from_db()
-                response = True
-                if response:
-                    context['adr_messages'].append("Votre adresse a été modifiée.")
-                else:
-                    context['adr_errors'].append("erreur.")
+            # else:
+            #     error_message = "Une erreur s'est produite."
+            #     messages.error(request, error_message)
             
             CForm_dsa = AddressForm(instance=contact.default_shipping_address, prefix="CForm_dsa")
             CForm_dia = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia")
             UForm = UserForm(instance=user)
 
-        # return redirect(request.META.get('HTTP_REFERER'), context)
+        # return redirect(request.META.get('HTTP_REFERER'))
     else:
         CForm_dsa = AddressForm(instance=contact.default_shipping_address, prefix="CForm_dsa")
         CForm_dia = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia")
@@ -539,8 +564,10 @@ def histBase(request):
 
 def contact_us(request):
 
+    MForm = MessageForm(request.POST or None)
+    error = False
+    
     if request.method == "POST":
-        MForm = MessageForm(request.POST)
         if MForm.is_valid():
             email_contact = MForm.cleaned_data['email']
             message = MForm.cleaned_data['message']
@@ -551,18 +578,44 @@ def contact_us(request):
             content['html'] = 'email_message.html'
             content['email_contact'] = email_contact
             response = send_email('selio4pro@gmail.com', content)
-            
-            return redirect(reverse('store:propos'))
         else:
-            return redirect(reverse('store:propos'))
-    else:
-        MForm = MessageForm()
+            return render(request, 'store/propos.html')
 
     context = {
         'MForm': MForm,
+        'error': error,
     }
 
     return render(request, 'store/message.html', context)
+
+from django.contrib import messages
+
+class ContactUsView(SuccessMessageMixin, FormView):
+    template_name = 'store/message.html'
+    form_class = MessageForm
+    success_url = reverse_lazy('store:propos')
+    # success_message = "Votre message a bien été envoyé."
+
+    
+    def post(self, *args, **kwargs):
+        if self.request.is_ajax and self.request.method == "POST":
+            form = self.form_class(self.request.POST)
+            if form.is_valid():
+                email_contact = form.cleaned_data['email']
+                message = form.cleaned_data['message']
+                subject = form.cleaned_data['subject']
+                content = {}
+                content['subject'] = subject
+                content['message'] = message
+                content['html'] = 'email_message.html'
+                content['email_contact'] = email_contact
+                email_status = send_email('selio4pro@gmail.com', content)
+                #success_message = self.get_success_message(form.cleaned_data)
+                success_message = "Votre message a bien été envoyé."
+                if success_message:
+                    messages.success(self.request, success_message)
+        
+                return super().form_valid(form)
 
 
 def connexion(request):
@@ -638,3 +691,4 @@ def test(request):
 
     return render(request, 'store/test.html', context)
 
+    

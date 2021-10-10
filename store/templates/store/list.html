@@ -3,6 +3,11 @@
 <hr class="detail-separator">
 <h1 class="intro-text text-center">Nos Ouvrages</h1>
 <hr class="detail-separator">
+{% if messages %}
+    {% for message in messages %}
+        {% include "store/item_alert.html" %}
+    {% endfor %}
+{% endif %}
     <section class="bg-light py-1"><br />
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
             <div class="d-flex col">

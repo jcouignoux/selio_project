@@ -159,7 +159,7 @@ class EmailWidget(Widget):
             '  <div class="input-group-prepend">'
             '    <span class="input-group-text" id="basic-addon1">@</span>'
             '  </div>'
-            '  <input type="email" name="email" class="form-control" placeholder="Votre email" aria-label="Username" aria-describedby="basic-addon1">'
+            '  <input type="email" name="email" class="form-control" placeholder="Votre email" aria-label="Username" aria-describedby="basic-addon1"  required=True>'
             '</div>'
         ) % {'field': field, 'data': self.data})
 
@@ -180,7 +180,7 @@ class TextareaWidget(Widget):
             '  <div class="input-group-prepend">'
             '    <span class="input-group-text">Message</span>'
             '  </div>'
-            '  <textarea name="message" rows="5" cols="20" class="form-control" placeholder="Votre message" aria-label="Message"></textarea>'
+            '  <textarea name="message" rows="5" cols="20" class="form-control" placeholder="Votre message" aria-label="Message" required=True></textarea>'
             '</div>'
         ) % {'field': field, 'data': self.data})
 
@@ -188,7 +188,7 @@ class TextareaWidget(Widget):
 class MessageForm(Form):
     email = forms.EmailField(
         required = True,
-        # widget = EmailInput(attrs={"required": True, "placeholder": "Votre email"})
+        # widget = EmailInput(attrs={"required": True, "placeholder": "Votre email"}),
         widget = EmailWidget(base_widget=EmailInput, data='$'),
         label="Entrez votre adresse email :",
     )
@@ -205,7 +205,7 @@ class MessageForm(Form):
         label="Indiquez le sujet du message :",
     )
     message = forms.CharField (
-        # widget = Textarea(attrs={"rows":5, "cols":20, "required": True, "placeholder": "Votre message"})
+        # widget = Textarea(attrs={"rows":5, "cols":20, "required": True, "placeholder": "Votre message"}),
         required = True,
         widget = TextareaWidget(base_widget=Textarea, data='$'),
         label="",

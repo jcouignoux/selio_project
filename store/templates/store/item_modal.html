@@ -6,16 +6,17 @@
     $(".modal-body", $popup).load(popup_url, function () {
       $popup.modal("show");
       $('.closemodal').click(function() {
-        $('.modalwindow').modal('hide');
+        $popup.modal('hide');
       });
     });
   });
 </script>
 
-<div id="popup" class="modal fade modalwindow" role="dialog">
+<div id="popup" class="modal fade" role="dialog">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
-      <div class="modal-header"><h4 class="modal-title" data-dismiss="modal">{{ modal_title }}</h4>
+      <div class="modal-header">
+        <h4 class="modal-title" data-dismiss="modal">{{ modal_title }}</h4>
         <button type="button" class="btn btn-close btn-outline-secondary mt-auto closemodal" aria-hidden="true"></button>
       </div>
       <div class="modal-body"></div>
@@ -25,5 +26,3 @@
     </div>
   </div>
 </div>
-
-  

@@ -6,6 +6,11 @@
 <h1 class="intro-text text-center">A Propos</h1>
 <hr class="detail-separator">
 <section class="bg-light py-5">
+    {% if messages %}
+        {% for message in messages %}
+            {% include "store/item_alert.html" %}
+        {% endfor %}
+    {% endif %}
     <div class="card container">
         <img  class="align-self-center card-header bg-transparent" width="30%" height="auto" src="{% static 'store/img/selio.png' %}" alt="..." />
         <h4 class="text-center card-body">La SELIO, Société d’édition et librairie d’ Informations ouvrières porte le nom du journal Informations ouvrières, tribune libre de la lutte des classes.
@@ -16,8 +21,8 @@
             Bienvenue à la librairie SELIO.
         </h4>
         <div class="card-footer bg-transparent">
-            <a class="open-item text-decoration-none text-body" href="{% url 'store:contact_us' %}"
-            data-popup-url="{% url 'store:contact_us' %}">
+            <a class="open-item text-decoration-none text-body" href="{% url 'store:contactus' %}"
+            data-popup-url="{% url 'store:contactus' %}">
             <i class="bi bi-envelope me-1"></i> Nous contacter</a><br />
         </div>
     </div>
