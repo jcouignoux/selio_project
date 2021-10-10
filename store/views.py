@@ -627,7 +627,6 @@ def connexion(request):
         context = {}
 
     if request.method == "POST":
-        context['errors'] = []
         UForm = UserForm(data=request.POST, error_class=ParagraphErrorList)
         if UForm.is_valid():
             email = UForm.cleaned_data['email']
@@ -636,7 +635,6 @@ def connexion(request):
             # user = authenticate(request, username=user.username, password=password)
             if user:
                 if not user.is_staff:
-                    print('test')
                     contact = Contact.objects.get(user=user)
                     CForm_dsa = AddressForm(contact.default_shipping_address.__dict__)
                     CForm_dia = AddressForm(contact.default_invoicing_address.__dict__)
@@ -647,7 +645,8 @@ def connexion(request):
 
                 return render(request, 'store/index.html', context)
             else:
-                context['errors'].append("Identifiant ou mot de passe incorrect.")
+                error_message = "Identifiant ou mot de passe incorrect."
+                messages.error(request, error_message)
     else:
         UForm = UserForm()
     

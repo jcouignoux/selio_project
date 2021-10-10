@@ -2,9 +2,11 @@
 {% load bootstrap4 %}
 
 {% block content %}
-        {% if errors %}
-            {% include "store/item_popup.html" with errors=errors %}
-        {% endif %}
+    {% if messages %}
+        {% for message in messages %}
+            {% include "store/item_alert.html" %}
+        {% endfor %}
+    {% endif %}
         <div class="col mb-4">
             <div class="card text-center">
         <form class="form-group w-10 align-self-center" action="{% url 'store:login' %}" method="POST">
