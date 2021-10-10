@@ -177,6 +177,8 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'selio4pro@gmail.com'
 EMAIL_HOST_PASSWORD = 'selio4proJul13n76!'
+GMAIL_SMTP_USER = 'selio4pro@gmail.com'
+GMAIL_SMTP_PASSWORD = 'selio4proJul13n76!'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
