@@ -329,7 +329,6 @@ def basket(request):
     context['CForm_dsa'] = CForm_dsa
     context['CForm_dia'] = CForm_dia
 
-
     return render(request, 'store/basket.html', context)
 
 @login_required
@@ -472,6 +471,8 @@ def profil(request, contact_id):
         else:
             UForm = UserForm(instance=user)
 
+            # return HttpResponseRedirect(request.META.get('HTTP_REFERER','/'))
+
         if request.POST.get('update') == 'address':
             if CForm_dsa.is_valid() and CForm_dsa.has_changed():
                 CForm_dsa.save()
@@ -494,7 +495,7 @@ def profil(request, contact_id):
             CForm_dia = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia")
             UForm = UserForm(instance=user)
 
-        # return redirect(request.META.get('HTTP_REFERER'))
+            # return HttpResponseRedirect(request.META.get('HTTP_REFERER','/'))
     else:
         CForm_dsa = AddressForm(instance=contact.default_shipping_address, prefix="CForm_dsa")
         CForm_dia = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia")
@@ -506,6 +507,7 @@ def profil(request, contact_id):
     context['UForm'] = UForm
 
     return render(request, 'store/profil.html', context)
+    # return HttpResponseRedirect(request.META.get('HTTP_REFERER','/'))
 
 
 @login_required
@@ -528,18 +530,32 @@ def history(request):
         'end_date': end_date,
     }
     return render(request, 'store/history.html', context)
- 
+
+from time import sleep
 
 @login_required
 def dataBase(request):
     if request.method == "POST":
-        file = request.FILES['xls']
-        xls=xlsx()
-        xls.importXLSX(file)
+        if request.POST.get('Importer') == 'Importer':
+            file = request.FILES['imp_xls']
+            xls=xlsx()
+            # xls.importXLSX(file)
+            sleep(5)
+            success_message = "Le fichier a bien été importé."
+            messages.success(request, success_message)
+            context = { 'mess': 'import' }
+        if request.POST.get('Exporter') == 'Exporter':
+            file = request.FILES['exp_xls']
+            xls=xlsx()
+            # xls.exportXLSX(file)
+            sleep(5)
+            success_message = "La base a bien été exportée."
+            messages.success(request, success_message)
+            context = { 'mess': 'export' }
     else:
-        pass
+        context = {}
 
-    return render(request, 'store/db.html')
+    return render(request, 'store/db.html', context)
 
 
 @login_required
@@ -612,8 +628,7 @@ class ContactUsView(SuccessMessageMixin, FormView):
                 email_status = send_email('selio4pro@gmail.com', content)
                 #success_message = self.get_success_message(form.cleaned_data)
                 success_message = "Votre message a bien été envoyé."
-                if success_message:
-                    messages.success(self.request, success_message)
+                messages.success(self.request, success_message)
         
                 return super().form_valid(form)
 

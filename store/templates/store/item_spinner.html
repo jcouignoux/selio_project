@@ -1,0 +1,15 @@
+<script>
+    function showStuff() {
+        var form = document.getElementById("import");
+        // alert( form.checkValidity() )
+        if ( form.checkValidity() ) {
+            document.getElementById('bouton').style.display = 'none';
+            document.getElementById('spinner').style.display = 'block';
+        }
+    }
+</script>
+
+<div id="bouton" onclick="showStuff()" ><input class="btn btn-light btn-outline-secondary mt-auto text-body" type="submit" name="{{ button }}" value="{{ button }}"></div>
+<div id="spinner" style="display:none" class="btn btn-primary" type="button" disabled>
+    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>  {{ spinner }}
+</div>

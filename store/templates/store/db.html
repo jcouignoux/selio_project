@@ -9,31 +9,42 @@
 {% if user.is_staff %}
     <div class="card container">
         <br />
-        <form class="form-group row" action="{% url 'store:dataBase' %}" method=post enctype=multipart/form-data>
+        <div class="form-group row">
+            <h5 class="card-header text-center">Importer Base</h5>
+        </div>
+        <form id="import" class="row" action="{% url 'store:dataBase' %}" method=post enctype=multipart/form-data>
             {% csrf_token %}
-            <div class="row">
-                <hr class="detail-separator">
-                <h5 class="intro-text text-center">Importer Base</h5>
-                <hr class="detail-separator"></div>
-            <div class="col-6">
-                <input class="form-control" type="file" value='' name="xls" required=True/>
-            </div>
             <div class="col-5">
-                <input class="btn btn-light btn-outline-secondary mt-auto text-body" type="submit" value="Importer">
+                <input class="form-control" type="file" value='' name="imp_xls" required=True/>
+            </div>
+            <div class="col-2">
+                {% include "store/item_spinner.html" with button="Importer" spinner="Chargement ..." %}
+            </div>
+            <div class="col-4">
+                {% if mess == 'import' %}
+                    {% for message in messages %}
+                        {% include "store/item_alert.html" %}
+                    {% endfor %}
+                {% endif %}
             </div>
         </form>
-        <br />
-        <form class="form-group row" action="" method=post enctype=multipart/form-data>
+        <div class="form-group row">
+            <h5 class="card-header text-center">Exporter Base</h5>
+        </div>
+        <form id="export" class="row" action="" method=post enctype=multipart/form-data>
             {% csrf_token %}
-            <div class="row">
-                <hr class="detail-separator">
-                <h5 class="intro-text text-center">Exporter Base</h5>
-                <hr class="detail-separator"></div>
-            <div class="col-6">
-                <input class="form-control" type="file" value='' name="xls"  required=True/>
-            </div>
             <div class="col-5">
-                <input class="btn btn-light btn-outline-secondary mt-auto text-body" type="submit" value="Exporter">
+                <input class="form-control" type="file" value='' name="exp_xls"  required=True/>
+            </div>
+            <div class="col-2">
+                {% include "store/item_spinner.html" with button="Exporter" spinner="Chargement ..." %}
+            </div>
+            <div class="col-4">
+                {% if mess == 'export' %}
+                    {% for message in messages %}
+                        {% include "store/item_alert.html" %}
+                    {% endfor %}
+                {% endif %}
             </div>
         </form>
     </div><br />
