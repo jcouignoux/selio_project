@@ -1,11 +1,10 @@
 from django.shortcuts import get_object_or_404
-from django.core.mail import EmailMessage, EmailMultiAlternatives, send_mail
-from django.template.loader import get_template
+from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.contrib.auth.models import User
 
-from .models import History, Ouvrage, Booking
+from .models import History, Ouvrage
 
 def add_to_history(ouvrage_id, quantity, date):
     ouvrage = get_object_or_404(Ouvrage, id=ouvrage_id)
@@ -34,10 +33,10 @@ def send_email(address, content):
     # message = content['message']
     from_email = "no-reply@selio4.org"
     to = [address, ]
-    bcc = [User.objects.get(username='jcouignoux').email, ]
+    # bcc = [User.objects.get(username='jcouignoux').email, ]
     # attachments = ['attachments', ]
-    auth_user = User.objects.get(username='jcouignoux').email
-    auth_password = User.objects.get(username='jcouignoux').password
+    # auth_user = User.objects.get(username='jcouignoux').email
+    # auth_password = User.objects.get(username='jcouignoux').password
     email_contact = content['email_contact']
     
     html = content['html']
