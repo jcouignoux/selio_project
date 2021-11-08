@@ -132,7 +132,7 @@ def detail(request, ouvrage_id):
                 catPrice = VForm.cleaned_data['catPrice']
                 payment = VForm.cleaned_data['payment']
                 fournisseur = ''
-                quantity = VForm.cleaned_data['quantity']
+                quantity = VForm.cleaned_data['quantity'] * -1
                 date = VForm.cleaned_data['date']
                 comment = VForm.cleaned_data['comment']
             if AForm.is_valid():
@@ -158,7 +158,7 @@ def detail(request, ouvrage_id):
                         date=date,
                         comment=comment
                     )
-                    ouvrage.stock -= 1
+                    ouvrage.stock += quantity
                     if ouvrage.stock <= 0:
                         # ouvrage.available = False
                         pass
@@ -254,7 +254,7 @@ def basket(request):
         if request.POST.get('order') == "commander":
             dict = {}
 
-            if not 'basket' in request.session:
+            if not 'basket' in request.session or request.session['basket'] == {}:
                 context['errors'].append("Votre panier est vide.")
                 context['CForm_dsa'] = AddressForm(instance=contact.default_shipping_address, prefix="CForm_dsa" )
                 context['CForm_dia'] = AddressForm(instance=contact.default_invoicing_address, prefix="CForm_dia" )
